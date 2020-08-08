@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 '''
-    Provides additional color options and should be used in conjunction with 
+    Provides additional color options and should be used in conjunction with
     either an built-in or an user defined lexer.
     An indicator is used to avoid style collisions.
     Although the Scintilla documentation states that indicators 0-7 are reserved for the lexers,
     indicator 0 is used. Change self.INDICATOR_ID if there is a problem.
-    
+
     Even when using more than one regex, it is not necessary to define more than one indicator
     because the class uses the flag SC_INDICFLAG_VALUEFORE.
     See https://www.scintilla.org/ScintillaDoc.html#Indicators for more information on that topic
@@ -21,39 +21,37 @@ if sys.version_info[0] == 2:
 else:
     _dict = dict
 
-                       
+
 class EnhanceLexer:
 
     def __init__(self):
         '''
             Initialize the class, should be called once only.
         '''
-        
+
         current_version = notepad.getPluginVersion()
         if  current_version < '1.5.4.0':
-            notepad.messageBox('It is needed to run PythonScript version 1.5.4.0 or higher', 
+            notepad.messageBox('It is needed to run PythonScript version 1.5.4.0 or higher',
                                'Unsupported PythonScript verion: {}'.format(current_version))
             return
-        
+
         self.INDICATOR_ID = 0
         self.registered_lexers = _dict()
-        
+
         self.document_is_of_interest = False
-        self.lexer_name = ''
-        
-        self.regexes = _dict()
-        self.excluded_styles = []
-        
+        self.regexes = None
+        self.excluded_styles = None
+
         editor1.indicSetStyle(self.INDICATOR_ID, INDICATORSTYLE.TEXTFORE)
         editor1.indicSetFlags(self.INDICATOR_ID, INDICFLAG.VALUEFORE)
         editor2.indicSetStyle(self.INDICATOR_ID, INDICATORSTYLE.TEXTFORE)
         editor2.indicSetFlags(self.INDICATOR_ID, INDICFLAG.VALUEFORE)
-        
+
         editor.callbackSync(self.on_updateui, [SCINTILLANOTIFICATION.UPDATEUI])
         editor.callbackSync(self.on_marginclick, [SCINTILLANOTIFICATION.MARGINCLICK])
         notepad.callback(self.on_langchanged, [NOTIFICATION.LANGCHANGED])
         notepad.callback(self.on_bufferactivated, [NOTIFICATION.BUFFERACTIVATED])
-        
+
 
     @staticmethod
     def rgb(r, g, b):
@@ -97,7 +95,7 @@ class EnhanceLexer:
             This is where the actual coloring takes place.
             Color, the position of the first character and
             the length of the text to be colored must be provided.
-            Coloring occurs only if the character at the current position 
+            Coloring occurs only if the character at the current position
             has not a style from the excluded styles list assigned.
 
             Args:
@@ -125,13 +123,13 @@ class EnhanceLexer:
             Calls up the regexes to find the position and
             calculates the length of the text to be colored.
             Deletes the old indicators before setting new ones.
-            
+
             Args:
                 None
             Returns:
                 None
         '''
-        
+
         start_line = editor.docLineFromVisible(editor.getFirstVisibleLine())
         end_line = editor.docLineFromVisible(start_line + editor.linesOnScreen())
         if editor.getWrapMode():
@@ -163,15 +161,24 @@ class EnhanceLexer:
             Returns:
                 None
         '''
-        
+
         current_language = notepad.getLanguageName(notepad.getLangType()).replace('udf - ','').lower()
         self.document_is_of_interest = current_language in self.registered_lexers
         if self.document_is_of_interest:
             self.regexes, self.excluded_styles = self.registered_lexers[current_language]
-            
 
 
     def on_marginclick(self, args):
+        '''
+            Callback which gets called every time one clicks the symbol margin.
+
+            Triggers the styling function if the document is of interest.
+
+            Args:
+                margin, only the symbol marign (=2) is of interest
+            Returns:
+                None
+        '''
         if args['margin'] == 2 and self.document_is_of_interest :
             self.style()
 
@@ -238,7 +245,7 @@ class EnhanceLexer:
 #
 #   Only the active document and for performance reasons, only the currently visible area
 #   is scanned and colored.
-#   This means, that a regular expression match is assumed to reflect only one line of code 
+#   This means, that a regular expression match is assumed to reflect only one line of code
 #   and not to extend over multiple lines.
 #   As an illustration, in python one can define, for example, a function like this
 #
@@ -247,9 +254,9 @@ class EnhanceLexer:
 #
 #   but it is also valid to define it like this
 #
-#       def my_function(param1, 
+#       def my_function(param1,
 #                       param2,
-#                       param3, 
+#                       param3,
 #                       param4):
 #           pass
 #
@@ -260,7 +267,7 @@ class EnhanceLexer:
 #
 #   offset_start_line = start_line - offset
 #   if offset_start_line < 0 then offset_start_line = 0
-#   
+#
 #   Not sure if this is the best approach - still investigating.
 #
 # Definition of colors and regular expressions
@@ -272,8 +279,8 @@ class EnhanceLexer:
 #       regexes[(a, b)] = (c, d)
 #
 #
-#   regexes = an ordered dictionary which ensures that the regular expressions 
-#             are always processed in the same order. 
+#   regexes = an ordered dictionary which ensures that the regular expressions
+#             are always processed in the same order.
 #   a = an unique number - suggestion, start with 0 and always increase by one (per lexer)
 #   b = color tuple in the form of (r,g,b). Example (255,0,0) for the color red.
 #   c = raw byte string, describes the regular expression. Example r'\w+'
@@ -296,7 +303,7 @@ py_regexes[(4, (86, 182, 194))]  = (r'\b(editor|editor1|editor2|notepad|console|
 
 # There is no standardization in defining the style IDs of lexers attributes,
 # hence one has to check the stylers.xml (or THEMENAME.xml) to see which
-# IDs are defined by the respective lexer and what its purposes are to 
+# IDs are defined by the respective lexer and what its purposes are to
 # create an list of style ids which shouldn't be altered.
 py_excluded_styles = [1, 3, 4, 6, 7, 12, 16, 17, 18, 19]
 
