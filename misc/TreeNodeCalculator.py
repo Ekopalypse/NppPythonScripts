@@ -8,62 +8,87 @@
         b) one root node in a document
         c) items are only in the last level and NOT in between.
 '''
-from Npp import editor
+from Npp import editor, notepad, MESSAGEBOXFLAGS
 
 # example test data
-# root
-    # level1
-        # item1
-        # item2
-    # level1
-        # level2
-            # item3
-            # item4
-        # level2
-            # level3
-                # item5
-                # item6
-    # level1
-        # item7
-        # item8
+# work
+    # names 1
+        # × antonio
+        # bernard #
+        # joseph
+        # alex
+        # # francisco
+        # suzana
+        # × victor
+        # amanda #
+        # # victoria
+        # xxxxx
+        # yy # yyy
+        # aaaa
+    # names 2
+        # aaaaa
+        # qqqqq #
+        # × wwwww
+        # a111111
+        # b222222
+        # c3333 # 33
+        # # wwwww
+        # wwwww
+    # names 3
+        # aaaaa
+        # qqqqq
 
 # would be modified to
 
-# root                                                                            8
-    # level1                                                                      2
-        # item1
-        # item2
-    # level1                                                                      4
-        # level2                                                                  2
-            # item3
-            # item4
-        # level2                                                                  2
-            # level3                                                              2
-                # item5
-                # item6
-    # level1                                                                      2
-        # item7
-        # item8
+# work                                                                            (22, 11)
+    # names 1                                                                     (12, 7)
+        # × antonio
+        # bernard #
+        # joseph
+        # alex
+        # # francisco
+        # suzana
+        # × victor
+        # amanda #
+        # # victoria
+        # xxxxx
+        # yy # yyy
+        # aaaa
+    # names 2                                                                     (8, 4)
+        # aaaaa
+        # qqqqq #
+        # × wwwww
+        # a111111
+        # b222222
+        # c3333 # 33
+        # # wwwww
+        # wwwww
+    # names 3                                                                     (2, 0)
+        # aaaaa
+        # qqqqq
 
 class Node:
     '''
         helper class which counts the items and updates the parents recursively.
     '''
     def __init__(self, line, parent=None):
-    '''
-        store on which line the parent is and initialze the object itself
-    '''
+        '''
+            store on which line the parent is and initialze the object itself
+        '''
         self.line = line
         self.parent = parent
         self.items = 0
+        self.additional_flags = 0
 
-    def add(self):
+    def add(self, additional_flags):
         '''
             add the current found item and call its parents recursively
         '''
         if self.parent:
-            self.parent.add()
+            self.parent.add(additional_flags)
         self.items += 1
+        if additional_flags:
+            self.additional_flags += 1
 
     def result(self):
         '''
@@ -71,7 +96,7 @@ class Node:
         '''
         if self.parent:
             self.parent.result()
-        return self.line, self.items
+        return self.line, self.items, self.additional_flags
 
 
 # Calculate the level
@@ -83,6 +108,7 @@ max_lines = len(lines)-1
 current_line = 0
 level_stack = []
 save_popped_levels = []
+additional_filters = ['#', '×']
 
 # loop through all lines and build the needed Node objects
 while current_line < max_lines:
@@ -90,7 +116,8 @@ while current_line < max_lines:
         current_level = get_level(lines[current_line])
 
         if current_level >= get_level(lines[current_line+1]):
-            level_stack[-1][0].add()
+            found_additional_filters = [x in lines[current_line] for x in additional_filters]
+            level_stack[-1][0].add(True if any(found_additional_filters) else False)
         else:
             if current_level == 0:
                 level_stack = []
@@ -111,16 +138,28 @@ while current_line < max_lines:
 prev_level = current_level
 if lines[current_line].strip() != '':
     if prev_level == get_level(lines[current_line]):
-        level_stack[-1][0].add()
+        found_additional_filters = [x in lines[current_line] for x in additional_filters]
+        level_stack[-1][0].add(True if any(found_additional_filters) else False)
 
 # create a list of all Node objects
 results = [x[0].result() for x in level_stack]
 results.extend([x[0].result() for x in save_popped_levels])
 
 # reformat the resulting content
-for line, _sum in sorted(results):
-    lines[line] = '{0:<{1}}{2}'.format(lines[line][:80],
-                                       80, 
-                                       _sum)
+if notepad.messageBox('Should additional filtering be applied?',
+                      '',
+                      MESSAGEBOXFLAGS.YESNO) == MESSAGEBOXFLAGS.RESULTYES:
+    for line, _sum, _additional_filters in sorted(results):
+        lines[line] = '{0:<{1}}({2}{3}{4})'.format(lines[line][:80],
+                                             80, 
+                                             _sum,
+                                             ', ',
+                                             _additional_filters)
+else:
+    for line, _sum, _ in sorted(results):
+        lines[line] = '{0:<{1}}({2})'.format(lines[line][:80],
+                                             80, 
+                                             _sum)
+    
 # set the new content
 editor.setText('\r\n'.join(lines))
