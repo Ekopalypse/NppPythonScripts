@@ -1,0 +1,384 @@
+<NotepadPlus>
+    <InternalCommands>
+        <Shortcut id="43010" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41005" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41004" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="1001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="10001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="10002" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="10003" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="10004" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41002" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41003" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41007" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41008" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41009" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41010" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41011" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41012" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41013" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41014" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41015" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41016" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41017" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41018" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41019" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41020" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41021" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41022" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41023" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="41024" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42012" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42013" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42014" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42015" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42016" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42017" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42018" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42019" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42020" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42021" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42022" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42023" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42024" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42025" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42026" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42027" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42028" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42029" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42030" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42031" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42032" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42033" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42034" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42035" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42036" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42038" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42039" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42042" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42043" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42044" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42045" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42046" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42047" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42048" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42049" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42050" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42051" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42052" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42053" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42054" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42055" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42056" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42057" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42058" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42059" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42060" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42061" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42062" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42063" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42064" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42065" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42066" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42067" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42068" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42069" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42070" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42071" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42072" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42073" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42074" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42075" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="42076" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43002" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43003" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43004" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43005" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43007" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43008" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43009" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43011" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43013" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43014" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43015" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43018" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43019" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43020" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43021" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43022" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43023" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43024" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43025" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43026" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43027" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43028" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43029" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43030" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43031" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43032" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43033" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43034" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43035" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43036" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43037" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43038" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43039" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43040" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43041" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43042" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43043" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43044" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43045" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43046" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43047" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43048" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43049" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43050" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43051" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43052" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43053" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="43054" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44009" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44010" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44019" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44020" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44022" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44025" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44026" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44029" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44030" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44031" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44032" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44034" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44035" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44036" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44041" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44042" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44049" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44051" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44052" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44053" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44054" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44055" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44056" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44057" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44058" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44061" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44062" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44063" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44064" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44065" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44066" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44067" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44068" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44072" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44080" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44081" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44082" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44083" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44084" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44085" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44086" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44087" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44088" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44089" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44090" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44091" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44092" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44093" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44094" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44095" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44096" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44097" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44098" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44099" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44100" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44101" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44102" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="44103" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45002" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45003" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45004" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45005" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45007" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45008" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45009" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45010" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45011" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45012" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45013" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45020" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45021" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45022" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45023" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45024" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45025" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45026" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45027" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45028" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45029" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45030" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45031" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45032" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45033" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45034" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45035" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45036" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45037" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45040" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45041" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45042" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45044" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45045" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45046" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45047" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45048" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45049" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45050" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45051" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45052" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45053" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45054" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45055" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45056" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45057" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45058" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45059" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45060" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45061" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45062" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45064" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45065" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45066" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45067" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="45068" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="46001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="46180" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="46250" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="47001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="47002" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="47004" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="47006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="48005" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="48006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="48009" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="48011" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="48018" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50000" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50001" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50002" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50003" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50004" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="50005" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="49000" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <Shortcut id="47000" Ctrl="no" Alt="no" Shift="no" Key="0" />
+    </InternalCommands>
+    <Macros />
+    <UserDefinedCommands />
+    <PluginCommands />
+    <ScintillaKeys>
+        <ScintKey ScintID="2004" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2169" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2288" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2300" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2301" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2302" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2303" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2304" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2305" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2306" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2307" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2308" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2309" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2310" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2311" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2312" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2313" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2314" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2315" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2316" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2317" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2318" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2319" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2320" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2321" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2322" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2323" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2324" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2325" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2326" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2329" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2330" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2331" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2335" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2336" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2337" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2338" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2339" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2342" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2343" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2344" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2345" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2346" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2347" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2348" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2349" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2390" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2391" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2392" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2393" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2395" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2396" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2401" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2404" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2413" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2414" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2415" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2416" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2426" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2427" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2428" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2429" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2430" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2431" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2432" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2433" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2434" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2435" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2436" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2437" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2438" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2439" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2440" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2441" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2442" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2450" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2451" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2452" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2453" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2454" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2455" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2606" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2607" menuCmdID="0" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2177" menuCmdID="42001" Ctrl="no" Alt="no" Shift="yes" Key="0" />
+        <ScintKey ScintID="2178" menuCmdID="42002" Ctrl="yes" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2179" menuCmdID="42005" Ctrl="no" Alt="no" Shift="yes" Key="0" />
+        <ScintKey ScintID="2013" menuCmdID="42007" Ctrl="yes" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2180" menuCmdID="42006" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2176" menuCmdID="42003" Ctrl="no" Alt="yes" Shift="no" Key="0" />
+        <ScintKey ScintID="2011" menuCmdID="42004" Ctrl="yes" Alt="no" Shift="yes" Key="0" />
+        <ScintKey ScintID="2327" menuCmdID="42008" Ctrl="no" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2328" menuCmdID="42009" Ctrl="no" Alt="no" Shift="yes" Key="0" />
+        <ScintKey ScintID="2333" menuCmdID="44023" Ctrl="yes" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2334" menuCmdID="44024" Ctrl="yes" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2373" menuCmdID="44033" Ctrl="yes" Alt="no" Shift="no" Key="0" />
+        <ScintKey ScintID="2469" menuCmdID="42010" Ctrl="yes" Alt="no" Shift="no" Key="0" />
+    </ScintillaKeys>
+</NotepadPlus>
