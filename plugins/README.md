@@ -12,7 +12,9 @@ Then run python.exe setup.py build_ext -i
 If there is no error the plugin will be created and copied to the notepad++ plugins directory.
 
 Tested on Windows 7 x64 with
+~~~
     Python 3.8.5
     cffi 1.14.2 (pip install cffi)
     cython 3.0a6 (pip install --pre cython)
     Visual Studio 2017 Community Edition
+~~~
