@@ -12,7 +12,7 @@
     v0.2 - count each occurance if additional filters per line.
 
 '''
-from Npp import editor2, notepad, MESSAGEBOXFLAGS
+from Npp import editor, notepad, MESSAGEBOXFLAGS
 
 # example test data
 # work
@@ -108,7 +108,7 @@ class Node:
 def get_level(line): return len(line) - len(line.lstrip())
 
 
-lines = editor2.getText().splitlines()
+lines = editor.getText().splitlines()
 max_lines = len(lines)-1
 current_line = 0
 level_stack = []
@@ -167,4 +167,4 @@ else:
                                              _sum)
     
 # set the new content
-editor2.setText('\r\n'.join(lines))
+editor.setText('\r\n'.join(lines))
