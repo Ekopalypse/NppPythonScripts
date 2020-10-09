@@ -7,8 +7,12 @@
         a) using either space or tabs doing the intend but NOT mixed ones
         b) one root node in a document
         c) items are only in the last level and NOT in between.
+        
+    [Changes since initial version]
+    v0.2 - count each occurance if additional filters per line.
+
 '''
-from Npp import editor, notepad, MESSAGEBOXFLAGS
+from Npp import editor2, notepad, MESSAGEBOXFLAGS
 
 # example test data
 # work
@@ -34,13 +38,13 @@ from Npp import editor, notepad, MESSAGEBOXFLAGS
         # c3333 # 33
         # # wwwww
         # wwwww
+        # # 1111111 # 12121212 # 5555555 # 323232323 # 444 # 11
     # names 3
         # aaaaa
         # qqqqq
-
 # would be modified to
 
-# work                                                                            (22, 11)
+# work                                                                            (23, 17)
     # names 1                                                                     (12, 7)
         # × antonio
         # bernard #
@@ -54,7 +58,7 @@ from Npp import editor, notepad, MESSAGEBOXFLAGS
         # xxxxx
         # yy # yyy
         # aaaa
-    # names 2                                                                     (8, 4)
+    # names 2                                                                     (9, 10)
         # aaaaa
         # qqqqq #
         # × wwwww
@@ -63,6 +67,7 @@ from Npp import editor, notepad, MESSAGEBOXFLAGS
         # c3333 # 33
         # # wwwww
         # wwwww
+        # # 1111111 # 12121212 # 5555555 # 323232323 # 444 # 11
     # names 3                                                                     (2, 0)
         # aaaaa
         # qqqqq
@@ -88,7 +93,7 @@ class Node:
             self.parent.add(additional_flags)
         self.items += 1
         if additional_flags:
-            self.additional_flags += 1
+            self.additional_flags += additional_flags
 
     def result(self):
         '''
@@ -103,7 +108,7 @@ class Node:
 def get_level(line): return len(line) - len(line.lstrip())
 
 
-lines = editor.getText().splitlines()
+lines = editor2.getText().splitlines()
 max_lines = len(lines)-1
 current_line = 0
 level_stack = []
@@ -116,8 +121,8 @@ while current_line < max_lines:
         current_level = get_level(lines[current_line])
 
         if current_level >= get_level(lines[current_line+1]):
-            found_additional_filters = [x in lines[current_line] for x in additional_filters]
-            level_stack[-1][0].add(True if any(found_additional_filters) else False)
+            found_additional_filters = [lines[current_line].count(x) for x in additional_filters]
+            level_stack[-1][0].add(sum(found_additional_filters))
         else:
             if current_level == 0:
                 level_stack = []
@@ -138,8 +143,8 @@ while current_line < max_lines:
 prev_level = current_level
 if lines[current_line].strip() != '':
     if prev_level == get_level(lines[current_line]):
-        found_additional_filters = [x in lines[current_line] for x in additional_filters]
-        level_stack[-1][0].add(True if any(found_additional_filters) else False)
+        found_additional_filters = [lines[current_line].count(x) for x in additional_filters]
+        level_stack[-1][0].add(sum(found_additional_filters))
 
 # create a list of all Node objects
 results = [x[0].result() for x in level_stack]
@@ -162,4 +167,4 @@ else:
                                              _sum)
     
 # set the new content
-editor.setText('\r\n'.join(lines))
+editor2.setText('\r\n'.join(lines))
