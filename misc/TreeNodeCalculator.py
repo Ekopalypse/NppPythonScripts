@@ -10,6 +10,9 @@
         
     [Changes since initial version]
     v0.2 - count each occurance if additional filters per line.
+    v0.3 - introduced two different kind of filters
+            combined_filters = sum of all defined characters per line
+            unique_filters = list of the sum of each configured character per line
 
 '''
 from Npp import editor, notepad, MESSAGEBOXFLAGS
@@ -38,7 +41,7 @@ from Npp import editor, notepad, MESSAGEBOXFLAGS
         # c3333 # 33
         # # wwwww
         # wwwww
-        # # 1111111 # 12121212 # 5555555 # 323232323 # 444 # 11
+        # 1111111€  -  # 12121212  -  # 5555555€  -  # 323232323  -  # 444€  -  #11  -  # 88888€
     # names 3
         # aaaaa
         # qqqqq
@@ -83,17 +86,24 @@ class Node:
         self.line = line
         self.parent = parent
         self.items = 0
-        self.additional_flags = 0
+        self.combined_filters = 0
+        self.unique_filters = []
 
-    def add(self, additional_flags):
+    def add(self, combined_filters, unique_filters=None):
         '''
             add the current found item and call its parents recursively
         '''
         if self.parent:
-            self.parent.add(additional_flags)
+            self.parent.add(combined_filters, unique_filters)
         self.items += 1
-        if additional_flags:
-            self.additional_flags += additional_flags
+        if combined_filters:
+            self.combined_filters += combined_filters
+        if unique_filters:
+            if not self.unique_filters:
+                self.unique_filters = unique_filters
+            else:
+                self.unique_filters = [sum(i) for i in zip(self.unique_filters, unique_filters)]
+
 
     def result(self):
         '''
@@ -101,7 +111,7 @@ class Node:
         '''
         if self.parent:
             self.parent.result()
-        return self.line, self.items, self.additional_flags
+        return self.line, self.items, self.combined_filters, self.unique_filters
 
 
 # Calculate the level
@@ -113,7 +123,8 @@ max_lines = len(lines)-1
 current_line = 0
 level_stack = []
 save_popped_levels = []
-additional_filters = ['#', '×']
+combined_filters = ['#', '×']
+unique_filters = ['€', '$']
 
 # loop through all lines and build the needed Node objects
 while current_line < max_lines:
@@ -121,8 +132,9 @@ while current_line < max_lines:
         current_level = get_level(lines[current_line])
 
         if current_level >= get_level(lines[current_line+1]):
-            found_additional_filters = [lines[current_line].count(x) for x in additional_filters]
-            level_stack[-1][0].add(sum(found_additional_filters))
+            found_additional_filters = [lines[current_line].count(x) for x in combined_filters]
+            found_unique_filters = [lines[current_line].count(u) for u in unique_filters]
+            level_stack[-1][0].add(sum(found_additional_filters), found_unique_filters)
         else:
             if current_level == 0:
                 level_stack = []
@@ -143,8 +155,9 @@ while current_line < max_lines:
 prev_level = current_level
 if lines[current_line].strip() != '':
     if prev_level == get_level(lines[current_line]):
-        found_additional_filters = [lines[current_line].count(x) for x in additional_filters]
-        level_stack[-1][0].add(sum(found_additional_filters))
+        found_additional_filters = [lines[current_line].count(x) for x in combined_filters]
+        found_unique_filters = [lines[current_line].count(u) for u in unique_filters]
+        level_stack[-1][0].add(sum(found_additional_filters), found_unique_filters)
 
 # create a list of all Node objects
 results = [x[0].result() for x in level_stack]
@@ -154,12 +167,16 @@ results.extend([x[0].result() for x in save_popped_levels])
 if notepad.messageBox('Should additional filtering be applied?',
                       '',
                       MESSAGEBOXFLAGS.YESNO) == MESSAGEBOXFLAGS.RESULTYES:
-    for line, _sum, _additional_filters in sorted(results):
-        lines[line] = '{0:<{1}}({2}{3}{4})'.format(lines[line][:80],
-                                             80, 
-                                             _sum,
-                                             ', ',
-                                             _additional_filters)
+    for line, _sum, _additional_filters, _unique_filters in sorted(results):
+        __unique_filters = ', '.join([str(x) for x in _unique_filters])
+        __unique_filters = ', ' + __unique_filters if __unique_filters else ''
+        lines[line] = '{0:<{1}}({2}{3}{4}{5})'.format(lines[line][:80],
+                                                      80, 
+                                                      _sum,
+                                                      ', ',
+                                                      _additional_filters,
+                                                      __unique_filters
+                                                      )
 else:
     for line, _sum, _ in sorted(results):
         lines[line] = '{0:<{1}}({2})'.format(lines[line][:80],
