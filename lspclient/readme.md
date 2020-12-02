@@ -1,7 +1,7 @@
 
 Proof of concept for creating an lsp-client for notepad++ with Python
 
-***WARNING: is still work in progress***
+***WARNING: is still work in progress***  
 Even if some LSP messages have already been created, they are not yet sufficient tested, so CAUTION!
 
 Requirement: installed PythonScript plugin version 3.X
