@@ -13,7 +13,7 @@
         {
             "RUST": {
                 "pipe": "io",
-                "executable": "C:\\Users\\gateadm\\.cargo\\bin\\rls.exe"
+                "executable": "C:\\Users\\xxxxxxxxx\\.cargo\\bin\\rls.exe"
             }
         },
         {
