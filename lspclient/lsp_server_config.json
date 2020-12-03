@@ -1,7 +1,7 @@
 {
     "version": "0.1",
     "loglevel": "info",
-    "logpath": "D:\\npplsplog.txt",
+    "logpath": "C:\\npplsplog.txt",
     "lspservers": [
         {
             "PYTHON": {
