@@ -50,3 +50,4 @@ The lsp-client is currently configured with logging by default. If you have prob
     - output formatted diags to console to be able to jump to line of interest
     - make format request working
     - make peek request working
+    - added more logging calls
