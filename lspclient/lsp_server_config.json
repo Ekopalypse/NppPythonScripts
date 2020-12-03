@@ -1,13 +1,13 @@
 {
     "version": "0.1",
-    "loglevel": "critical",
+    "loglevel": "info",
     "logpath": "D:\\npplsplog.txt",
     "lspservers": [
         {
             "PYTHON": {
                 "pipe": "io",
                 "executable": "D:\\ProgramData\\Python\\Python38_64\\Scripts\\pyls.exe",
-                "args": []
+                "args": ["--check-parent-process", "--log-file", "D:\\log.txt", "-v"]
             }
         },
         {
