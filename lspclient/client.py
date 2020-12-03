@@ -5,15 +5,19 @@ import os
 from urllib.request import url2pathname
 import pprint
 import logging
-log = logging.info
 
-from Npp import editor, editor1, editor2, notepad, NOTIFICATION, SCINTILLANOTIFICATION, ANNOTATIONVISIBLE, ORDERING
+from Npp import (editor, editor1, editor2, notepad, console,
+                 NOTIFICATION, SCINTILLANOTIFICATION, ANNOTATIONVISIBLE, ORDERING)
 from .io_handler import COMMUNICATION_MANAGER
 from .lsp_protocol import MESSAGES
 
+log = logging.info
 pp = pprint.PrettyPrinter(indent=4)
-def pretty_print_dict(text):
-    log(pp.pformat(text))
+
+
+def pretty_print_dict(text, caller=''):
+    log(f'{caller} {pp.pformat(text)}')
+
 
 class LSPCLIENT():
 
@@ -44,7 +48,7 @@ class LSPCLIENT():
         editor.callbackSync(self.on_dwell_start, [SCINTILLANOTIFICATION.DWELLSTART])
 
         fg_color = editor.styleGetFore(32)
-        darker_bg_color = tuple([x-10 if x>10 else x for x in editor.styleGetBack(32)])
+        darker_bg_color = tuple([x - 10 if x > 10 else x for x in editor.styleGetBack(32)])
 
         CALLTIP_STYLE = 38
         editor1.styleSetBack(CALLTIP_STYLE, darker_bg_color)
@@ -69,7 +73,7 @@ class LSPCLIENT():
         editor1.setMouseDwellTime(500)
         editor2.setMouseDwellTime(500)
 
-        self.open_files_dict = {x[1]:x[0] for x in notepad.getFiles()}
+        self.open_files_dict = {x[1]: x[0] for x in notepad.getFiles()}
 
 
     def terminate(self):
@@ -153,14 +157,15 @@ class LSPCLIENT():
         return file_version
 
 
-    # used for testing only
     def _send_custom(self, _query):
+        # used for testing only
         self.com_manager.send(self.lsp_msg.codeAction(_query))
         self.open_results[self.lsp_msg.request_id] = self.custom_response_handler
 
-    # used for testing only
+
     def custom_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        # used for testing only
+        pretty_print_dict(decoded_message, 'custom_response_handler')
 
 
     def _send_did_change(self, version=None):
@@ -249,9 +254,12 @@ class LSPCLIENT():
         if _method == 'textDocument/publishDiagnostics':
             if editor.getModify():
                 return
+            # TODO: for now every diagnostic message clears the console
+            console.clear()
             _file = url2pathname(decoded_message['params']['uri'].replace('file:', ''))
             if decoded_message['params']['diagnostics']:
                 diag_dict = dict()
+                console_output = []
                 for item in decoded_message['params']['diagnostics']:
                     # _code = item.get('code', '')
                     _message = item.get('message', 'MESSAGE:???')
@@ -262,6 +270,7 @@ class LSPCLIENT():
                         _start = (__range['start']['line'], __range['start']['character'])
                         _end = (__range['end']['line'], __range['end']['character'])
                         _range = (_start, _end)
+                        console_output.append(f'  File "{_file}", line {_start[0]+1}  -  {_message}')
                     else:
                         _range = 'RANGE:???'
 
@@ -270,7 +279,6 @@ class LSPCLIENT():
                     else:
                         diag_dict[_severity] += f'    {_range} {_source} {_message}'
                     diag_dict[_severity] += '\n'
-
 
                 error_msgs = ''
                 warning_msgs = ''
@@ -289,7 +297,7 @@ class LSPCLIENT():
 
                 diag_msgs = error_msgs + warning_msgs + info_msgs + hint_msgs
                 log(f'{_file}, {diag_msgs}')
-                print(f'{_file}, {diag_msgs}')
+                print('\n'.join(console_output))
 
         elif _method == 'window/progress':
             # ignore for the time being
@@ -297,14 +305,14 @@ class LSPCLIENT():
         else:
             if _method:
                 log(_method)
-            pretty_print_dict(decoded_message)
+            pretty_print_dict(decoded_message, '_notification_handler')
 
 
     @staticmethod
     def signature_response_handler(decoded_message):
         if decoded_message['result'].get('signatures', None):
             tip = '{}\n\n{}'.format(decoded_message['result']['signatures'][0]['label'],
-                                    decoded_message['result']['signatures'][0]['documentation'][:500])
+                                    decoded_message['result']['signatures'][0]['documentation'][:1000])
             if tip.strip():
                 editor.callTipShow(editor.getCurrentPos(), tip)
 
@@ -339,7 +347,7 @@ class LSPCLIENT():
     def document_symbol_response_handler(self, decoded_message):
         symbol_list = []
         for symbol in decoded_message['result']:
-            if symbol['kind'] in [5,6,12]:
+            if symbol['kind'] in [5, 6, 12]:
                 symbol_list.append(f'{symbol["containerName"]}->{symbol["name"]}')
         log('\n'.join(symbol_list))
 
@@ -351,12 +359,12 @@ class LSPCLIENT():
 
 
     def goto_definition_response_handler(self, decoded_message):
-         # 'result': [   {   'range': {   'end': {   'character': 22,
-                                                     # 'line': 76},
-                                         # 'start': {   'character': 8,
-                                                       # 'line': 76}},
-                           # 'uri': 'file:///d:/PortableApps/Npp/plugins/Config/PythonScript/lib/lspclient/client.py'}]}
-        pretty_print_dict(decoded_message)
+        # 'result': [   {   'range': {   'end': {   'character': 22,
+        # 'line': 76},
+        # 'start': {   'character': 8,
+        # 'line': 76}},
+        # 'uri': 'file:///d:/PortableApps/Npp/plugins/Config/PythonScript/lib/lspclient/client.py'}]}
+        pretty_print_dict(decoded_message, 'goto_definition_response_handler')
         if decoded_message['result']:
             _file = url2pathname(decoded_message['result'][0]['uri'].replace('file:', ''))
             notepad.activateFile(_file.encode('utf8'))
@@ -370,7 +378,7 @@ class LSPCLIENT():
     def peek_definition_response_handler(self, decoded_message):
         # TODO: use annotation
         if decoded_message['result']:
-            pretty_print_dict(decoded_message)
+            pretty_print_dict(decoded_message, 'peek_definition_response_handler')
             _file = url2pathname(decoded_message['result'][0]['uri'].replace('file:', ''))
             _line_number = decoded_message['result'][0]['range']['start']['line']
             with open(_file) as f:
@@ -386,18 +394,21 @@ class LSPCLIENT():
     def hover_response_handler(self, decoded_message):
         if 'contents' in decoded_message['result']:
             tip = decoded_message['result']['contents']
-            if tip.strip() and self.current_hover_position != -1:
-                editor.callTipShow(self.current_hover_position, tip[:1000])
+            if tip and self.current_hover_position != -1:
+                if isinstance(tip[0], dict) and 'value' in tip[0]:
+                    editor.callTipShow(self.current_hover_position, tip[0]['value'])
+                else:
+                    editor.callTipShow(self.current_hover_position, tip[0][:500])
                 self.current_hover_position = -1
-        # pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'hover_response_handler')
 
 
     def reference_response_handler(self, decoded_message):
         # 'result': [   {   'range': {   'end': {   'character': 24,
-                                                     # 'line': 16},
-                                         # 'start': {   'character': 13,
-                                                       # 'line': 16}},
-                           # 'uri': 'file:///d:/...'},
+        # 'line': 16},
+        # 'start': {   'character': 13,
+        # 'line': 16}},
+        # 'uri': 'file:///d:/...'},
         references = []
         if decoded_message['result']:
             for reference in decoded_message['result']:
@@ -410,7 +421,7 @@ class LSPCLIENT():
 
     def code_lens_response_handler(self, decoded_message):
         if decoded_message['result']:
-            pretty_print_dict(decoded_message)
+            pretty_print_dict(decoded_message, 'code_lens_response_handler')
 
 
     def _send_rename(self):
@@ -423,13 +434,10 @@ class LSPCLIENT():
 
     def rename_response_handler(self, decoded_message):
         # 'result': {'documentChanges': [{'edits': [{'newText': u"...",
-                                                      # 'range': {'end': {'character': 0,
-                                                                          # 'line': 417},
-                                                                 # 'start': {'character': 0,
-                                                                            # 'line': 0}}}],
-                                                      # 'textDocument': {'uri': 'file:///d:/...',
-                                                                        # 'version': None}}]}}
-        pretty_print_dict(decoded_message)
+        # 'range': {'end': {'character': 0, 'line': 417},
+        # 'start': {'character': 0, 'line': 0}}}],
+        # 'textDocument': {'uri': 'file:///d:/...', 'version': None}}]}}
+        pretty_print_dict(decoded_message, 'rename_response_handler')
         if decoded_message['result']:
             editor.beginUndoAction()
             for changes in decoded_message['result']['documentChanges']:
@@ -446,43 +454,40 @@ class LSPCLIENT():
 
 
     def prepare_rename_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'prepare_rename_response_handler')
 
 
     def folding_range_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'folding_range_response_handler')
 
 
     def declaration_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'declaration_response_handler')
 
 
     def type_definition_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'type_definition_response_handler')
 
 
     def document_highlight_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'document_highlight_response_handler')
 
 
     def workspace_symbol_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'workspace_symbol_response_handler')
 
 
     def _result_handler(self, decoded_message):
         if decoded_message['id'] in self.open_results:
             _handler = self.open_results.pop(decoded_message['id'])
-            if 'error' in decoded_message or decoded_message['result'] is None:
-                log('_result_handler')
-                pretty_print_dict(decoded_message)
+            if 'error' in decoded_message or not decoded_message['result']:
                 return
             _handler(decoded_message)
-        else:
-            pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, '_result_handler')
 
 
     def resolve_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message)
+        pretty_print_dict(decoded_message, 'resolve_response_handler')
 
 
     def on_receive(self, message):
@@ -495,12 +500,10 @@ class LSPCLIENT():
             if decoded_message:
                 if 'result' in decoded_message:
                     if not decoded_message['result'] is None and 'capabilities' in decoded_message['result']:
-                    # if decoded_message.get('id') == 1:
                         self.com_manager.send(self.lsp_msg.initialized())
-                        # self.current_triggers[self.current_language]['signatureHelpProvider'] = []
-                        # self.current_triggers[self.current_language]['completionProvider'] = []
-                        for k, v in self._get_trigger_chars(decoded_message, ['signatureHelpProvider', 'completionProvider']):
-                            triggers = [ord(x) for x in v.get('triggerCharacters',[])]
+                        for k, v in self._get_trigger_chars(decoded_message, ['signatureHelpProvider',
+                                                                              'completionProvider']):
+                            triggers = [ord(x) for x in v.get('triggerCharacters', [])]
                             if k == 'signatureHelpProvider':
                                 self.current_triggers[self.current_language]['signatureHelpProvider'] = triggers
                             elif k == 'completionProvider':
@@ -512,7 +515,7 @@ class LSPCLIENT():
                 elif 'id' not in decoded_message:
                     self._notification_handler(decoded_message)
                 else:
-                    pretty_print_dict(decoded_message)
+                    pretty_print_dict(decoded_message, 'on_receive')
                     self.com_manager.send(self.lsp_msg.response(decoded_message))
             else:
                 log('on_receive decoding message failed')
@@ -538,8 +541,8 @@ class LSPCLIENT():
         if self.current_language in self.available_lsp_servers:
             self.lsp_doc_flag = True
             if not self.com_manager.already_initialized(self.current_language):
-                self.current_triggers[self.current_language] = {'signatureHelpProvider' : [],
-                                                                'completionProvider' : []}
+                self.current_triggers[self.current_language] = {'signatureHelpProvider': [],
+                                                                'completionProvider': []}
                 self.com_manager.send(self.lsp_msg.initialize(self.current_file.rpartition('\\')[0], os.getpid()))
 
             _version = self._get_file_version()
@@ -574,7 +577,7 @@ class LSPCLIENT():
 
     def on_char_added(self, args):
         if self.lsp_doc_flag:
-           
+
             if chr(args['ch']) == ')':
                 editor.callTipCancel()
             elif (args['ch'] in self.current_triggers[self.current_language]['signatureHelpProvider'] or

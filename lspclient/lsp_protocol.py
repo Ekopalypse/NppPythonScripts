@@ -8,6 +8,7 @@ import json
 import enum
 from urllib.request import pathname2url
 
+
 class CompletionItemKind(enum.IntEnum):
     Text = 1
     Method = 2
@@ -260,6 +261,8 @@ class MESSAGES:
 
     # --------------------------------------------------------------------------------------------------------------------
     # Notifications
+
+
     def initialized(self):
         return self._notif('initialized', None)
 
@@ -271,38 +274,38 @@ class MESSAGES:
                   'version': _version,  # increase after each change, including undo/redo
                   # 'text': json.dumps(_text)
                   'text': _text
-                    }
+                  }
                   }
         return self._notif('textDocument/didOpen', params)
 
 
     def didChange(self, _file, _languageId, _version, _changes):
         params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'languageId': _languageId,
-                    'version': _version  # increase after each change, including undo/redo
-                    },
-                  'contentChanges': [{'text': _changes}]
-                  }
+            'uri': f'file:{pathname2url(_file)}',
+            'languageId': _languageId,
+            'version': _version  # increase after each change, including undo/redo
+        },
+            'contentChanges': [{'text': _changes}]
+        }
         return self._notif('textDocument/didChange', params)
 
 
     def didSave(self, _file, _version):
         params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version  # increase after each change, including undo/redo
-                     }
-                  }
+            'uri': f'file:{pathname2url(_file)}',
+            'version': _version  # increase after each change, including undo/redo
+        }
+        }
         return self._notif('textDocument/didSave', params)
 
 
     def willSave(self, _file, _version, _reason):
         params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                    'reason': _reason
-                  }
+            'uri': f'file:{pathname2url(_file)}',
+            'version': _version
+        },
+            'reason': _reason
+        }
         return self._notif('textDocument/willSave', params)
 
 
@@ -311,9 +314,9 @@ class MESSAGES:
 
     def didClose(self, _file):
         params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}'
-                 }
-              }
+            'uri': f'file:{pathname2url(_file)}'
+        }
+        }
         return self._notif('textDocument/didClose', params)
 
     # TODO: clarify settings param
@@ -360,13 +363,13 @@ class MESSAGES:
                     'applyEdit': True,
                     'workspaceEdit': {
                         'documentChanges': False
-                        },
+                    },
                     'didChangeConfiguration': {
                         'dynamicRegistration': False
-                        },
+                    },
                     'didChangeWatchedFiles': {
                         'dynamicRegistration': False
-                        },
+                    },
                     'symbol': {
                         'dynamicRegistration': True,
                         'symbolKind': {
@@ -396,14 +399,14 @@ class MESSAGES:
                                          SymbolKind.Event,
                                          SymbolKind.Operator,
                                          SymbolKind.TypeParameter]
-                            }
-                        },
+                        }
+                    },
                     'executeCommand': {
                         'dynamicRegistration': True
-                        },
+                    },
                     'configuration': True,
                     'workspaceFolders': True
-                    },
+                },
                 'textDocument': {
                     'publishDiagnostics': {'relatedInformation': True},
                     'synchronization': {
@@ -411,7 +414,7 @@ class MESSAGES:
                         'willSave': True,
                         'willSaveWaitUntil': False,
                         'didSave': True
-                        },
+                    },
                     'completion': {
                         'dynamicRegistration': True,
                         'contextSupport': True,
@@ -422,7 +425,7 @@ class MESSAGES:
                                 'markdown',
                                 'plaintext'
                             ],
-                        'deprecatedSupport': True
+                            'deprecatedSupport': True
                         },
                         'completionItemKind': {
                             'valueSet': [CompletionItemKind.Text,
@@ -450,18 +453,18 @@ class MESSAGES:
                                          CompletionItemKind.Event,
                                          CompletionItemKind.Operator,
                                          CompletionItemKind.TypeParameter]
-                            }
-                        },
+                        }
+                    },
                     'hover': {
                         'dynamicRegistration': True,
                         'contentFormat': ['markdown', 'plaintext']
-                        },
+                    },
                     'signatureHelp': {
                         'dynamicRegistration': True,
                         'signatureInformation': {
                             'documentationFormat': ['markdown', 'plaintext']
-                            }
-                        },
+                        }
+                    },
                     'definition': {'dynamicRegistration': True},
                     'references': {'dynamicRegistration': True},
                     'documentHighlight': {'dynamicRegistration': True},
@@ -494,8 +497,8 @@ class MESSAGES:
                                          SymbolKind.Event,
                                          SymbolKind.Operator,
                                          SymbolKind.TypeParameter]
-                            }
-                        },
+                        }
+                    },
                     'codeAction': {'dynamicRegistration': True},
                     'codeLens': {'dynamicRegistration': True},
                     'formatting': {'dynamicRegistration': True},
@@ -510,9 +513,9 @@ class MESSAGES:
                         'dynamicRegistration': False,
                         'rangeLimit': 5000,
                         'lineFoldingOnly': True
-                        }
                     }
-                },
+                }
+            },
 
             #
             # The initial trace setting. If omitted trace is disabled ('off').
@@ -537,32 +540,26 @@ class MESSAGES:
 
 
     def completion(self, _file, _version, _line, _character):
-        params = {'textDocument': {
-                  'uri': f'file:{pathname2url(_file)}',
-                  'version': _version
-                  },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    },
-                  'context': {
-                    'triggerKind': CompletionTriggerKind.Invoked
-                    }
-                 }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               },
+                  'context': {'triggerKind': CompletionTriggerKind.Invoked}
+                  }
         return self._request('textDocument/completion', params)
 
 
     def signatureHelp(self, _file, _languageId, _version, _text, _line, _character):
-        params = {'textDocument': {
-                  'uri': f'file:{pathname2url(_file)}',
-                  'languageId': _languageId,
-                  'version': _version,  # increase after each change, including undo/redo
-                  'text': _text
-                  },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'languageId': _languageId,
+                                   'version': _version,  # increase after each change, including undo/redo
+                                   'text': _text
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               }
                   }
         return self._request('textDocument/signatureHelp', params)
 
@@ -577,143 +574,119 @@ class MESSAGES:
 
 
     def documentSymbol(self, _file, _version):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     }}
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version}}
         return self._request('textDocument/documentSymbol', params)
 
 
     def formatting(self, _file, _version):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     }}
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version}}
         return self._request('textDocument/formatting', params)
 
 
     def definition(self, _file, _version, _line, _character):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               }
                   }
         return self._request('textDocument/definition', params)
 
 
     def hover(self, _file, _version, _line, _character):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               }
                   }
         return self._request('textDocument/hover', params)
 
 
     def references(self, _file, _version, _line, _character, _includeDeclaration=True):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    },
-                  'context': {
-                    'includeDeclaration': _includeDeclaration
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               },
+                  'context': {'includeDeclaration': _includeDeclaration}
                   }
         return self._request('textDocument/references', params)
 
 
     def codeLens(self, _file, _version):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   }
                   }
         return self._request('textDocument/codeLens', params)
 
 
-    def rename(self, _file, _version, _line, _character, _new_name ):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    },
+    def rename(self, _file, _version, _line, _character, _new_name):
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               },
                   'newName': _new_name
                   }
         return self._request('textDocument/rename', params)
 
 
-    def prepareRename(self, _file, _version, _line, _character ):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+    def prepareRename(self, _file, _version, _line, _character):
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               }
                   }
         return self._request('textDocument/prepareRename', params)
 
 
-    def foldingRange(self,  _file, _version):
-        params = {'textDocument': {
-                        'uri': f'file:{pathname2url(_file)}',
-                        'version': _version
-                         }
-                      }
+    def foldingRange(self, _file, _version):
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   }
+                  }
         return self._request('textDocument/foldingRange', params)
 
 
     def declaration(self, _file, _version, _line, _character):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               }
                   }
         return self._request('textDocument/declaration', params)
 
 
     def typeDefinition(self, _file, _version, _line, _character):
-        params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
-                  'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version
+                                   },
+                  'position': {'line': _line,
+                               'character': _character
+                               }
                   }
         return self._request('textDocument/typeDefinition', params)
 
 
     def documentHighlight(self, _file, _version, _line, _character):
         params = {'textDocument': {
-                    'uri': f'file:{pathname2url(_file)}',
-                    'version': _version
-                     },
+                  'uri': f'file:{pathname2url(_file)}',
+                  'version': _version},
                   'position': {
-                    'line': _line,
-                    'character': _character
-                    }
+                  'line': _line,
+                  'character': _character}
                   }
         return self._request('textDocument/documentHighlight', params)
 
@@ -743,18 +716,31 @@ class MESSAGES:
         return self._request('completionItem/resolve', params)
 
 
-    # not implemented yet.
+    # not implemented yet
+
+
     def __codeAction(self, params): return self._request('textDocument/codeAction', params)
+
     def __codeLens_resolve(self, params): return self._request('codeLens/resolve', params)
+
     def __colorPresentation(self, params): return self._request('textDocument/colorPresentation', params)
+
     def __documentColor(self, params): return self._request('textDocument/documentColor', params)
+
     def __documentLink(self, params): return self._request('textDocument/documentLink', params)
+
     def __implementation(self, params): return self._request('textDocument/implementation', params)
+
     def __onTypeFormatting(self, params): return self._request('textDocument/onTypeFormatting', params)
+
     def __rangeFormatting(self, params): return self._request('textDocument/rangeFormatting', params)
+
     def __willSaveWaitUntil(self, params): return self._request('textDocument/willSaveWaitUntil', params)
+
     def __didChangeWatchedFiles(self, params): return self._request('workspace/didChangeWatchedFiles', params)
+
     def __didChangeWorkspaceFolders(self, params): return self._request('workspace/didChangeWorkspaceFolders', params)
+
     def __executeCommand(self, params): return self._request('workspace/executeCommand', params)
 
 

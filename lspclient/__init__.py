@@ -11,7 +11,7 @@ from .client import LSPCLIENT
 LSP client implementation for notepad++
 '''
 
-__version__ = '0.1'
+__version__ = '0.2'
 __all__ = [lsp_protocol, LSPCLIENT, logging, COMMUNICATION_MANAGER]
 
 single_instance = None
@@ -62,8 +62,8 @@ def __check_lsp_server_config(lsp_server_configs):
 
 def __check_config(config_file):
     mandatory_keys = ['version', 'loglevel', 'logpath', 'lspservers']
+    print(f'load:{config_file}')
     with open(config_file, 'rb') as f:
-        print(f'load:{config_file}')
         config = json.load(f)
     if not all(key in config for key in mandatory_keys):
         raise KeyError(f'Corrupt config file. Missing mandatory key(s):{mandatory_keys}')

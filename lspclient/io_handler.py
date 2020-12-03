@@ -21,20 +21,21 @@ class TCP_OBJECT:
 
     def start(self):
         ''' start_process '''
+
         def _start_tcp_client(self, port, max_tcp_retry=0, ip=None):
-                ''' _start_tcp_client '''
-                _socket = None
-                if ip is None:
-                    ip = 'localhost'
-                while max_tcp_retry >= 0:
-                    try:
-                        _socket = socket.create_connection((ip, port))
-                        max_tcp_retry = -1
-                    except Exception as e:  # pylint: disable=W0703
-                        log(f'{e}')
-                        time.sleep(1)
-                        max_tcp_retry -= 1
-                return _socket
+            ''' _start_tcp_client '''
+            _socket = None
+            if ip is None:
+                ip = 'localhost'
+            while max_tcp_retry >= 0:
+                try:
+                    _socket = socket.create_connection((ip, port))
+                    max_tcp_retry = -1
+                except Exception as e:  # pylint: disable=W0703
+                    log(f'{e}')
+                    time.sleep(1)
+                    max_tcp_retry -= 1
+            return _socket
 
         executable = self.config['executable']
         args = self.config.get('args', None)
@@ -54,9 +55,9 @@ class TCP_OBJECT:
         _socket = None
         try:
             process = subprocess.Popen(args,
-                                 startupinfo=si,
-                                 cwd=executable.rpartition('\\')[0],
-                                 close_fds=False)
+                                       startupinfo=si,
+                                       cwd=executable.rpartition('\\')[0],
+                                       close_fds=False)
             if process:
                 _socket = self._start_tcp_client(port, max_tcp_retries)
                 if _socket is None:
@@ -164,7 +165,7 @@ class PROCESS_MONITOR(threading.Thread):
                         while (start_json := content.find(b'{')) != 0:
                             log(f'{start_json=}')
                             if start_json > 0:
-                                content += out.read(expected_content_length-len(content)+start_json)
+                                content += out.read(expected_content_length - len(content) + start_json)
                                 break
                             elif start_json == -1:
                                 content += out.read(expected_content_length)
