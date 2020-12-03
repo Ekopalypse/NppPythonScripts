@@ -24,7 +24,7 @@ Requirement: installed PythonScript plugin version 3.X
 
 -   modify the file lsp_server_config according to your needs  
 -   add additional flush method to ConsoleError object to startup.py
-~~~
+~~~py
 class ConsoleError:
     def __init__(self):
         global console
