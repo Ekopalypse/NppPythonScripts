@@ -1,7 +1,7 @@
 
 Proof of concept for creating an lsp-client for notepad++ with Python
 
-***WARNING: is still work in progress***  
+***WARNING: is still work in progress, still aplha phase***  
 Even if some LSP messages have already been created, they are not yet sufficient tested, so CAUTION!
 
 Requirement: installed PythonScript plugin version 3.X
@@ -44,6 +44,13 @@ Note: use the console, because diagnostic information are currently being displa
 The lsp-client is currently configured with logging by default. If you have problems ... take a look into it.
 
 ## Changes  
+-  V 0.3
+    - added additional env (environment variables) to lsp_server_config.json
+    - made sure that no other messages are sent if initilize_result from server is pending  
+    - removed dynamic registration capabilities from initialize request as those aren't supported yet.  
+    - added more logging calls  
+    - sucessfully tested basic functionality with non-python lsp servers  
+    
 -  V 0.2
     - added additional setup info
     - reformatted code to satisfy pyls linter
