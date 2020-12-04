@@ -7,7 +7,8 @@ import pprint
 import logging
 
 from Npp import (editor, editor1, editor2, notepad, console,
-                 NOTIFICATION, SCINTILLANOTIFICATION, ANNOTATIONVISIBLE, ORDERING)
+                 NOTIFICATION, SCINTILLANOTIFICATION,
+                 ANNOTATIONVISIBLE, ORDERING, STATUSBARSECTION)
 from .io_handler import COMMUNICATION_MANAGER
 from .lsp_protocol import MESSAGES
 
@@ -301,7 +302,12 @@ class LSPCLIENT():
 
         elif _method == 'window/progress':
             # ignore for the time being
-            pass
+            if decoded_message['params']['done']:
+                pass  # reset statusbar
+            else:
+                _message = decoded_message['params']['message']
+                _title = decoded_message['params']['title']
+                notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, f'{_title} - {_message}')
         else:
             if _method:
                 log(_method)
@@ -496,36 +502,37 @@ class LSPCLIENT():
         '''
         if message:
             log(message)
-            decoded_message = self.lsp_msg.decode(message)
-            if decoded_message:
-                if 'result' in decoded_message:
-                    if not decoded_message['result'] is None and 'capabilities' in decoded_message['result']:
-                        self.com_manager.send(self.lsp_msg.initialized())
-                        for k, v in self._get_trigger_chars(decoded_message, ['signatureHelpProvider',
-                                                                              'completionProvider']):
-                            triggers = [ord(x) for x in v.get('triggerCharacters', [])]
-                            if k == 'signatureHelpProvider':
-                                self.current_triggers[self.current_language]['signatureHelpProvider'] = triggers
-                            elif k == 'completionProvider':
-                                self.current_triggers[self.current_language]['completionProvider'] = triggers
-                    else:
-                        self._result_handler(decoded_message)
-                elif 'error' in decoded_message:
-                    self._result_handler(decoded_message)
-                elif 'id' not in decoded_message:
-                    self._notification_handler(decoded_message)
-                else:
-                    pretty_print_dict(decoded_message, 'on_receive')
-                    self.com_manager.send(self.lsp_msg.response(decoded_message))
+            decoded_message, error = self.lsp_msg.decode(message)
+            if error:
+                log(decoded_message)
             else:
-                log('on_receive decoding message failed')
+                if decoded_message:
+                    if 'result' in decoded_message:
+                        if not decoded_message['result'] is None and 'capabilities' in decoded_message['result']:
+                            self.com_manager.send_initialized(self.lsp_msg.initialized())
+                            for k, v in self._get_trigger_chars(decoded_message, ['signatureHelpProvider',
+                                                                                  'completionProvider']):
+                                triggers = [ord(x) for x in v.get('triggerCharacters', [])]
+                                if k == 'signatureHelpProvider':
+                                    self.current_triggers[self.current_language]['signatureHelpProvider'] = triggers
+                                elif k == 'completionProvider':
+                                    self.current_triggers[self.current_language]['completionProvider'] = triggers
+                        else:
+                            self._result_handler(decoded_message)
+                    elif 'error' in decoded_message:
+                        self._result_handler(decoded_message)
+                    elif 'id' not in decoded_message:
+                        self._notification_handler(decoded_message)
+                    else:
+                        pretty_print_dict(decoded_message, 'on_receive')
+                        self.com_manager.send(self.lsp_msg.response(decoded_message))
         else:
             log(f'got corrupted message:{message}')
 
 
     def on_buffer_activated(self, args):
         log(f'{args}')
-        self.current_language = notepad.getCurrentLang().name
+        self.current_language = notepad.getLanguageName(notepad.getLangType()).upper()
         if args['bufferID'] not in self.open_files_dict:
             self.current_file = notepad.getCurrentFilename()
             self.open_files_dict[args['bufferID']] = self.current_file
@@ -544,6 +551,7 @@ class LSPCLIENT():
                 self.current_triggers[self.current_language] = {'signatureHelpProvider': [],
                                                                 'completionProvider': []}
                 self.com_manager.send(self.lsp_msg.initialize(self.current_file.rpartition('\\')[0], os.getpid()))
+                self.com_manager.waiting_for_initialize_result = True
 
             _version = self._get_file_version()
 
@@ -600,11 +608,7 @@ class LSPCLIENT():
                     self.open_results[self.lsp_msg.request_id] = self.signature_response_handler
 
                 else:
-                    if self.waiting_for_completion_response:
-                        return
-                    log('waiting_for_completion_response')
                     self.com_manager.send(self.lsp_msg.completion(*self.__TextDocumentPositionParams()))
-                    self.waiting_for_completion_response = True
                     self.open_results[self.lsp_msg.request_id] = self.completion_response_handler
 
 

@@ -232,29 +232,17 @@ class MESSAGES:
 
 
     def decode(self, msg):
-        return json.loads(msg)
-        # msg_parts = msg.splitlines()
-        # if msg_parts:
-            # if 'Content-Length: ' in msg_parts[0]:
-                # expected_length = int(msg_parts[0].split()[1])
-                # json_part = msg_parts[len(msg_parts) - 1]
-                # lenght_json = len(json_part)
-                # try:
-                    # if lenght_json == expected_length:
-                        # return json.loads(json_part)
-                    # elif lenght_json >= expected_length:
-                        # print(f'json message to too big, ignoring:{json_part[expected_length:]}')
-                        # return json.loads(json_part[:expected_length])
-                    # else:
-                        # print(f'json message to short, expected length:{expected_length} received:{lenght_json}')
-                # except Exception:
-                    # print('corrupt json message received\r\n{}'.format(msg_parts))
-            # else:
-                # print('corrupt lsp message received\r\n{}'.format(msg_parts))
-            # return None
+        try:
+            decoded_msg = json.loads(msg)
+            return decoded_msg, False
+        except Exception as e:
+            return e, True
+
 
     # --------------------------------------------------------------------------------------------------------------------
     # Response
+
+
     def response(self, message):
         return self._response(message.get('id'))
 
@@ -355,7 +343,7 @@ class MESSAGES:
             # initializationOptions?: any;
             'initializationOptions': dict(),
             #
-            # The capabilities provided by the client (Npp.editor or tool)
+            # The capabilities provided by the client
             #
             # capabilities: ClientCapabilities;
             'capabilities': {
@@ -371,7 +359,7 @@ class MESSAGES:
                         'dynamicRegistration': False
                     },
                     'symbol': {
-                        'dynamicRegistration': True,
+                        'dynamicRegistration': False,
                         'symbolKind': {
                             'valueSet': [SymbolKind.File,
                                          SymbolKind.Module,
@@ -402,7 +390,7 @@ class MESSAGES:
                         }
                     },
                     'executeCommand': {
-                        'dynamicRegistration': True
+                        'dynamicRegistration': False
                     },
                     'configuration': True,
                     'workspaceFolders': True
@@ -410,21 +398,18 @@ class MESSAGES:
                 'textDocument': {
                     'publishDiagnostics': {'relatedInformation': True},
                     'synchronization': {
-                        'dynamicRegistration': True,
+                        'dynamicRegistration': False,
                         'willSave': True,
                         'willSaveWaitUntil': False,
                         'didSave': True
                     },
                     'completion': {
-                        'dynamicRegistration': True,
+                        'dynamicRegistration': False,
                         'contextSupport': True,
                         'completionItem': {
                             'snippetSupport': True,
                             'commitCharactersSupport': True,
-                            'documentationFormat': [
-                                'markdown',
-                                'plaintext'
-                            ],
+                            'documentationFormat': ['plaintext'],
                             'deprecatedSupport': True
                         },
                         'completionItemKind': {
@@ -456,20 +441,20 @@ class MESSAGES:
                         }
                     },
                     'hover': {
-                        'dynamicRegistration': True,
-                        'contentFormat': ['markdown', 'plaintext']
+                        'dynamicRegistration': False,
+                        'contentFormat': ['plaintext']
                     },
                     'signatureHelp': {
-                        'dynamicRegistration': True,
+                        'dynamicRegistration': False,
                         'signatureInformation': {
-                            'documentationFormat': ['markdown', 'plaintext']
+                            'documentationFormat': ['plaintext']
                         }
                     },
-                    'definition': {'dynamicRegistration': True},
-                    'references': {'dynamicRegistration': True},
-                    'documentHighlight': {'dynamicRegistration': True},
+                    'definition': {'dynamicRegistration': False},
+                    'references': {'dynamicRegistration': False},
+                    'documentHighlight': {'dynamicRegistration': False},
                     'documentSymbol': {
-                        'dynamicRegistration': True,
+                        'dynamicRegistration': False,
                         'symbolKind': {
                             'valueSet': [SymbolKind.File,
                                          SymbolKind.Module,
@@ -499,16 +484,16 @@ class MESSAGES:
                                          SymbolKind.TypeParameter]
                         }
                     },
-                    'codeAction': {'dynamicRegistration': True},
-                    'codeLens': {'dynamicRegistration': True},
-                    'formatting': {'dynamicRegistration': True},
-                    'rangeFormatting': {'dynamicRegistration': True},
-                    'onTypeFormatting': {'dynamicRegistration': True},
-                    'rename': {'dynamicRegistration': True},
-                    'documentLink': {'dynamicRegistration': True},
-                    'typeDefinition': {'dynamicRegistration': True},
-                    'implementation': {'dynamicRegistration': True},
-                    'colorProvider': {'dynamicRegistration': True},
+                    'codeAction': {'dynamicRegistration': False},
+                    'codeLens': {'dynamicRegistration': False},
+                    'formatting': {'dynamicRegistration': False},
+                    'rangeFormatting': {'dynamicRegistration': False},
+                    'onTypeFormatting': {'dynamicRegistration': False},
+                    'rename': {'dynamicRegistration': False},
+                    'documentLink': {'dynamicRegistration': False},
+                    'typeDefinition': {'dynamicRegistration': False},
+                    'implementation': {'dynamicRegistration': False},
+                    'colorProvider': {'dynamicRegistration': False},
                     'foldingRange': {
                         'dynamicRegistration': False,
                         'rangeLimit': 5000,

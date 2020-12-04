@@ -4,6 +4,7 @@
     Sends an NEW_LSP_MESSAGE_RECEIVED event when receiving new messages from LSP servers
 '''
 
+import os
 import threading
 import subprocess
 import queue
@@ -96,10 +97,17 @@ class PIPE_OBJECT:
         log(f'{self.config["executable"]}')
         executable = self.config['executable']
         args = self.config.get('args', None)
+        env = self.config.get('env', '')
         if args is None:
             args = [executable]
         else:
             args.insert(0, executable)
+
+        _env = os.environ.copy()
+        if env:
+            for var in env:
+                k, v = var.split('=', 1)
+                _env[k] = v
 
         si = subprocess.STARTUPINFO()
         si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -110,7 +118,8 @@ class PIPE_OBJECT:
                                             stdout=subprocess.PIPE,
                                             startupinfo=si,
                                             cwd=executable.rpartition('\\')[0],
-                                            close_fds=False)
+                                            close_fds=False,
+                                            env=_env)
             log(f'{self.process.pid}')
         except Exception as e:  # pylint: disable=W0703
             log(f'{e}')
@@ -149,7 +158,7 @@ class PROCESS_MONITOR(threading.Thread):
         self.ready.set()
         while self.keep_reading:
             for line in iter(out.readline, ''):
-                log(line)
+                log(f'{line=}')
                 if line == b'\r\n':
                     continue
                 parts = line.split(b'\r\n')
@@ -162,13 +171,12 @@ class PROCESS_MONITOR(threading.Thread):
                         log(f'{expected_content_length=}')
                         content = out.read(expected_content_length).lstrip()
                         log(f'{content=}')
-                        while (start_json := content.find(b'{')) != 0:
-                            log(f'{start_json=}')
-                            if start_json > 0:
-                                content += out.read(expected_content_length - len(content) + start_json)
-                                break
-                            elif start_json == -1:
-                                content += out.read(expected_content_length)
+                        start_json = content.find(b'{')
+                        log(f'{start_json=}')
+                        while (content_length := len(content[start_json:])) != expected_content_length:
+                            log(f'{content_length=}')
+                            missing = expected_content_length - content_length
+                            content += out.read(missing)
                         log(f'full: {content=}')
                     else:
                         log(f'Content header without length !! ???? {parts}')
@@ -240,6 +248,8 @@ class COMMUNICATION_MANAGER:
         self.com_obj = None
         self.current_queue = None
         self.max_queue_wait_time = 2.0
+        self.waiting_for_initialize_result = False
+        self.backlog = []
 
 
     def start_process(self, proc_config):
@@ -253,9 +263,22 @@ class COMMUNICATION_MANAGER:
         return process, _socket
 
 
-    def send(self, lspmessage, waiting_for_msg=True):
+    def send(self, lspmessage):
         ''' Called by client on various notepad++ and scintilla events '''
+        if self.waiting_for_initialize_result:
+            self.backlog.append(lspmessage)
+        else:
+            self.com_obj.send_to(lspmessage)
+
+    def send_initialized(self, lspmessage):
+        ''' Called by client after initialize result has been received '''
         self.com_obj.send_to(lspmessage)
+        self.waiting_for_initialize_result = False
+        if self.backlog:
+            log(f'backlog message:{self.backlog}')
+            while self.backlog:
+                msg = self.backlog.pop(0)
+                self.com_obj.send_to(msg)
 
 
     def already_initialized(self, language):
@@ -281,6 +304,7 @@ class COMMUNICATION_MANAGER:
                 log(f'thread start took {time.time() - start}')
                 log(f'self.com_obj:{type(self.com_obj)}')
                 self.running_servers[language] = (process_monitor, self.com_obj)
+                # self.running_servers[f'{language}_intialized'] = False
         return False
 
 
@@ -292,4 +316,5 @@ class COMMUNICATION_MANAGER:
 
     def running_monitoring_threads(self):
         for language in self.running_servers.keys():
+            log(f'{language=}')
             yield self.running_servers[language]

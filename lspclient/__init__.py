@@ -52,6 +52,12 @@ def __check_lsp_server_config(lsp_server_configs):
                                     print(f'{item} expected string but got {type(arg)} -> {arg}')
                                     continue
 
+                    if 'env' in config[item]:
+                        if isinstance(config[item]['env'], list):
+                            for var in config[item]['env']:
+                                if not isinstance(var, str):
+                                    print(f'{item} expected string but got {type(var)} -> {var}')
+                                    continue
                     lsp_configs[item] = config[item]
 
     if lsp_configs:
@@ -87,7 +93,7 @@ def start(config_file=None):
         it is treated as invalid format
 
         {
-            "version": "0.1",
+            "version": "0.3",
             "loglevel": "info",
             "logpath": "C:\\temp\\npplsplog.txt",
             "lspservers": [
@@ -106,8 +112,17 @@ def start(config_file=None):
                     }
                 },
                 {
-                    "TEMPLATE": {
-                        "pipe": "io or tcp",
+                    "TEMPLATE_IO": {
+                        "pipe": "io",
+                        "executable": "SOMEDRIVE:\\SOMEPATH\\SOME.exe",
+                        "args": ["empty, string or comma delimited strings"]
+                    }
+                },
+                {
+                    "TEMPLATE_TCP": {
+                        "pipe": "tcp",
+                        "port": 2087,
+                        "tcpretries" : 3,
                         "executable": "SOMEDRIVE:\\SOMEPATH\\SOME.exe",
                         "args": ["empty, string or comma delimited strings"]
                     }
@@ -181,11 +196,6 @@ def clear_peek_definition():
 def peek_definition():
     if isinstance(single_instance, LSPCLIENT):
         single_instance._send_peek_definition()
-
-
-def hover():
-    if isinstance(single_instance, LSPCLIENT):
-        single_instance._send_hover()
 
 
 def _send_references():
