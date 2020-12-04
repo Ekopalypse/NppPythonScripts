@@ -20,7 +20,8 @@
             "TEMPLATE_IO": {
                 "pipe": "io",
                 "executable": "SOMEDRIVE:\\SOMEPATH\\SOME.exe",
-                "args": ["empty, string or comma delimited strings"]
+                "args": ["empty, string or comma delimited strings"],
+                "env": []
             }
         },
         {
@@ -29,7 +30,8 @@
                 "port": 2087,
                 "tcpretries" : 3,
                 "executable": "SOMEDRIVE:\\SOMEPATH\\SOME.exe",
-                "args": ["empty, string or comma delimited strings"]
+                "args": ["empty, string or comma delimited strings"],
+                "env": []
             }
         }
 
