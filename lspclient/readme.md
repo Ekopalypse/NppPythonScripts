@@ -65,7 +65,7 @@ The lsp-client is currently configured with logging by default. If you have prob
 - [x] `shutdown`
 - [x] `exit`
 - [ ] `$/cancelRequest`
-- [x] `$/progress`
+- [x] `$/progress` (window/progress only atm)
 ### Window
 - [ ] `showMessage`
 - [ ] `showMessageRequest`
