@@ -65,7 +65,7 @@ The lsp-client is currently configured with logging by default. If you have prob
 - [x] `shutdown`
 - [x] `exit`
 - [ ] `$/cancelRequest`
-<!-- - [ ] `$/progress` -->
+- [x] `$/progress`
 ### Window
 - [ ] `showMessage`
 - [ ] `showMessageRequest`
@@ -120,3 +120,5 @@ The lsp-client is currently configured with logging by default. If you have prob
 - [x] `rename`
 - [ ] `prepareRename`
 - [ ] `foldingRange`
+- [ ] `selectionRange`
+
