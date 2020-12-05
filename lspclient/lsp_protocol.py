@@ -354,7 +354,7 @@ class MESSAGES:
             # capabilities: ClientCapabilities;
             'capabilities': {
                 'workspace': {
-                    'applyEdit': True,
+                    'applyEdit': False,
                     'workspaceEdit': {
                         'documentChanges': False
                     },
@@ -369,15 +369,15 @@ class MESSAGES:
                         'symbolKind': {
                             'valueSet': [SymbolKind.File,
                                          SymbolKind.Module,
-                                         SymbolKind.Namespace,
-                                         SymbolKind.Package,
+                                         # SymbolKind.Namespace,
+                                         # SymbolKind.Package,
                                          SymbolKind.Class,
                                          SymbolKind.Method,
                                          SymbolKind.Property,
-                                         SymbolKind.Field,
-                                         SymbolKind.Constructor,
+                                         # SymbolKind.Field,
+                                         # SymbolKind.Constructor,
                                          SymbolKind.Enum,
-                                         SymbolKind.Interface,
+                                         # SymbolKind.Interface,
                                          SymbolKind.Function,
                                          SymbolKind.Variable,
                                          SymbolKind.Constant,
@@ -386,13 +386,14 @@ class MESSAGES:
                                          SymbolKind.Boolean,
                                          SymbolKind.Array,
                                          SymbolKind.Object,
-                                         SymbolKind.Key,
-                                         SymbolKind.Null,
-                                         SymbolKind.EnumMember,
-                                         SymbolKind.Struct,
-                                         SymbolKind.Event,
-                                         SymbolKind.Operator,
-                                         SymbolKind.TypeParameter]
+                                         # SymbolKind.Key,
+                                         # SymbolKind.Null,
+                                         # SymbolKind.EnumMember,
+                                         # SymbolKind.Struct,
+                                         # SymbolKind.Event,
+                                         # SymbolKind.Operator,
+                                         # SymbolKind.TypeParameter
+                                         ]
                         }
                     },
                     'executeCommand': {
@@ -413,37 +414,38 @@ class MESSAGES:
                         'dynamicRegistration': False,
                         'contextSupport': True,
                         'completionItem': {
-                            'snippetSupport': True,
+                            'snippetSupport': False,
                             'commitCharactersSupport': True,
                             'documentationFormat': ['plaintext'],
                             'deprecatedSupport': True
                         },
                         'completionItemKind': {
-                            'valueSet': [CompletionItemKind.Text,
+                            'valueSet': [# CompletionItemKind.Text,
                                          CompletionItemKind.Method,
                                          CompletionItemKind.Function,
-                                         CompletionItemKind.Constructor,
-                                         CompletionItemKind.Field,
-                                         CompletionItemKind.Variable,
+                                         # CompletionItemKind.Constructor,
+                                         # CompletionItemKind.Field,
+                                         # CompletionItemKind.Variable,
                                          CompletionItemKind.Class,
-                                         CompletionItemKind.Interface,
-                                         CompletionItemKind.Module,
-                                         CompletionItemKind.Property,
-                                         CompletionItemKind.Unit,
-                                         CompletionItemKind.Value,
+                                         # CompletionItemKind.Interface,
+                                         # CompletionItemKind.Module,
+                                         # CompletionItemKind.Property,
+                                         # CompletionItemKind.Unit,
+                                         # CompletionItemKind.Value,
                                          CompletionItemKind.Enum,
-                                         CompletionItemKind.Keyword,
-                                         CompletionItemKind.Snippet,
-                                         CompletionItemKind.Color,
-                                         CompletionItemKind.File,
-                                         CompletionItemKind.Reference,
-                                         CompletionItemKind.Folder,
-                                         CompletionItemKind.EnumMember,
-                                         CompletionItemKind.Constant,
-                                         CompletionItemKind.Struct,
-                                         CompletionItemKind.Event,
-                                         CompletionItemKind.Operator,
-                                         CompletionItemKind.TypeParameter]
+                                         # CompletionItemKind.Keyword,
+                                         # CompletionItemKind.Snippet,
+                                         # CompletionItemKind.Color,
+                                         # CompletionItemKind.File,
+                                         # CompletionItemKind.Reference,
+                                         # CompletionItemKind.Folder,
+                                         # CompletionItemKind.EnumMember,
+                                         # CompletionItemKind.Constant,
+                                         # CompletionItemKind.Struct,
+                                         # CompletionItemKind.Event,
+                                         # CompletionItemKind.Operator,
+                                         # CompletionItemKind.TypeParameter
+                                         ]
                         }
                     },
                     'hover': {
@@ -464,15 +466,15 @@ class MESSAGES:
                         'symbolKind': {
                             'valueSet': [SymbolKind.File,
                                          SymbolKind.Module,
-                                         SymbolKind.Namespace,
-                                         SymbolKind.Package,
+                                         # SymbolKind.Namespace,
+                                         # SymbolKind.Package,
                                          SymbolKind.Class,
                                          SymbolKind.Method,
                                          SymbolKind.Property,
-                                         SymbolKind.Field,
-                                         SymbolKind.Constructor,
+                                         # SymbolKind.Field,
+                                         # SymbolKind.Constructor,
                                          SymbolKind.Enum,
-                                         SymbolKind.Interface,
+                                         # SymbolKind.Interface,
                                          SymbolKind.Function,
                                          SymbolKind.Variable,
                                          SymbolKind.Constant,
@@ -481,13 +483,14 @@ class MESSAGES:
                                          SymbolKind.Boolean,
                                          SymbolKind.Array,
                                          SymbolKind.Object,
-                                         SymbolKind.Key,
-                                         SymbolKind.Null,
-                                         SymbolKind.EnumMember,
-                                         SymbolKind.Struct,
-                                         SymbolKind.Event,
-                                         SymbolKind.Operator,
-                                         SymbolKind.TypeParameter]
+                                         # SymbolKind.Key,
+                                         # SymbolKind.Null,
+                                         # SymbolKind.EnumMember,
+                                         # SymbolKind.Struct,
+                                         # SymbolKind.Event,
+                                         # SymbolKind.Operator,
+                                         # SymbolKind.TypeParameter
+                                         ]
                         }
                     },
                     'codeAction': {'dynamicRegistration': False},
@@ -570,9 +573,21 @@ class MESSAGES:
         return self._request('textDocument/documentSymbol', params)
 
 
-    def formatting(self, _file, _version):
+    def formatting(self, _file, _version, tabSize=4, insertSpaces=True):
         params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
-                                   'version': _version}}
+                                   'version': _version},
+                  'options': {
+                        # Size of a tab in spaces.
+                        'tabSize': 4,
+                        # Prefer spaces over tabs.
+                        'insertSpaces': True,
+                        # Trim trailing whitespace on a line.
+                        'trimTrailingWhitespace': True,
+                        # Insert a newline character at the end of the file if one does not exist.
+                        'insertFinalNewline': True,
+                        # Trim all newlines after the final newline at the end of the file.
+                        'trimFinalNewlines': True}
+                  }
         return self._request('textDocument/formatting', params)
 
 
@@ -707,11 +722,23 @@ class MESSAGES:
         return self._request('completionItem/resolve', params)
 
 
-    def rangeFormatting(self, _file, _version, start, end):
+    def rangeFormatting(self, _file, _version, start, end, tabSize=4, insertSpaces=True):
         params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
                                    'version': _version},
                   'range': {'start': {'line': start[0], 'character': start[1]},
-                            'end': {'line': end[0], 'character': end[1]}}}
+                            'end': {'line': end[0], 'character': end[1]}},
+                  'options': {
+                        # Size of a tab in spaces.
+                        'tabSize': 4,
+                        # Prefer spaces over tabs.
+                        'insertSpaces': True,
+                        # Trim trailing whitespace on a line.
+                        'trimTrailingWhitespace': True,
+                        # Insert a newline character at the end of the file if one does not exist.
+                        'insertFinalNewline': True,
+                        # Trim all newlines after the final newline at the end of the file.
+                        'trimFinalNewlines': True}
+                  }
         return self._request('textDocument/rangeFormatting', params)
 
 

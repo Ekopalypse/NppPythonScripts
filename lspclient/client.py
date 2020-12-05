@@ -363,11 +363,29 @@ class LSPCLIENT():
         log('\n'.join(symbol_list))
 
 
+    @staticmethod
+    def __format_document(item):
+        new_content = item['newText']
+        _start_line = item['range']['start']['line']
+        _start_char_pos = item['range']['start']['character']
+        _end_line = item['range']['end']['line']
+        _end_char_pos = item['range']['end']['character']
+        start = editor.positionFromLine(_start_line) + _start_char_pos
+        end = editor.positionFromLine(_end_line) + _end_char_pos
+        if start == -1 or end == -1:
+            log(f'ABORTED - negative position found:{item}')
+            return
+        editor.setTargetRange(start, end)
+        editor.replaceTarget(new_content)
+
+
     def document_formatting_handler(self, decoded_message):
         log(decoded_message)
         editor.beginUndoAction()
         current_caret_pos = editor.getCurrentPos()
-        editor.setText(decoded_message['result'][0]['newText'])
+        for item in reversed(decoded_message['result']):
+            self.__format_document(item)
+        # editor.setText(decoded_message['result'][0]['newText'])
         editor.gotoPos(current_caret_pos)
         editor.endUndoAction()
 
@@ -376,15 +394,8 @@ class LSPCLIENT():
         log(decoded_message)
         editor.beginUndoAction()
         current_caret_pos = editor.getCurrentPos()
-        new_content = decoded_message['result'][0]['newText']
-        _start_line = decoded_message['result'][0]['range']['start']['line']
-        _start_char_pos = decoded_message['result'][0]['range']['start']['character']
-        _end_line = decoded_message['result'][0]['range']['end']['line']
-        _end_char_pos = decoded_message['result'][0]['range']['end']['character']
-        start = editor.positionFromLine(_start_line) + _start_char_pos
-        end = editor.positionFromLine(_end_line) + _end_char_pos
-        editor.setTargetRange(start, end)
-        editor.replaceTarget(new_content)
+        for item in reversed(decoded_message['result']):
+            self.__format_document(item)
         editor.gotoPos(current_caret_pos)
         editor.endUndoAction()
 

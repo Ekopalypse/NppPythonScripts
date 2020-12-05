@@ -158,38 +158,38 @@ class PROCESS_MONITOR(threading.Thread):
         self.ready.set()
         while self.keep_reading:
             for line in iter(out.readline, ''):
-                log(f'{line=}')
-                if line == b'\r\n':
+                time.sleep(0.1)
+                if line == b'\r\n' or not line:
                     continue
+                log(f'{line=}')
                 parts = line.split(b'\r\n')
-                if parts[0].find(b'Content-Length: ') > -1:
-                    log(f'{parts[0]=}')
-                    header_parts = parts[0].split()
-                    log(f'{header_parts=}')
-                    if len(header_parts) > 1:
-                        expected_content_length = int(header_parts[1])
-                        log(f'{expected_content_length=}')
-                        content = out.read(expected_content_length)
-                        log(f'{content=}')
+                # if parts[0].find(b'Content-Length: ') > -1:
+                log(f'{parts[0]=}')
+                header_parts = parts[0].split()
+                log(f'{header_parts=}')
+                if len(header_parts) > 1:
+                    expected_content_length = int(header_parts[1])
+                    log(f'{expected_content_length=}')
+                    content = out.read(expected_content_length)
+                    log(f'{content=}')
 
-                        while (start_json := content.find(b'{')) == -1:
-                            log(f'{start_json=}')
-                            content += out.read(expected_content_length)
+                    while (start_json := content.find(b'{')) == -1:
+                        log(f'{start_json=}')
+                        content += out.read(expected_content_length)
 
-                        while (content_length := len(content[start_json:])) != expected_content_length:
-                            log(f'{content_length=}')
-                            missing = expected_content_length - content_length
-                            # log(f'{missing=}')
-                            content += out.read(missing)
-                        log(f'full: {content=}')
-                    else:
-                        log(f'Content header without length !! ???? {parts}')
-                        break
+                    while (content_length := len(content[start_json:])) != expected_content_length:
+                        log(f'{content_length=}')
+                        missing = expected_content_length - content_length
+                        # log(f'{missing=}')
+                        content += out.read(missing)
+                    log(f'full: {content=}')
+                else:
+                    log(f'Content header without length !! ???? {parts}')
+                    break
 
                 log(f'callback: {content.decode()[-expected_content_length:]}')
                 self.callback(content.decode()[-expected_content_length:])
                 break
-            time.sleep(0.1)
 
 
     def enqueue_tcp_messsage(self, _socket, queue):
