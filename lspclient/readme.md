@@ -73,7 +73,7 @@ The lsp-client is currently configured with logging by default. If you have prob
 - [ ] `progress/create`
 - [ ] `progress/cancel`
 ### Telemetry
-- [ ] `event`
+- [x] `event`
 ### Client
 - [ ] `registerCapability`
 - [ ] `unregisterCapability`
@@ -89,12 +89,12 @@ The lsp-client is currently configured with logging by default. If you have prob
 ### Text Synchronization
 - [x] `didOpen`
 - [x] `didChange`
-- [ ] `willSave`
+- [x] `willSave`
 - [ ] `willSaveWaitUntil`
 - [x] `didSave`
 - [x] `didClose`
 ### Diagnostics
-- [ ] `publishDiagnostics`
+- [x] `publishDiagnostics`
 ### Language Features
 - [x] `completion`
 - [ ] `completion resolve`
@@ -115,7 +115,7 @@ The lsp-client is currently configured with logging by default. If you have prob
 - [ ] `documentColor`
 - [ ] `colorPresentation`
 - [x] `formatting`
-- [ ] `rangeFormatting`
+- [x] `rangeFormatting`
 - [ ] `onTypeFormatting`
 - [x] `rename`
 - [ ] `prepareRename`
