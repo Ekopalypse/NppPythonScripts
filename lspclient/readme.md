@@ -21,6 +21,11 @@ Requirement: installed PythonScript plugin version 3.X
 	- lspclient_stop.py
 	- lspclient_format_document.py
 	- lspclient_peek_definition.py
+	- lspclient_clear_peek_definition.py
+	- lspclient_find_references.py
+	- lspclient_goto_definition.py
+	- lspclient_range_format_document.py
+	- lspclient_rename.py
 
 -   modify the file lsp_server_config according to your needs  
 -   add additional flush method to ConsoleError object to startup.py
@@ -44,6 +49,11 @@ Note: use the console, because diagnostic information are currently being displa
 The lsp-client is currently configured with logging by default. If you have problems ... take a look into it.
 
 ## Changes  
+-  V 0.4
+    - added additional setup info
+    - multiple new language features added
+    - added more logging calls, again.
+    
 -  V 0.3
     - added additional env (environment variables) to lsp_server_config.json
     - made sure that no other messages are sent if initilize_result from server is pending  
@@ -101,12 +111,12 @@ The lsp-client is currently configured with logging by default. If you have prob
 - [x] `hover`
 - [x] `signatureHelp`
 - [ ] `declaration`
-- [ ] `definition`
+- [x] `definition`
 - [ ] `typeDefinition`
 - [ ] `implementation`
-- [ ] `references`
+- [x] `references`
 - [ ] `documentHighlight`
-- [ ] `documentSymbol`
+- [x] `documentSymbol`
 - [ ] `codeAction`
 - [ ] `codeLens`
 - [ ] `codeLens resolve`
