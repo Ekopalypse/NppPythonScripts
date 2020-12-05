@@ -49,6 +49,10 @@ Note: use the console, because diagnostic information are currently being displa
 The lsp-client is currently configured with logging by default. If you have problems ... take a look into it.
 
 ## Changes  
+-  V 0.5
+    - fixed a crash because formatting target received a negative position.
+    - enhanced formatting and range formatting requests
+
 -  V 0.4
     - added additional setup info
     - multiple new language features added
