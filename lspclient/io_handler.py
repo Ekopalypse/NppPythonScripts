@@ -169,13 +169,17 @@ class PROCESS_MONITOR(threading.Thread):
                     if len(header_parts) > 1:
                         expected_content_length = int(header_parts[1])
                         log(f'{expected_content_length=}')
-                        content = out.read(expected_content_length).lstrip()
+                        content = out.read(expected_content_length)
                         log(f'{content=}')
-                        start_json = content.find(b'{')
-                        log(f'{start_json=}')
+
+                        while (start_json := content.find(b'{')) == -1:
+                            log(f'{start_json=}')
+                            content += out.read(expected_content_length)
+
                         while (content_length := len(content[start_json:])) != expected_content_length:
                             log(f'{content_length=}')
                             missing = expected_content_length - content_length
+                            # log(f'{missing=}')
                             content += out.read(missing)
                         log(f'full: {content=}')
                     else:
@@ -269,6 +273,7 @@ class COMMUNICATION_MANAGER:
             self.backlog.append(lspmessage)
         else:
             self.com_obj.send_to(lspmessage)
+
 
     def send_initialized(self, lspmessage):
         ''' Called by client after initialize result has been received '''

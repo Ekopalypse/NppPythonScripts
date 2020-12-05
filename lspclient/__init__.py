@@ -154,7 +154,8 @@ def start(config_file=None):
                     format='[%(asctime)-15s] [%(thread)-5d] [%(levelname)-10s] %(funcName)-20s  %(message)s'
                 )
                 logging.info(config)
-                # logging.disable(logging.INFO)
+                if logging.root.level == logging.NOTSET:
+                    logging.disable()
                 single_instance = LSPCLIENT(lsp_server_config)
                 args = {'bufferID': notepad.getCurrentBufferID()}
                 single_instance.on_buffer_activated(args)
@@ -173,7 +174,7 @@ def stop():
     single_instance = None
 
 
-def _send_documet_symbol():
+def document_symbols():
     if isinstance(single_instance, LSPCLIENT):
         single_instance._send_documet_symbol()
 
@@ -183,7 +184,7 @@ def format_document():
         single_instance._send_document_formatting()
 
 
-def _send_goto_definition():
+def goto_definition():
     if isinstance(single_instance, LSPCLIENT):
         single_instance._send_goto_definition()
 
@@ -198,19 +199,24 @@ def peek_definition():
         single_instance._send_peek_definition()
 
 
-def _send_references():
+def references():
     if isinstance(single_instance, LSPCLIENT):
         single_instance._send_references()
-
-
-def _send_codeLens():
-    if isinstance(single_instance, LSPCLIENT):
-        single_instance._send_codeLens()
 
 
 def rename():
     if isinstance(single_instance, LSPCLIENT):
         single_instance._send_rename()
+
+
+def range_format_document():
+    if isinstance(single_instance, LSPCLIENT):
+        single_instance._send_document_range_formatting()
+
+
+def _send_codeLens():
+    if isinstance(single_instance, LSPCLIENT):
+        single_instance._send_codeLens()
 
 
 def _send_prepareRename():
@@ -246,3 +252,4 @@ def _send_workspace_symbol():
 def _send_resolve():
     if isinstance(single_instance, LSPCLIENT):
         single_instance._send_resolve()
+

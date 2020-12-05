@@ -5,4 +5,3 @@ try:
 except Exception as e:
     console.writeError(f'error starting lspclient: {e}')
     lspclient.stop()
-

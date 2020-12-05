@@ -10,14 +10,10 @@ from Npp import (editor, editor1, editor2, notepad, console,
                  NOTIFICATION, SCINTILLANOTIFICATION,
                  ANNOTATIONVISIBLE, ORDERING, STATUSBARSECTION)
 from .io_handler import COMMUNICATION_MANAGER
-from .lsp_protocol import MESSAGES
+from .lsp_protocol import MESSAGES, TextDocumentSaveReason
 
 log = logging.info
 pp = pprint.PrettyPrinter(indent=4)
-
-
-def pretty_print_dict(text, caller=''):
-    log(f'{caller} {pp.pformat(text)}')
 
 
 class LSPCLIENT():
@@ -44,6 +40,7 @@ class LSPCLIENT():
         notepad.callback(self.on_buffer_activated, [NOTIFICATION.BUFFERACTIVATED])
         notepad.callback(self.on_file_saved, [NOTIFICATION.FILESAVED])
         notepad.callback(self.on_file_closed, [NOTIFICATION.FILECLOSED])
+        notepad.callback(self.on_file_before_save, [NOTIFICATION.FILEBEFORESAVE])
         editor.callbackSync(self.on_char_added, [SCINTILLANOTIFICATION.CHARADDED])
         editor.callbackSync(self.on_dwell_end, [SCINTILLANOTIFICATION.DWELLEND])
         editor.callbackSync(self.on_dwell_start, [SCINTILLANOTIFICATION.DWELLSTART])
@@ -65,7 +62,7 @@ class LSPCLIENT():
         editor2.autoCSetSeparator(10)
         editor2.autoCSetOrder(ORDERING.CUSTOM)
 
-        self.PEEK_STYLE = 62
+        self.PEEK_STYLE = 60
         editor1.styleSetFore(self.PEEK_STYLE, fg_color)
         editor1.styleSetBack(self.PEEK_STYLE, darker_bg_color)
         editor2.styleSetFore(self.PEEK_STYLE, fg_color)
@@ -75,7 +72,7 @@ class LSPCLIENT():
         editor2.setMouseDwellTime(500)
 
         self.open_files_dict = {x[1]: x[0] for x in notepad.getFiles()}
-
+        
 
     def terminate(self):
         log('clear callbacks...')
@@ -158,17 +155,6 @@ class LSPCLIENT():
         return file_version
 
 
-    def _send_custom(self, _query):
-        # used for testing only
-        self.com_manager.send(self.lsp_msg.codeAction(_query))
-        self.open_results[self.lsp_msg.request_id] = self.custom_response_handler
-
-
-    def custom_response_handler(self, decoded_message):
-        # used for testing only
-        pretty_print_dict(decoded_message, 'custom_response_handler')
-
-
     def _send_did_change(self, version=None):
         version = self._get_file_version() if version is None else version
         self.com_manager.send(self.lsp_msg.didChange(self.current_file,
@@ -187,6 +173,20 @@ class LSPCLIENT():
         self.com_manager.send(self.lsp_msg.formatting(self.current_file,
                                                       self._get_file_version()))
         self.open_results[self.lsp_msg.request_id] = self.document_formatting_handler
+
+    def _send_document_range_formatting(self):
+        _start_pos = editor.getSelectionStart()
+        start_line = editor.lineFromPosition(_start_pos)
+        start_char_pos = _start_pos - editor.positionFromLine(start_line)
+        _end_pos = editor.getSelectionEnd()
+        end_line = editor.lineFromPosition(_end_pos)
+        end_char_pos = _end_pos - editor.positionFromLine(end_line)
+        
+        self.com_manager.send(self.lsp_msg.rangeFormatting(self.current_file,
+                                                           self._get_file_version(),
+                                                           (start_line, start_char_pos),
+                                                           (end_line, end_char_pos)))
+        self.open_results[self.lsp_msg.request_id] = self.document_range_formatting_handler
 
 
     def _send_goto_definition(self):
@@ -253,8 +253,8 @@ class LSPCLIENT():
     def _notification_handler(self, decoded_message):
         _method = decoded_message.get('method', None)
         if _method == 'textDocument/publishDiagnostics':
-            if editor.getModify():
-                return
+            # if editor.getModify():
+                # return
             # TODO: for now every diagnostic message clears the console
             console.clear()
             _file = url2pathname(decoded_message['params']['uri'].replace('file:', ''))
@@ -264,7 +264,7 @@ class LSPCLIENT():
                 for item in decoded_message['params']['diagnostics']:
                     # _code = item.get('code', '')
                     _message = item.get('message', 'MESSAGE:???')
-                    _severity = item.get('severity', 'SEVERITY:???')
+                    _severity = item.get('severity', '1')
                     _source = item.get('source', 'SOURCE:???')
                     __range = item.get('range', None)
                     if __range:
@@ -274,7 +274,7 @@ class LSPCLIENT():
                         console_output.append(f'  File "{_file}", line {_start[0]+1}  -  {_message}')
                     else:
                         _range = 'RANGE:???'
-
+                    
                     if _severity not in diag_dict:
                         diag_dict[_severity] = f'    {_range} {_source} {_message}'
                     else:
@@ -301,17 +301,14 @@ class LSPCLIENT():
                 print('\n'.join(console_output))
 
         elif _method == 'window/progress':
-            # ignore for the time being
             if decoded_message['params']['done']:
-                pass  # reset statusbar
+                pass  # TODO: reset statusbar
             else:
                 _message = decoded_message['params']['message']
                 _title = decoded_message['params']['title']
                 notepad.setStatusBar(STATUSBARSECTION.DOCTYPE, f'{_title} - {_message}')
         else:
-            if _method:
-                log(_method)
-            pretty_print_dict(decoded_message, '_notification_handler')
+            log(f'unknown notification received: {decoded_message}')
 
 
     @staticmethod
@@ -349,8 +346,16 @@ class LSPCLIENT():
                 completion_list = [x['insertText'] for x in decoded_message['result']]
                 self._show_completion_list(completion_list)
 
-
+ 
     def document_symbol_response_handler(self, decoded_message):
+        # How to visualize is the question??
+        # {"jsonrpc":"2.0","id":2,"result":[
+        # {"name":"json","containerName":null,"location":{"uri":"...","range":{"start":{"line":0,"character":0},"end":{"line":0,"character":11}}},"kind":2},
+        # {"name":"Test","containerName":null,"location":{"uri":"...","range":{"start":{"line":3,"character":0},"end":{"line":13,"character":0}}},"kind":5},
+        # {"name":"t",   "containerName":null,"location":{"uri":"...","range":{"start":{"line":15,"character":0},"end":{"line":15,"character":10}}},"kind":13}]}    
+        # {"name":"__init__","containerName":"Test","location":{"uri":"...","range":{"start":{"line":5,"character":4},"end":{"line":7,"character":0}}},"kind":6},
+        # {"name":"start",   "containerName":"Test","location":{"uri":"...","range":{"start":{"line":8,"character":4},"end":{"line":10,"character":0}}},"kind":6},
+        # {"name":"stop",    "containerName":"Test","location":{"uri":"...","range":{"start":{"line":11,"character":4},"end":{"line":13,"character":0}}},"kind":6},
         symbol_list = []
         for symbol in decoded_message['result']:
             if symbol['kind'] in [5, 6, 12]:
@@ -359,21 +364,36 @@ class LSPCLIENT():
 
 
     def document_formatting_handler(self, decoded_message):
+        log(decoded_message)
         editor.beginUndoAction()
+        current_caret_pos = editor.getCurrentPos()
         editor.setText(decoded_message['result'][0]['newText'])
+        editor.gotoPos(current_caret_pos)
+        editor.endUndoAction()
+
+
+    def document_range_formatting_handler(self, decoded_message):
+        log(decoded_message)
+        editor.beginUndoAction()
+        current_caret_pos = editor.getCurrentPos()
+        new_content = decoded_message['result'][0]['newText']
+        _start_line = decoded_message['result'][0]['range']['start']['line']
+        _start_char_pos = decoded_message['result'][0]['range']['start']['character']
+        _end_line = decoded_message['result'][0]['range']['end']['line']
+        _end_char_pos = decoded_message['result'][0]['range']['end']['character']
+        start = editor.positionFromLine(_start_line) + _start_char_pos
+        end = editor.positionFromLine(_end_line) + _end_char_pos
+        editor.setTargetRange(start, end)
+        editor.replaceTarget(new_content)
+        editor.gotoPos(current_caret_pos)
         editor.endUndoAction()
 
 
     def goto_definition_response_handler(self, decoded_message):
-        # 'result': [   {   'range': {   'end': {   'character': 22,
-        # 'line': 76},
-        # 'start': {   'character': 8,
-        # 'line': 76}},
-        # 'uri': 'file:///d:/PortableApps/Npp/plugins/Config/PythonScript/lib/lspclient/client.py'}]}
-        pretty_print_dict(decoded_message, 'goto_definition_response_handler')
+        log(decoded_message)
         if decoded_message['result']:
             _file = url2pathname(decoded_message['result'][0]['uri'].replace('file:', ''))
-            notepad.activateFile(_file.encode('utf8'))
+            notepad.activateFile(_file)
             editor.gotoLine(decoded_message['result'][0]['range']['start']['line'])
 
 
@@ -382,9 +402,8 @@ class LSPCLIENT():
 
 
     def peek_definition_response_handler(self, decoded_message):
-        # TODO: use annotation
+        log(decoded_message)
         if decoded_message['result']:
-            pretty_print_dict(decoded_message, 'peek_definition_response_handler')
             _file = url2pathname(decoded_message['result'][0]['uri'].replace('file:', ''))
             _line_number = decoded_message['result'][0]['range']['start']['line']
             with open(_file) as f:
@@ -398,6 +417,7 @@ class LSPCLIENT():
 
 
     def hover_response_handler(self, decoded_message):
+        log(decoded_message)
         if 'contents' in decoded_message['result']:
             tip = decoded_message['result']['contents']
             if tip and self.current_hover_position != -1:
@@ -406,15 +426,14 @@ class LSPCLIENT():
                 else:
                     editor.callTipShow(self.current_hover_position, tip[0][:500])
                 self.current_hover_position = -1
-        pretty_print_dict(decoded_message, 'hover_response_handler')
 
 
     def reference_response_handler(self, decoded_message):
-        # 'result': [   {   'range': {   'end': {   'character': 24,
-        # 'line': 16},
-        # 'start': {   'character': 13,
-        # 'line': 16}},
-        # 'uri': 'file:///d:/...'},
+        log(decoded_message)
+        # {'jsonrpc': '2.0', 'id': 4, 'result': [
+        # {'uri': 'file:///d:/.../test.py', 'range': {'start': {'line': 8, 'character': 8}, 'end': {'line': 8, 'character': 13}}}, 
+        # {'uri': 'file:///d:/.../test.py', 'range': {'start': {'line': 16, 'character': 2}, 'end': {'line': 16, 'character': 7}}}]}
+        # How to visualize is the question??
         references = []
         if decoded_message['result']:
             for reference in decoded_message['result']:
@@ -422,12 +441,11 @@ class LSPCLIENT():
                 _file = url2pathname(reference['uri'].replace('file:', ''))
                 references.append((_file, _line))
             log('\n'.join(['{}\r\n  {}'.format(*x) for x in references]))
-        # pretty_print_dict(decoded_message)
 
 
     def code_lens_response_handler(self, decoded_message):
         if decoded_message['result']:
-            pretty_print_dict(decoded_message, 'code_lens_response_handler')
+            log(decoded_message)
 
 
     def _send_rename(self):
@@ -439,17 +457,17 @@ class LSPCLIENT():
 
 
     def rename_response_handler(self, decoded_message):
+        log(decoded_message)
         # 'result': {'documentChanges': [{'edits': [{'newText': u"...",
         # 'range': {'end': {'character': 0, 'line': 417},
         # 'start': {'character': 0, 'line': 0}}}],
         # 'textDocument': {'uri': 'file:///d:/...', 'version': None}}]}}
-        pretty_print_dict(decoded_message, 'rename_response_handler')
         if decoded_message['result']:
             editor.beginUndoAction()
             for changes in decoded_message['result']['documentChanges']:
                 for change in changes['edits']:
                     _file = url2pathname(changes['textDocument']['uri'].replace('file:', ''))
-                    notepad.open(_file.encode('utf-8'))
+                    notepad.open(_file)
                     start_line = change['range']['start']['line']
                     end_line = change['range']['end']['line']
                     start_position = editor.positionFromLine(start_line) + change['range']['start']['character']
@@ -460,27 +478,27 @@ class LSPCLIENT():
 
 
     def prepare_rename_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'prepare_rename_response_handler')
+        log(decoded_message)
 
 
     def folding_range_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'folding_range_response_handler')
+        log(decoded_message)
 
 
     def declaration_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'declaration_response_handler')
+        log(decoded_message)
 
 
     def type_definition_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'type_definition_response_handler')
+        log(decoded_message)
 
 
     def document_highlight_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'document_highlight_response_handler')
+        log(decoded_message)
 
 
     def workspace_symbol_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'workspace_symbol_response_handler')
+        log(decoded_message)
 
 
     def _result_handler(self, decoded_message):
@@ -489,11 +507,12 @@ class LSPCLIENT():
             if 'error' in decoded_message or not decoded_message['result']:
                 return
             _handler(decoded_message)
-        pretty_print_dict(decoded_message, '_result_handler')
+        else:
+            log(f'Unexpected message received: {decoded_message}')
 
 
     def resolve_response_handler(self, decoded_message):
-        pretty_print_dict(decoded_message, 'resolve_response_handler')
+        log(decoded_message)
 
 
     def on_receive(self, message):
@@ -524,7 +543,6 @@ class LSPCLIENT():
                     elif 'id' not in decoded_message:
                         self._notification_handler(decoded_message)
                     else:
-                        pretty_print_dict(decoded_message, 'on_receive')
                         self.com_manager.send(self.lsp_msg.response(decoded_message))
         else:
             log(f'got corrupted message:{message}')
@@ -566,6 +584,13 @@ class LSPCLIENT():
         else:
             log(f'{self.current_language} not in {self.available_lsp_servers}')
             self.lsp_doc_flag = False
+
+
+    def on_file_before_save(self, args):
+        if self.lsp_doc_flag:
+            _version = self._set_file_version()
+            _reason = TextDocumentSaveReason.Manual
+            self.com_manager.send(self.lsp_msg.willSave(self.current_file, _version, _reason))
 
 
     def on_file_saved(self, args):

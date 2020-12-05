@@ -146,6 +146,13 @@ class InsertTextFormat(enum.IntEnum):
     Snippet = 2
 
 
+class DiagnosticSeverity(enum.IntEnum):
+    Error = 1
+    Warning = 2
+    Information = 3
+    Hint = 4
+
+
 class MESSAGES:
     '''
         Implements request, response and notification messages as per specifiaction
@@ -260,7 +267,6 @@ class MESSAGES:
                   'uri': f'file:{pathname2url(_file)}',
                   'languageId': _languageId,
                   'version': _version,  # increase after each change, including undo/redo
-                  # 'text': json.dumps(_text)
                   'text': _text
                   }
                   }
@@ -701,6 +707,14 @@ class MESSAGES:
         return self._request('completionItem/resolve', params)
 
 
+    def rangeFormatting(self, _file, _version, start, end):
+        params = {'textDocument': {'uri': f'file:{pathname2url(_file)}',
+                                   'version': _version},
+                  'range': {'start': {'line': start[0], 'character': start[1]},
+                            'end': {'line': end[0], 'character': end[1]}}}
+        return self._request('textDocument/rangeFormatting', params)
+
+
     # not implemented yet
 
 
@@ -717,8 +731,6 @@ class MESSAGES:
     def __implementation(self, params): return self._request('textDocument/implementation', params)
 
     def __onTypeFormatting(self, params): return self._request('textDocument/onTypeFormatting', params)
-
-    def __rangeFormatting(self, params): return self._request('textDocument/rangeFormatting', params)
 
     def __willSaveWaitUntil(self, params): return self._request('textDocument/willSaveWaitUntil', params)
 
