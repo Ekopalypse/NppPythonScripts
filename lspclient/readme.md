@@ -57,4 +57,66 @@ The lsp-client is currently configured with logging by default. If you have prob
     - output formatted diags to console to be able to jump to line of interest
     - make format request working
     - make peek request working
-    - added more logging calls
+    - added more logging calls  
+  
+### General
+- [x] `initialize`
+- [x] `initialized`
+- [x] `shutdown`
+- [x] `exit`
+- [ ] `$/cancelRequest`
+<!-- - [ ] `$/progress` -->
+### Window
+- [x] `showMessage`
+- [ ] `showMessageRequest`
+- [ ] `logMessage`
+- [ ] `progress/create`
+- [ ] `progress/cancel`
+### Telemetry
+- [ ] `event`
+### Client
+- [ ] `registerCapability`
+- [ ] `unregisterCapability`
+### Workspace
+- [ ] `workspaceFolders`
+- [ ] `didChangeWorkspaceFolder`
+- [ ] `didChangeConfiguration`
+- [ ] `configuration`
+- [ ] `didChangeWatchedFiles`
+- [ ] `symbol`
+- [ ] `executeCommand`
+- [ ] `applyEdit`
+### Text Synchronization
+- [x] `didOpen`
+- [x] `didChange`
+- [ ] `willSave`
+- [ ] `willSaveWaitUntil`
+- [x] `didSave`
+- [x] `didClose`
+### Diagnostics
+- [ ] `publishDiagnostics`
+### Language Features
+- [x] `completion`
+- [ ] `completion resolve`
+- [x] `hover`
+- [x] `signatureHelp`
+- [ ] `declaration`
+- [ ] `definition`
+- [ ] `typeDefinition`
+- [ ] `implementation`
+- [ ] `references`
+- [ ] `documentHighlight`
+- [ ] `documentSymbol`
+- [ ] `codeAction`
+- [ ] `codeLens`
+- [ ] `codeLens resolve`
+- [ ] `documentLink`
+- [ ] `documentLink resolve`
+- [ ] `documentColor`
+- [ ] `colorPresentation`
+- [x] `formatting`
+- [ ] `rangeFormatting`
+- [ ] `onTypeFormatting`
+- [x] `rename`
+- [ ] `prepareRename`
+- [ ] `foldingRange`
