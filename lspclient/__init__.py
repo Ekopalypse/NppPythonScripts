@@ -11,7 +11,7 @@ from .client import LSPCLIENT
 LSP client implementation for notepad++
 '''
 
-__version__ = '0.4'
+__version__ = '0.5'
 __all__ = [lsp_protocol, LSPCLIENT, logging, COMMUNICATION_MANAGER]
 
 single_instance = None
