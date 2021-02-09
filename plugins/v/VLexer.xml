@@ -1,0 +1,33 @@
+<NotepadPlus version="2">
+    <Languages>
+        <Language name="VLang" ext="v" commentLine="//" commentStart="/*" commentEnd="*/">
+            <Keywords name="instre1">assert if else asm return sizeof go goto mut shared lock rlock type for true false continue break typeof pub in atomic or static as defer match select is none print println</Keywords>
+            <Keywords name="instre2">i8 i16 int i64 u8 u16 u32 u64 f32 f64 string ustring char byte bool any size_t rune</Keywords>
+            <Keywords name="type1">void voidptr charptr byteptr</Keywords>
+            <Keywords name="type2">__global __offsetof</Keywords>
+            <Keywords name="type3">fn array map chan struct enum interface union import module unsafe const</Keywords>
+            <Keywords name="type4">attrtwo debuglivetest deprecated direct_array_access export inline manualfree testing trusted unsafe windows_stdcall</Keywords>
+            <Keywords name="type5" />
+            <Keywords name="type6" />
+        </Language>
+    </Languages>
+    <LexerStyles>
+        <LexerType name="VLang" desc="V Programming Language" ext="" excluded="no">
+            <WordsStyle styleID="0" name="Default" fgColor="56B6C2" bgColor="FFFFFF" colorStyle="0" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle styleID="1" name="LineComments" fgColor="5C6670" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle styleID="2" name="BlockComments" fgColor="5C6670" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle styleID="3" name="Numbers" fgColor="D19A66" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle styleID="4" name="Operators" fgColor="56B6C2" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle styleID="5" name="Strings" fgColor="99CC99" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" fontSize="" />
+            <WordsStyle styleID="6" name="Keywords1" fgColor="B67DCC" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="instre1" fontSize="" />
+            <WordsStyle styleID="7" name="Keywords2" fgColor="D9BE8B" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="instre2" fontSize="" />
+            <WordsStyle styleID="8" name="Keywords3" fgColor="E5C07B" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="type1" fontSize="" />
+            <WordsStyle styleID="9" name="Keywords4" fgColor="E06C75" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="type2" />
+            <WordsStyle styleID="10" name="Keywords5" fgColor="BD66D8" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="type3" />
+            <WordsStyle styleID="11" name="Keywords6" fgColor="56B6C2" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="type4" />
+            <WordsStyle styleID="12" name="Keywords7" fgColor="BD66D8" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="type5" />
+            <WordsStyle styleID="13" name="Keywords8" fgColor="E5C07B" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" keywordClass="type6" />
+            <WordsStyle styleID="14" name="CFunctions" fgColor="59ACFF" bgColor="FFFFFF" colorStyle="1" fontName="" fontStyle="0" />
+        </LexerType>
+    </LexerStyles>
+</NotepadPlus>
