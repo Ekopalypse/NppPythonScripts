@@ -76,9 +76,9 @@ class ErrorListLexer:
         self.kernel32 = windll.kernel32
         self.user32 = windll.user32
 
-        notepad_hwnd = self.user32.FindWindowW('Notepad++', None)
-        self.editor1_hwnd = self.user32.FindWindowExW(notepad_hwnd, None, "Scintilla", None)
-        self.editor2_hwnd = self.user32.FindWindowExW(notepad_hwnd, self.editor1_hwnd, "Scintilla", None)
+        notepad_hwnd = self.user32.FindWindowW(u'Notepad++', None)
+        self.editor1_hwnd = self.user32.FindWindowExW(notepad_hwnd, None, u"Scintilla", None)
+        self.editor2_hwnd = self.user32.FindWindowExW(notepad_hwnd, self.editor1_hwnd, u"Scintilla", None)
 
         self.kernel32.GetModuleHandleW.argtypes = [LPCWSTR]
         self.kernel32.GetModuleHandleW.restype = HMODULE
