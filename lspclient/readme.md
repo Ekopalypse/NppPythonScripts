@@ -1,4 +1,9 @@
 
+# ***NOTE - a dedicated plugin is available [here](https://github.com/Ekopalypse/NppLspClient)***
+
+
+
+
 Proof of concept for creating an lsp-client for notepad++ with Python
 
 ***WARNING: is still work in progress, still aplha phase***  
