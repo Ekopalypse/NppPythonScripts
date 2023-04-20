@@ -1,7 +1,7 @@
 
 WinDialog module
 
-Note, PythonScript version 3.0.16 is required!
+***Note, PythonScript version 3.0.16 is required!***
 
 Copy the complete WinDialog directory into your **user** config *lib* directory.
 For example via the menu
