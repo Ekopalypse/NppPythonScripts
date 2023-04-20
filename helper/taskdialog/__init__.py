@@ -7,7 +7,7 @@ The workflow is like this
 1. Import the module
 2. Create a dialog instance
 3. Call the create_page method for the first page.
-3. Show the dialog
+4. Show the dialog
 
 Minimal example:
 
@@ -21,16 +21,16 @@ Minimal example:
                 super(MinimalDialog, self).__init__()
             else:
                 super().__init__()
-            
+
             self.create_page(
-                title = "MyTitle", 
-                main_instruction = "Main instructions going here", 
+                title = "MyTitle",
+                main_instruction = "Main instructions going here",
                 push_buttons = [
                     (1000, "Close this task", self.on_close)
-                ], 
+                ],
             )
 
-            
+
         def on_close(self, id):
             return 0  # triggers closing
 
@@ -53,16 +53,16 @@ Slightly more enhanced example
                 super(MyDialog, self).__init__()
             else:
                 super().__init__()
-            
+
             self.create_page(
-                title = "MyTitle", 
-                main_instruction = "Main instructions going here", 
+                title = "MyTitle",
+                main_instruction = "Main instructions going here",
                 content = "{0}".format(ctime()),
                 default_button = 1001,
                 push_buttons = [
-                    (1000, "Close this task", self.on_close), 
+                    (1000, "Close this task", self.on_close),
                     (1001, "Next", self.create_second_page)
-                ], 
+                ],
                 default_radio_button = 2003,
                 radio_buttons = [
                     (2000, "option &0", self.on_option),
@@ -78,7 +78,7 @@ Slightly more enhanced example
                 width = 400
             )
 
-            
+
         def on_close(self, id):
             print("I'm closing")
             return 0  # triggers closing
@@ -89,7 +89,7 @@ Slightly more enhanced example
             self.create_page(
                 content = "<a href=\"https://github.com/bruderstein/PythonScript/releases\">This is a link to the PS release page</a>",
                 push_buttons = [
-                    (1000, "Close this task", self.on_close), 
+                    (1000, "Close this task", self.on_close),
                 ],
                 radio_buttons = []
             )
@@ -97,19 +97,19 @@ Slightly more enhanced example
         def create_second_page(self, id):
             self.use_command_links(False)
             self.create_page(
-                title = "Changing title", 
-                main_instruction = "forget what I said the last time", 
+                title = "Changing title",
+                main_instruction = "forget what I said the last time",
                 content = "Now do this",
                 push_buttons = [
-                    (1000, "Close this task", self.on_close), 
-                    (1001, "Go on", self.create_third_page), 
+                    (1000, "Close this task", self.on_close),
+                    (1001, "Go on", self.create_third_page),
                 ],
                 radio_buttons = []
             )
 
         def on_option(self, id):
             print("Clicked on option button id", id)
-            
+
         def on_option2(self, id):
             print("Triggered by option button id", id)
 
