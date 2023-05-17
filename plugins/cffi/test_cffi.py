@@ -135,23 +135,21 @@ def getFuncsArray(_nbF):
 
 @ffi.def_extern(onerror=_onerror)
 def open_doc():
-    SCI_LEXER = ctypes.WinDLL('SciLexer.dll', use_last_error=True)
-
     result = SENDMESSAGE(npp_hwnd, NPPM_MENUCOMMAND, 0, IDM_FILE_NEW)
     log(f'npp sendmessage returned:{{result}}')
-
-    sci_direct_function = SCI_LEXER.Scintilla_DirectFunction
-    sci_direct_pointer = SENDMESSAGE(sci1_hwnd, 2185, 0, 0)
 
     SCI_ADDTEXT = 2001
     SCI_GETSTATUS = 2383
 
     message = 'this text is copyright protected by cffi ;-)'.encode('utf8')
-    result = sci_direct_function(sci_direct_pointer, SCI_ADDTEXT, len(message), message)
-    error_status = sci_direct_function(sci_direct_pointer, SCI_GETSTATUS, None, None)
 
-    if error_status > 0:
-        log(f'-->> ERROR: {{error_status}}')
+    log(f'SENDMESSAGE({{sci1_hwnd}}, {{SCI_ADDTEXT}}, {{len(message)}}, {{message}})')
+    result = SENDMESSAGE(sci1_hwnd, SCI_ADDTEXT, len(message), message)
+    log(f'sci SENDMESSAGE returned:{{result}}')
+    
+    log(f'SENDMESSAGE({{sci1_hwnd}}, {{SCI_GETSTATUS}}, 0, 0)')
+    result = SENDMESSAGE(sci1_hwnd, SCI_GETSTATUS, 0, 0)
+    log(f'sci SENDMESSAGE returned:{{result}}')
 
 
 @ffi.def_extern(onerror=_onerror)
