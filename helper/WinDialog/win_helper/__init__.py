@@ -1,17 +1,26 @@
-""" helper module which defines all needed
-    win api related functions, structures,
-    constants ...
+"""
+Win32 Helper Utilities
+
+This module provides Win32 API functions, structures, and common shared control classes and enums.
+It serves as a utility module to facilitate interaction with the WinDialog module.
+
+Note:
+    For detailed usage instructions and examples, please refer to the
+    MS documentation at https://learn.microsoft.com/en-us/windows/win32/api
 """
 
 import ctypes
 from ctypes import POINTER
 from ctypes.wintypes import (
-	HWND, UINT, WPARAM, LPARAM, INT, BOOL,
-    MSG, HINSTANCE, RECT, HMODULE, LPCWSTR
+	HWND, UINT, WPARAM, LPARAM, INT, BOOL, DWORD,
+    MSG, HINSTANCE, RECT, HMODULE, LPCWSTR,
+    POINT
 )
 from enum import IntEnum
 
-INT_PTR = ctypes.c_ssize_t  # signed pointer sized integer
+WM_USER = 1024
+
+INT_PTR = LONG_PTR = ctypes.c_ssize_t  # signed pointer sized integer
 UINT_PTR = ctypes.c_size_t  # unsigned pointer sized integer
 DWORD_PTR = ctypes.c_size_t # unsigned pointer sized integer
 
@@ -23,7 +32,6 @@ comctl32 = ctypes.WinDLL('comctl32', use_last_error=True)
 
 LRESULT = LPARAM
 DIALOGPROC = ctypes.WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM)
-SUBCLASSPROC = ctypes.WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR)
 
 SendMessage = user32.SendMessageW
 SendMessage.restype = LRESULT
@@ -37,9 +45,17 @@ DialogBoxIndirectParam = user32.DialogBoxIndirectParamW
 DialogBoxIndirectParam.restype = INT_PTR
 DialogBoxIndirectParam.argtypes = [HINSTANCE, POINTER(ctypes.c_ubyte), HWND, DIALOGPROC, LPARAM]
 
+CreateDialogIndirectParam = user32.CreateDialogIndirectParamW #DialogBoxParamW
+CreateDialogIndirectParam.argtypes = [HINSTANCE, POINTER(ctypes.c_ubyte), HWND, DIALOGPROC, LPARAM] #
+CreateDialogIndirectParam.restype = HWND
+
 GetDlgItem = user32.GetDlgItem
 GetDlgItem.restype = HWND
 GetDlgItem.argtypes = [HWND, INT]
+
+GetDlgItemText = user32.GetDlgItemTextW
+GetDlgItemText.restype = UINT
+GetDlgItemText.argtypes = [HWND, INT, LPCWSTR, INT]
 
 EndDialog = user32.EndDialog
 EndDialog.restype = BOOL
@@ -52,6 +68,14 @@ ShowWindow.argtypes = [HWND, INT]
 UpdateWindow = user32.UpdateWindow
 UpdateWindow.restype = BOOL
 UpdateWindow.argtypes = [HWND]
+
+DestroyWindow = user32.DestroyWindow
+DestroyWindow.restype = BOOL
+DestroyWindow.argtypes = [HWND]
+
+IsWindowVisible = user32.IsWindowVisible
+IsWindowVisible.argtypes = [HWND]
+IsWindowVisible.restype = BOOL
 
 GetMessage = user32.GetMessageW
 GetMessage.restype  = BOOL
@@ -89,6 +113,9 @@ GetModuleHandle = kernel32.GetModuleHandleW
 GetModuleHandle.restype  = HMODULE
 GetModuleHandle.argtypes = [LPCWSTR]
 
+# https://learn.microsoft.com/en-us/windows/win32/controls/subclassing-overview#subclassing-controls-using-comctl32dll-version-6
+SUBCLASSPROC = ctypes.WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR)
+
 SetWindowSubclass = comctl32.SetWindowSubclass
 SetWindowSubclass.restype  = BOOL
 SetWindowSubclass.argtypes = [HWND, SUBCLASSPROC, UINT_PTR, DWORD_PTR]
@@ -104,6 +131,60 @@ RemoveWindowSubclass.argtypes = [HWND, SUBCLASSPROC, UINT_PTR]
 DefSubclassProc = comctl32.DefSubclassProc
 DefSubclassProc.restype  = LRESULT
 DefSubclassProc.argtypes = [HWND, UINT, WPARAM, LPARAM]
+
+SetWindowText = user32.SetWindowTextW
+SetWindowText.restype = BOOL
+SetWindowText.argtypes = [HWND, LPCWSTR]
+
+GetWindowText = user32.GetWindowTextW
+GetWindowText.restype = INT
+GetWindowText.argtypes = [HWND, LPCWSTR, INT]
+
+GetWindowTextLength = user32.GetWindowTextLengthW
+GetWindowTextLength.restype = INT
+GetWindowTextLength.argtypes = [HWND]
+
+GetWindowLong = user32.GetWindowLongPtrW
+GetWindowLong.restype = LONG_PTR
+GetWindowLong.argtypes = [HWND, INT]
+
+SetWindowLong = user32.SetWindowLongPtrW
+SetWindowLong.restype = LONG_PTR
+SetWindowLong.argtypes = [HWND, INT, LONG_PTR]
+
+FindWindow = user32.FindWindowW
+FindWindow.restype = HWND
+FindWindow.argtypes = [LPCWSTR, LPCWSTR]
+
+FindWindowEx = user32.FindWindowExW
+FindWindowEx.restype = HWND
+FindWindowEx.argtypes = [HWND, HWND, LPCWSTR, LPCWSTR]
+
+SetFocus = user32.SetFocus
+SetFocus.restype = HWND
+SetFocus.argtypes = [HWND]
+# GetDialogBaseUnits = user32.GetDialogBaseUnits
+# GetDialogBaseUnits.restype = LONG
+# GetDialogBaseUnits.argtypes = []
+
+# MulDiv = kernel32.MulDiv
+# MulDiv.restype = INT
+# MulDiv.argtypes = [INT, INT, INT]
+
+# MapDialogRect = user32.MapDialogRect
+# MapDialogRect.restype = BOOL
+# MapDialogRect.argtypes = [HWND, POINTER(RECT)]
+
+SWP_NOSIZE = 1
+
+class GWL(IntEnum):
+    WNDPROC        = -4
+    HINSTANCE      = -6
+    HWNDPARENT     = -8
+    STYLE          = -16
+    EXSTYLE        = -20
+    USERDATA       = -21
+    ID             = -12
 
 class WindowClassStyles(IntEnum):
     # Aligns the window's client area on a byte boundary (in the x direction).
@@ -351,19 +432,75 @@ class ShowWindowCommands(IntEnum):
     # FORCEMINIMIZE = 11
     MAX = 11
 
-# class NMHDR(ctypes.Structure):
-    # """ implements the windows NMHDR structure """
-    # _fields_ = [('hwndFrom', HWND),
-                # ('idFrom',   UINT_PTR),
-                # ('code',     UINT)]
-# LPNMHDR = POINTER(NMHDR)
-
+class NMHDR(ctypes.Structure):
+    """ implements the windows NMHDR structure """
+    _fields_ = [('hwndFrom', HWND),
+                ('idFrom',   UINT_PTR),
+                ('code',     UINT)]
+LPNMHDR = POINTER(NMHDR)
 
 def LOWORD(value):
     """ low part of a dword """
     return value & 0xFFFF
 
-
 def HIWORD(value):
     """ high part of a dword """
     return (value >>16) & 0xFFFF
+
+class NMITEMACTIVATE(ctypes.Structure):
+    """ implementation of a NMITEMACTIVATE structure """
+    _fields_ = [('hdr',       LPNMHDR),
+                ('iItem',     INT),
+                ('iSubItem',  INT),
+                ('uNewState', UINT),
+                ('uOldState', UINT),
+                ('uChanged',  UINT),
+                ('ptAction',  POINT),
+                ('lParam',    LPARAM),
+                ('uKeyFlags', UINT),
+                ]
+LPNMITEMACTIVATE = ctypes.POINTER(NMITEMACTIVATE)
+
+class CCM(IntEnum):
+    FIRST               = 0x2000         # Common control shared messages
+    LAST                = FIRST + 0x200
+    SETBKCOLOR          = FIRST + 1      # lParam is bkColor
+    SETCOLORSCHEME      = FIRST + 2      # lParam is color scheme
+    GETCOLORSCHEME      = FIRST + 3      # fills in COLORSCHEME pointed to by lParam
+    GETDROPTARGET       = FIRST + 4
+    SETUNICODEFORMAT    = FIRST + 5
+    GETUNICODEFORMAT    = FIRST + 6
+    SETVERSION          = FIRST + 0x7
+    GETVERSION          = FIRST + 0x8
+    SETNOTIFYWINDOW     = FIRST + 0x9    # wParam == hwndParent.
+    SETWINDOWTHEME      = FIRST + 0xb
+    DPISCALE            = FIRST + 0xc    # wParam == Awareness
+
+
+class WM_CommandDelegator:
+    '''
+        A descriptor class that acts as a delegator for Windows WM_COMMAND notifications.
+        Used only internally.
+    '''
+    def __init__(self, wm_command_id):
+        self.id = wm_command_id
+
+    def __set__(self, control, value):
+        # shifting and adding is done to be able to use the wparam value directly.
+        control.registered_commands[self.id] = value
+
+
+class WM_NotifyDelegator:
+    '''
+        A descriptor class that acts as a delegator for Windows WM_NOTIFY notifications.
+        Used only internally.
+    '''
+    def __init__(self, wm_notify_id, returned_struct):
+        self.id = wm_notify_id
+        self.returned_struct = returned_struct
+
+    def __set__(self, control, value):
+        # wm_notifs do not deliver simple integer values, they provide structures,
+        # so registering keys as (nmhdr.code, nmhdr.idFrom)
+        # is this really the best way to do it?  TODO
+        control.registered_notifications[self.id] = (value, self.returned_struct)

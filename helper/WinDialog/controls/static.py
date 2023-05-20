@@ -1,9 +1,9 @@
-""" Dialog label control implementation
-"""
+""" Dialog STATIC control implementation """
+from dataclasses import dataclass
+from .__control_template import Control
 
 from enum import IntEnum
-from .dialog_template import Control
-from .win_helper import (
+from ..win_helper import (
     WindowStyle as WS
 )
 
@@ -41,52 +41,32 @@ class SS(IntEnum):
     WORDELLIPSIS     = 0x0000C000
     ELLIPSISMASK     = 0x0000C000
 
-
+@dataclass
 class Label(Control):
-    """Implementation for a standard label control"""
-    # https://docs.microsoft.com/en-us/windows/desktop/Controls/static-control-styles
+    """Implementation for a simple label control"""
+    style: int = SS.SIMPLE | WS.CHILD | WS.VISIBLE
+    window_class: str = 'Static'
 
-
-
-    def __init__(self, name=None, size=None, position=None):
-        super().__init__(name, size, position)
-        self.windowClass = 'Static'
-        self.style = WS.CHILD | WS.VISIBLE
-        self.name = name
-        self.size = size
-        self.position = position
-
-
-class SimpleLabel(Label):
-    """ Implementation of a simple label control """
-    def __init__(self, name=None, size=None, position=None):
-        super().__init__(name, size, position)
-        self.style = WS.CHILD | WS.VISIBLE | SS.SIMPLE
-
-
+@dataclass
 class RigthAlignedLabel(Label):
     """ Implementation of a right aligned label control """
-    def __init__(self, name=None, size=None, position=None):
-        super().__init__(name, size, position)
-        self.style = WS.CHILD | WS.VISIBLE | SS.RIGHT
+    def __post_init__(self):
+        self.style = SS.RIGHT | WS.CHILD | WS.VISIBLE
 
-
+@dataclass
 class CenteredLabel(Label):
     """ Implementation of a centered label control """
-    def __init__(self, name=None, size=None, position=None):
-        super().__init__(name, size, position)
-        self.style = WS.CHILD | WS.VISIBLE | SS.CENTER
+    def __post_init__(self):
+        self.style = SS.CENTER | WS.CHILD | WS.VISIBLE
 
-
+@dataclass
 class TruncatedLabel(Label):
     """ Implementation of a truncated label control """
-    def __init__(self, name=None, size=None, position=None):
-        super().__init__(name, size, position)
-        self.style = WS.CHILD | WS.VISIBLE | SS.WORDELLIPSIS
+    def __post_init__(self):
+        self.style = SS.LEFT | SS.WORDELLIPSIS | WS.CHILD | WS.VISIBLE
 
-
+@dataclass
 class BlackFramedLabel(Label):
     """ Implementation of a black framed label control """
-    def __init__(self, name=None, size=None, position=None):
-        super().__init__(name, size, position)
-        self.style = WS.CHILD | WS.VISIBLE | SS.BLACKFRAME
+    def __post_init__(self):
+        self.style = SS.LEFT | SS.BLACKFRAME | WS.CHILD | WS.VISIBLE
