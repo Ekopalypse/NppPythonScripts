@@ -1,4 +1,16 @@
-""" Dialog LISTBOX control implementation """
+"""
+LISTBOX Control Implementations
+
+This module provides the `ListBox` class, which is an implementation of a listbox control.
+The listbox control allows the user to select one or more items from a list of options.
+
+The listbox control is implemented as data classes that inherit from the `Control` class defined in the `__control_template` module.
+It includes attributes for configuring the control's appearance, position, and behavior.
+
+Example Usage:
+
+
+"""
 from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
@@ -80,7 +92,24 @@ class LB(IntEnum):
 
 @dataclass
 class ListBox(Control):
-    """ Implementations of a listbox control """
+    """
+    Implementations of a listbox control.
+
+    The listbox can be used for single or multiple item selection.
+
+    Attributes:
+        style (int): The style of the listbox control.
+        window_class (str): The window class of the listbox control.
+        __items (list): The list of items in the listbox control.
+
+    Notifications:
+        - on_errspace: Sent when the listbox cannot allocate enough memory to meet a specific request.
+        - on_selchange: Sent when the selection in the listbox has changed.
+        - on_dblclk: Sent when the user double-clicks an item in the listbox.
+        - on_selcancel: Sent when the selection in the listbox has been canceled.
+        - on_setfocus: Sent when the listbox receives the keyboard focus.
+        - on_killfocus: Sent when the listbox loses the keyboard focus.
+    """
     style: int = WS.CHILD | WS.VISIBLE | LBS.HASSTRINGS | LBS.STANDARD
     window_class: str = 'Listbox'
     __items: list = None
@@ -98,13 +127,30 @@ class ListBox(Control):
     on_killfocus = WM_CommandDelegator(LBN.KILLFOCUS)
 
     def clear(self):
+        """
+        Clear the listbox.
+
+        This method removes all items from the listbox control.
+
+        Returns:
+            None
+        """
         self.__items.clear()
         SendMessage(self.hwnd, LB.RESETCONTENT, 0, 0)
 
     def add_strings(self, items):
-        '''
-            Adds a list of strings to the listbox
-        '''
+        """
+        Add a list of strings to the listbox.
+
+        Args:
+            items (list): A list of strings to add to the listbox.
+
+        Raises:
+            ValueError: If any item in the list is not of type string.
+
+        Returns:
+            None
+        """
         if not all(isinstance(item, str) for item in items):
             raise ValueError('Not all items are of type string')
         self.__items = []
@@ -114,9 +160,18 @@ class ListBox(Control):
             SendMessage(self.hwnd, LB.ADDSTRING, 0, lp_item)
 
     def add_string(self, item):
-        '''
-            Adds a string to the listbox
-        '''
+        """
+        Add a string to the listbox.
+
+        Args:
+            item (str): The string to add to the listbox.
+
+        Raises:
+            ValueError: If the item is not of type string.
+
+        Returns:
+            None
+        """
         if not isinstance(item, str):
             raise ValueError('Item is not of type string')
 
@@ -125,9 +180,13 @@ class ListBox(Control):
 
 
     def get_selected_item(self):
-        '''
-            In a single-selection list box, the return value is the
-            zero-based index of the currently selected item.
-            If there is no selection, the return value is LB_ERR.
-        '''
+        """
+        Get the index of the currently selected item in the listbox.
+
+        In a single-selection listbox, the return value is the zero-based index of the currently selected item.
+        If there is no selection, the return value is LB_ERR.
+
+        Returns:
+            int: The index of the currently selected item.
+        """
         return SendMessage(self.hwnd, LB.GETCURSEL, 0, 0)

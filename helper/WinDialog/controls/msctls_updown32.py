@@ -1,4 +1,12 @@
-""" Dialog MSCTLS_UPDOWN32 control implementation """
+"""
+UPDOWN control implementation
+
+The `UpDown` class represents a msctls_updown32 control.
+
+Example:
+
+
+"""
 from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
@@ -65,17 +73,60 @@ class UDN(IntEnum):
 
 @dataclass
 class UpDown(Control):
+    """
+    Implementation of an up-down control.
+
+    The UpDown class represents an up-down control, which is typically used to increment or decrement a value.
+    It provides methods to set the range of values, get and set the current value, and handles up-down control notifications.
+
+    Attributes:
+        window_class (str): The window class of the up-down control.
+        nmupdown (NMUPDOWN): An instance of the NMUPDOWN structure for handling up-down control notifications.
+
+    updown notification callbacks:
+        on_deltapos (WM_NotifyDelegator): Sent when the user changes the position of the up-down control.
+
+    Methods:
+        set_range(min_value, max_value): Set the range of the up-down control.
+        get_value(): Get the current value of the up-down control.
+        set_value(value): Set the value of the up-down control.
+
+    Note:
+        The valid range for the min_value and max_value parameters in the set_range method is between UD_MINVAL and UD_MAXVAL.
+    """
+
     window_class: str = 'msctls_updown32'
     nmupdown: NMUPDOWN = NMUPDOWN()
     # updown notification callbacks
     on_deltapos = WM_NotifyDelegator(UDN.DELTAPOS, PNMUPDOWN)
 
     def set_range(self, min_value, max_value):
+        """
+        Set the range of the up-down control.
+
+        Args:
+            min_value (int): The minimum value of the range.
+            max_value (int): The maximum value of the range.
+
+        Raises:
+            ValueError: If the provided values are not within the valid range.
+
+        Note:
+            The valid range for min_value and max_value is between UD_MINVAL(-0x7fff) and UD_MAXVAL(0x7fff).
+
+        """
         if (not (UD_MINVAL <= min_value <= UD_MAXVAL)) or (not (UD_MINVAL <= max_value <= UD_MAXVAL)):
             raise ValueError(f'Valid values are in range of {UD_MINVAL} to {UD_MAXVAL}')
         SendMessage(self.hwnd, UDM.SETRANGE, 0, ((min_value << 16) & 0xFFFF0000) + (max_value & 0xFFFF))
 
     def get_value(self):
+        """
+        Get the current value of the up-down control.
+
+        Returns:
+            int: The current value of the up-down control, or None if no value is set.
+
+        """
         ret_val = BOOL(0)
         res = SendMessage(self.hwnd, UDM.GETPOS32, 0, ctypes.addressof(ret_val))
         if not ret_val:
@@ -83,4 +134,11 @@ class UpDown(Control):
         return res
 
     def set_value(self, value):
+        """
+        Set the value of the up-down control.
+
+        Args:
+            value (int): The value to set.
+
+        """
         SendMessage(self.hwnd, UDM.SETPOS32, 0, value)

@@ -1,4 +1,12 @@
-""" Dialog MSCTLS_STATUSBAR32 control implementation """
+"""
+MSCTLS_STATUSBAR32 control implementation
+
+The `StatusBar` class represents a msctls_statusbar32 control that displays text at the bottom of a dialog.
+
+Example:
+
+
+"""
 from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
@@ -50,14 +58,37 @@ class SBN(IntEnum):
     FIRST = 0xfffffc8f
     SIMPLEMODECHANGE = FIRST - 0
 
-
 @dataclass
 class StatusBar(Control):
+    """
+    Implementation of a status bar control.
+
+    The `StatusBar` class represents a status bar control that displays status information to the user.
+    It provides methods to set the text displayed in the status bar.
+
+    Attributes:
+        window_class (str): The window class name for the status bar control. Default is 'msctls_statusbar32'.
+
+    Notifications:
+        on_simplemodechange (WM_NotifyDelegator): Sent when the status bar enters or exits simple mode.
+
+    Methods:
+        set_text() -> None:
+                Updates the text displayed in the status bar.
+
+    """
     window_class: str = 'msctls_statusbar32'
 
     # statusbar notification callbacks
     on_simplemodechange = WM_NotifyDelegator(SBN.SIMPLEMODECHANGE, LPNMHDR)
 
     def set_text(self, message):
+        """
+        Set the text displayed in the status bar.
+
+        Args:
+            message (str): The text message to be displayed in the status bar.
+
+        """
         msg = ctypes.create_unicode_buffer(message)
         SendMessage(self.hwnd, SB.SETTEXTW, SBT.NOBORDERS, ctypes.addressof(msg))
