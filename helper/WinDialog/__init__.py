@@ -59,7 +59,7 @@ __all__ = ['Dialog',
            'ComboBox', 'ComboBoxEx', 'CBS', 'CBES_EX',
            'ListBox', 'LBS',
            'TextBox', 'ES',
-           'ListView', 'LVS', 'LVS_EX'
+           'ListView', 'LVS', 'LVS_EX',
            'ProgressBar', 'PBS',
            'StatusBar', 'SBARS',
            'UpDown', 'UDS',
@@ -73,7 +73,6 @@ from .win_helper import (
     DIALOGPROC, DialogBoxIndirectParam, LPNMHDR,
     GetDlgItem, EndDialog,
     GetWindowRect, CopyRect, OffsetRect, SetWindowPos, GetModuleHandle,
-    SetWindowSubclass, SUBCLASSPROC,
     WinMessages as WM,
     WindowStyle as WS,
     DialogBoxStyles as DS
@@ -109,7 +108,7 @@ from Npp import notepad
 import ctypes
 from ctypes import wintypes, create_unicode_buffer
 from dataclasses import dataclass, field
-from typing import Dict, List, Callable
+from typing import Dict, List
 
 
 @dataclass
@@ -315,7 +314,7 @@ class Dialog:
         dlg_window = self.__create_dialog_window()
         dlg_window = self.__align_struct(dlg_window)
         dialog = dlg_window + controls
-        # print(' ,'.join(f'0x{x:>02X}' for x in dialog))
+        print(' ,'.join(f'0x{x:>02X}' for x in dialog))
         raw_bytes = (ctypes.c_ubyte * len(dialog)).from_buffer_copy(dialog)
         hinstance = GetModuleHandle(None)
         DialogBoxIndirectParam(hinstance,

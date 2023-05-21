@@ -5,7 +5,7 @@ from ..win_helper import (
 )
 
 from dataclasses import dataclass, field
-from typing import Dict, Callable
+from typing import Dict
 
 @dataclass
 class Control:

@@ -3,8 +3,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
 from ..win_helper import (
-    WM_NotifyDelegator, SetWindowSubclass, DefSubclassProc, SUBCLASSPROC,
-    WinMessages as WM,
+    WM_NotifyDelegator,
     SendMessage, WM_USER, CCM, NMHDR
 )
 import ctypes

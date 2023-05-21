@@ -7,7 +7,7 @@ from ..win_helper import (
     WM_CommandDelegator, WM_NotifyDelegator,
     CCM,
     SendMessage, NMHDR, WM_USER, INT_PTR, LPNMHDR,
-    GetDlgItemText, FindWindowEx
+    GetDlgItemText
 )
 import ctypes
 from ctypes.wintypes import (

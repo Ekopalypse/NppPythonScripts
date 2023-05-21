@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
 from ..win_helper import (
-    WindowStyle as WS,
     SendMessage, WM_USER, CCM
 )
 import ctypes

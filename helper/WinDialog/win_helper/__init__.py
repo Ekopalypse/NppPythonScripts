@@ -12,7 +12,7 @@ Note:
 import ctypes
 from ctypes import POINTER
 from ctypes.wintypes import (
-	HWND, UINT, WPARAM, LPARAM, INT, BOOL, DWORD,
+	HWND, UINT, WPARAM, LPARAM, INT, BOOL,
     MSG, HINSTANCE, RECT, HMODULE, LPCWSTR,
     POINT
 )
