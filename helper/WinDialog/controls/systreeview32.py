@@ -1,4 +1,10 @@
-""" Dialog SYSTREEVIEW32 control implementation """
+'''
+SYSTREEVIEW32 Control Implementations
+
+Example Usage:
+
+For detailed documentation, refer to their respective docstrings.
+'''
 from dataclasses import dataclass
 from .__control_template import Control
 from ..win_helper import WindowStyle as WS

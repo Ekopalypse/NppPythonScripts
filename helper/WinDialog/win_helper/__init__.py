@@ -433,22 +433,38 @@ class ShowWindowCommands(IntEnum):
     MAX = 11
 
 class NMHDR(ctypes.Structure):
-    """ implements the windows NMHDR structure """
     _fields_ = [('hwndFrom', HWND),
                 ('idFrom',   UINT_PTR),
                 ('code',     UINT)]
 LPNMHDR = POINTER(NMHDR)
 
 def LOWORD(value):
-    """ low part of a dword """
+    """
+    Extract the low part of a DWORD (double word).
+
+    Parameters:
+        value (int): The DWORD value.
+
+    Returns:
+        int: The low word (16 bits) of the DWORD value.
+    """
     return value & 0xFFFF
 
+
 def HIWORD(value):
-    """ high part of a dword """
+    """
+    Extract the high part of a DWORD (double word).
+
+    Parameters:
+        value (int): The DWORD value.
+
+    Returns:
+        int: The high word (16 bits) of the DWORD value.
+    """
     return (value >>16) & 0xFFFF
 
+
 class NMITEMACTIVATE(ctypes.Structure):
-    """ implementation of a NMITEMACTIVATE structure """
     _fields_ = [('hdr',       LPNMHDR),
                 ('iItem',     INT),
                 ('iSubItem',  INT),
@@ -457,9 +473,9 @@ class NMITEMACTIVATE(ctypes.Structure):
                 ('uChanged',  UINT),
                 ('ptAction',  POINT),
                 ('lParam',    LPARAM),
-                ('uKeyFlags', UINT),
-                ]
+                ('uKeyFlags', UINT)]
 LPNMITEMACTIVATE = ctypes.POINTER(NMITEMACTIVATE)
+
 
 class CCM(IntEnum):
     FIRST               = 0x2000         # Common control shared messages
@@ -486,7 +502,6 @@ class WM_CommandDelegator:
         self.id = wm_command_id
 
     def __set__(self, control, value):
-        # shifting and adding is done to be able to use the wparam value directly.
         control.registered_commands[self.id] = value
 
 
@@ -500,7 +515,4 @@ class WM_NotifyDelegator:
         self.returned_struct = returned_struct
 
     def __set__(self, control, value):
-        # wm_notifs do not deliver simple integer values, they provide structures,
-        # so registering keys as (nmhdr.code, nmhdr.idFrom)
-        # is this really the best way to do it?  TODO
         control.registered_notifications[self.id] = (value, self.returned_struct)

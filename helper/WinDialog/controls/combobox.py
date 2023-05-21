@@ -1,4 +1,16 @@
-""" Dialog COMBOBOX control implementation """
+"""
+COMBOBOX Control Implementations
+
+Provides classes for creating combobox and comboboxex controls for dialogs.
+
+The combobox controls are implemented as data classes that inherit from the `Control` class defined in the `__control_template` module.
+Each combobox control class includes attributes for configuring the control's appearance, position, and behavior.
+
+Example Usage:
+
+
+For detailed documentation on each combobox control class, refer to their respective docstrings.
+"""
 from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
@@ -84,12 +96,56 @@ class CBN(IntEnum):
 
 @dataclass
 class ComboBox(Control):
-    """ Implementations of the combobox control """
+    """
+    A class representing a combobox control.
+
+    Combobox is a control that combines the functionality of a text box and a drop-down list.
+    It allows users to select an item from a predefined list or enter a custom value.
+
+    Attributes:
+        style (int): The style of the combobox control.
+        window_class (str): The window class associated with the combobox control.
+        items (list): The list of items to be displayed in the combobox.
+
+    Combobox Notification Callbacks:
+        - on_selchange: Triggered when the selection in the combobox changes.
+        - on_dblclk: Triggered when the user double-clicks an item in the combobox.
+        - on_setfocus: Triggered when the combobox receives focus.
+        - on_killfocus: Triggered when the combobox loses focus.
+        - on_editchange: Triggered when the user changes the text in the combobox's edit control.
+        - on_editupdate: Triggered when the combobox's edit control is about to display altered text.
+        - on_dropdown: Triggered when the combobox's dropdown list is about to be displayed.
+        - on_closeup: Triggered when the combobox's dropdown list is about to be closed.
+        - on_selendok: Triggered when the user selects an item and closes the combobox's dropdown list.
+        - on_selendcancel: Triggered when the user cancels the selection and closes the combobox's dropdown list.
+
+    Methods:
+        - get_selected_item: Returns the index of the currently selected item.
+        - clear: Removes all items from the combobox.
+        - update: Clears the combobox and inserts a new list of items.
+        - insert_items: Inserts the items from the list into the combobox.
+
+    Note:
+        - This class inherits from the Control class.
+        - Combobox controls are typically used in GUI applications to provide a list of options to the user.
+    """
     style: int = WS.CHILD | WS.VISIBLE | CBS.HASSTRINGS | CBS.DROPDOWNLIST
     window_class: str = 'Combobox'
     items: list = None
 
     def __post_init__(self):
+        """
+        Perform post-initialization tasks for the ComboBox object.
+
+        This method is automatically called after the initialization of the ComboBox object.
+        It ensures that the 'items' attribute is initialized properly.
+
+        Parameters:
+            None.
+
+        Returns:
+            None.
+        """
         if self.items is None:
             self.items = []
 
@@ -106,18 +162,45 @@ class ComboBox(Control):
     on_selendcancel = WM_CommandDelegator(CBN.SELENDCANCEL)
 
     def get_selected_item(self):
+        """
+        Get the index of the currently selected item in the combobox.
+
+        Returns:
+            int: The index of the selected item.
+        """
         return SendMessage(self.hwnd, CB.GETCURSEL, 0, 0)
 
     def clear(self):
+        """
+        Clear the combobox by removing all items.
+
+        Returns:
+            None.
+        """
         self.items.clear()
         SendMessage(self.hwnd, CB.RESETCONTENT, 0, 0)
 
     def update(self, new_list_of_items):
+        """
+        Update the combobox by replacing the current list of items with a new list.
+
+        Parameters:
+            new_list_of_items (list): The new list of items to be displayed in the combobox.
+
+        Returns:
+            None.
+        """
         self.clear()
         self.items.extend(new_list_of_items)
         self.insert_items()
 
     def insert_items(self):
+        """
+        Insert items from the 'items' attribute into the combobox.
+
+        Returns:
+            None.
+        """
         try:
             for item in self.items:
                 lp_item = ctypes.addressof(ctypes.create_unicode_buffer(item))
@@ -138,8 +221,6 @@ class CBEIF(IntEnum):
     DI_SETITEM    = 0x10000000
 
 class COMBOBOXEXITEM(ctypes.Structure):
-    """ implementation of a COMBOBOXEXITEM structure """
-    # _pack_ = 1
     _fields_ = [
         ("mask", UINT),
         ("iItem", INT_PTR),
@@ -230,11 +311,61 @@ class CBENF(IntEnum):
 
 @dataclass
 class ComboBoxEx(Control):
+    """
+    A class representing a ComboBoxEx control.
+
+    Attributes:
+        style (int): The style of the combo box control.
+        window_class (str): The window class of the combo box control.
+        __items (list): The list of items in the combo box control.
+
+    Methods:
+        __post_init__(self): Initializes the ComboBoxEx object after its creation.
+        get_selected_item(self): Retrieves the index of the currently selected item in the combo box.
+        clear(self): Clears the items in the combo box.
+        update(self, new_list_of_items): Updates the items in the combo box with a new list.
+        insert_items(self, items): Inserts items into the combo box.
+        get_text(self, buffer_length): Retrieves the text of the combo box.
+        get_combo_control(self): Retrieves the handle of the underlying combo control.
+
+    Notification Callbacks:
+        The following notification callbacks are available for the ComboBoxEx class:
+        - on_insertitem: Triggered when an item is inserted into the combo box.
+        - on_deleteitem: Triggered when an item is deleted from the combo box.
+        - on_beginedit: Triggered when the combo box enters edit mode.
+        - on_endedit: Triggered when the combo box finishes editing.
+        - on_getdispinfo: Triggered to retrieve display information for an item.
+        - on_dragbegin: Triggered when dragging begins in the combo box.
+
+    Combobox Notification Callbacks:
+        The following notification callbacks inherited from the Control class are also available for the ComboBoxEx class:
+        - on_selchange: Triggered when the selection in the combo box changes.
+        - on_dblclk: Triggered when the combo box is double-clicked.
+        - on_setfocus: Triggered when the combo box receives focus.
+        - on_killfocus: Triggered when the combo box loses focus.
+        - on_editchange: Triggered when the content of the combo box edit control changes.
+        - on_editupdate: Triggered when the combo box edit control is updated.
+        - on_dropdown: Triggered when the combo box dropdown list is shown.
+        - on_closeup: Triggered when the combo box dropdown list is closed.
+        - on_selendok: Triggered when the combo box selection is completed.
+        - on_selendcancel: Triggered when the combo box selection is canceled.
+
+    """
     style: int = Control.style | CBS.DROPDOWN
     window_class: str = 'ComboBoxEx32'
     __items: list = None
 
     def __post_init__(self):
+        """
+        This method is automatically called after the initialization of the ComboBoxEx object.
+        It initializes the __items attribute if it is not set.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
         if self.__items is None:
             self.__items = []
 
@@ -262,18 +393,48 @@ class ComboBoxEx(Control):
     on_selendcancel = WM_CommandDelegator(CBN.SELENDCANCEL)
 
     def get_selected_item(self):
+        """
+        Get the index of the currently selected item in the combo box.
+
+        Returns:
+            int: The index of the selected item.
+        """
         return SendMessage(self.hwnd, CB.GETCURSEL, 0, 0)
 
     def clear(self):
+        """
+        Clear the items in the combo box.
+
+        Returns:
+            None
+        """
         self.__items.clear()
         SendMessage(self.hwnd, CB.RESETCONTENT, 0, 0)
 
     def update(self, new_list_of_items):
+        """
+        Update the items in the combo box with a new list.
+
+        Parameters:
+            new_list_of_items (list): The new list of items.
+
+        Returns:
+            None
+        """
         self.clear()
         self.__items.extend(new_list_of_items)
         self.insert_items()
 
     def insert_items(self, items):
+        """
+        This method inserts the specified items into the combo box.
+
+        Parameters:
+            items (list): The list of items to be inserted.
+
+        Returns:
+            None
+        """
         self.__items = []
         try:
             cb_item = COMBOBOXEXITEM()
@@ -292,6 +453,15 @@ class ComboBoxEx(Control):
             print(f'insert_items Exceptions:{e}')
 
     def get_text(self, buffer_length):
+        """
+        This method retrieves the text of the combo box.
+
+        Parameters:
+            buffer_length (int): The length of the buffer to hold the text.
+
+        Returns:
+            str or None: The text of the combo box, or None if an error occurred.
+        """
         buffer = ctypes.create_unicode_buffer(buffer_length)
         res = GetDlgItemText(self.hwnd, self.id, buffer, buffer_length)
         if res != 0:
@@ -299,6 +469,13 @@ class ComboBoxEx(Control):
         return None
 
     def get_combo_control(self):
+        """
+        This method retrieves the handle of the underlying combo control associated
+        with the ComboBoxEx control and sets it as the `child_combo_hwnd` attribute.
+
+        Returns:
+            None
+        """
         self.child_combo_hwnd = SendMessage(self.hwnd, CBEM.GETCOMBOCONTROL, 0, 0)
 
     # def set_dropdown_visibility(self, show=False):

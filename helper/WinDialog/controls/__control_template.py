@@ -53,19 +53,23 @@ class Control:
         '''
         Create the control template structure.
 
+        Parameters:
+            None.
+
         Returns:
             bytearray: The byte array representing the control template structure.
 
         '''
         # DO NOT CHANGE ORDER !!
+        # https://learn.microsoft.com/en-us/windows/win32/dlgbox/dlgitemtemplateex
         self._array = bytearray()
         self._array += DWORD(0)  # helpID
         self._array += DWORD(self.ex_style)
         self._array += DWORD(self.style)
-        self._array += SHORT(self.position[0])
-        self._array += SHORT(self.position[1])
-        self._array += SHORT(self.size[0])
-        self._array += SHORT(self.size[1])
+        self._array += SHORT(self.position[0])  # x
+        self._array += SHORT(self.position[1])  # y
+        self._array += SHORT(self.size[0])  # cx
+        self._array += SHORT(self.size[1])  # cy
         self._array += DWORD(self.id)
         self._array += create_unicode_buffer(self.window_class)
         self._array += create_unicode_buffer(self.title)

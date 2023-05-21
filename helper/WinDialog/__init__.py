@@ -12,15 +12,16 @@ Currently the following classes and enums are supported and tested:
     DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton, SplitButton
 - Label: Represents a static control and base class for various other types of labels.
     TruncatedLabel, BlackFramedLabel, CenteredLabel, RightAlignedLabel
-- ComboBox: Represents a combo box control.
-- ComboBoxEx: Represents an extended combo box control.
-- ListBox: Represents a list box control.
-- TextBox: Represents a text box control.
-- ListView: Represents a list view control.
+- ComboBox: Represents a combobox control.
+- ComboBoxEx: Represents an comboboxex control.
+- ListBox: Represents a listbox control.
+- TextBox: Represents a edit control.
+- ListView: Represents a syslistview32 control.
 - ProgressBar: Represents a progress bar control.
 - StatusBar: Represents a status bar control.
 - UpDown: Represents an up-down control.
 - Scintilla: Represents a Scintilla control.
+- TreeView: Represents a systreeview32 control.
 
 Enums:
 - BS: Button control styles.
@@ -37,7 +38,7 @@ Enums:
 
 For more documentation on each class, refer to their respective docstrings.
 
-Classes that are still missing are:
+Classes that are missing and for which there are currently no plans to include are:
 - HotKey
 - TrackBar
 - ReBarWindow
@@ -49,7 +50,6 @@ Classes that are still missing are:
 - Link
 - Pager
 - TabControl
-- TreeView
 - ToolBar
 """
 
@@ -63,7 +63,8 @@ __all__ = ['Dialog',
            'ProgressBar', 'PBS',
            'StatusBar', 'SBARS',
            'UpDown', 'UDS',
-           'Scintilla'
+           'Scintilla',
+           'TreeView'
            ]
 __version__ = '0.2'
 __author__ = 'ekopalypse'
@@ -88,6 +89,8 @@ from .controls.msctls_progress32 import ProgressBar, PBS
 from .controls.msctls_statusbar32 import StatusBar, SBARS
 from .controls.msctls_updown32 import UpDown, UDS
 from .controls.scintilla import Scintilla
+from .controls.systreeview32 import TreeView
+
 # from .controls.richedit import ...
 # from .controls.msctls_hotkey32 import ...
 # from .controls.msctls_trackbar32 import ...
@@ -99,7 +102,6 @@ from .controls.scintilla import Scintilla
 # from .controls.syslink import ...
 # from .controls.syspager import ...
 # from .controls.systabcontrol32 import ...
-# from .controls.systreeview32 import ...
 # from .controls.toolbarwindow32 import ...
 
 from .resource_parser import parser
@@ -167,17 +169,32 @@ class Dialog:
     registered_notifications: Dict = field(default_factory=dict)
 
     def __post_init__(self):
+        """
+        Perform post-initialization tasks for the Dialog object.
+
+        This method is automatically called after the initialization of the Dialog object.
+        It initializes the control_list, registered_commands, and registered_notifications attributes.
+
+        Parameters:
+            None.
+
+        Returns:
+            None.
+        """
         self.control_list = []
         self.registered_commands = {}
         self.registered_notifications = {}
 
     def initialize(self):
         '''
-        Initializes the dialog and its controls.
+        Initializes the dialog and its controls at runtime.
 
         This method is intended to be overridden by a concrete class.
         It is executed after all controls have been created but before the dialog is displayed.
         Concrete implementations should provide custom logic to set up initial values, states, and configurations of the controls.
+
+        Parameters:
+            None.
 
         Returns:
             None
@@ -190,24 +207,28 @@ class Dialog:
         '''
         Create the dialog template structure.
 
+        Parameters:
+            None.
+
         Returns:
             bytearray: The byte array representing the dialog template structure.
 
         '''
+        # https://learn.microsoft.com/en-us/windows/win32/dlgbox/dlgtemplateex
         self.windowClass = 0
         _array = bytearray()
-        _array += wintypes.WORD(1)                       # dlgVer
-        _array += wintypes.WORD(0xFFFF)                  # signature
-        _array += wintypes.DWORD(0)                      # helpID
-        _array += wintypes.DWORD(self.ex_style)          #
-        _array += wintypes.DWORD(self.style)             #
+        _array += wintypes.WORD(1)  # dlgVer
+        _array += wintypes.WORD(0xFFFF)  # signature
+        _array += wintypes.DWORD(0)  # helpID
+        _array += wintypes.DWORD(self.ex_style)
+        _array += wintypes.DWORD(self.style)
         _array += wintypes.WORD(self.dialog_items or 0)  # cDlgItems
-        _array += wintypes.SHORT(self.position[0])       # x
-        _array += wintypes.SHORT(self.position[1])       # y
-        _array += wintypes.SHORT(self.size[0])           # width
-        _array += wintypes.SHORT(self.size[1])           # height
-        _array += wintypes.WORD(0)                       # menu
-        _array += wintypes.WORD(0)                       # windowClass
+        _array += wintypes.SHORT(self.position[0])  # x
+        _array += wintypes.SHORT(self.position[1])  # y
+        _array += wintypes.SHORT(self.size[0])  # width
+        _array += wintypes.SHORT(self.size[1])  # height
+        _array += wintypes.WORD(0)  # menu
+        _array += wintypes.WORD(0)  # windowClass
         _array += create_unicode_buffer(self.title)
         _array += wintypes.WORD(self.pointsize)
         _array += wintypes.WORD(self.weight)
@@ -217,12 +238,28 @@ class Dialog:
         return _array
 
     def __default_dialog_proc(self, hwnd, msg, wparam, lparam):
+        """
+        Default Window Procedure Callback
+
+        It handles messages sent to a window that are not explicitly processed by a custom window procedure.
+
+        Parameters:
+            hwnd: The handle to the window receiving the message.
+            msg: The message identifier.
+            wparam: Additional message-specific information.
+            lparam: Additional message-specific information.
+
+        Returns:
+            The result of the message processing.
+
+        Note: Custom window procedures should call this function when they do not handle a particular message.
+
+        """
         if msg == WM.INITDIALOG:
                 self.hwnd = hwnd
                 for i, control in enumerate(self.control_list):
                     self.control_list[i].hwnd = GetDlgItem(hwnd, control.id)
 
-                # if self.on_init:
                 self.initialize()
 
                 if self.center:
@@ -267,6 +304,9 @@ class Dialog:
         allowing user interaction with the controls. The method blocks until the
         dialog is closed.
 
+        Parameters:
+            None.
+
         Returns:
             None
         '''
@@ -280,6 +320,9 @@ class Dialog:
         '''
         This method terminates the dialog and closes its window.
 
+        Parameters:
+            None.
+
         Returns:
             None
         '''
@@ -287,7 +330,15 @@ class Dialog:
             EndDialog(self.hwnd, 0)
 
     def __align_struct(self, tmp):
-        # align template structure to dword size
+        '''
+        Aligns the template structure to the size of a DWORD.
+
+        Parameters:
+            tmp: The template structure to be aligned.
+
+        Returns:
+            The aligned template structure.
+        '''
         dword_size = ctypes.sizeof(wintypes.DWORD)
         align = dword_size - len(tmp) % dword_size
         if align < dword_size:
@@ -295,6 +346,27 @@ class Dialog:
         return tmp
 
     def __create_dialog(self):
+        """
+        Create the dialog window and its controls.
+
+        This method constructs the dialog window by creating its controls and setting up event handling.
+        It iterates over the control_list, assigns unique IDs to the controls, creates control structures,
+        aligns them to match memory requirements, and registers event handlers for commands and notifications.
+
+        Parameters:
+            None.
+
+        Returns:
+            None.
+
+        Raises:
+            TypeError: If a control in control_list is not an instance of Control.
+
+        Notes:
+            - This method is called internally during the creation of the Dialog object.
+            - It utilizes the __align_struct method to ensure proper memory alignment.
+            - The created dialog is displayed using the DialogBoxIndirectParam function.
+        """
         controls = bytearray()
         for i, control in enumerate(self.control_list):
             if not isinstance(control, Control):
@@ -314,7 +386,7 @@ class Dialog:
         dlg_window = self.__create_dialog_window()
         dlg_window = self.__align_struct(dlg_window)
         dialog = dlg_window + controls
-        print(' ,'.join(f'0x{x:>02X}' for x in dialog))
+        # print(' ,'.join(f'0x{x:>02X}' for x in dialog))
         raw_bytes = (ctypes.c_ubyte * len(dialog)).from_buffer_copy(dialog)
         hinstance = GetModuleHandle(None)
         DialogBoxIndirectParam(hinstance,
@@ -332,7 +404,7 @@ def create_dialog_from_rc(rc_code):
     along with its associated controls based on the provided code.
     The control types defined in the resource code are mapped to their corresponding control classes.
 
-    Args:
+    Parameters:
         rc_code (str): The resource code defining the dialog and its controls.
 
     Returns:
@@ -342,22 +414,6 @@ def create_dialog_from_rc(rc_code):
         NotImplementedError: If a requested control type is not implemented yet.
 
     Note that currently only resource code generated by ResourceHacker is supported.
-
-    Example:
-        rc = """
-        1 DIALOGEX 0, 0, 250, 100
-        STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-        CAPTION "T1"
-        LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-        FONT 9, "Segoe UI"
-        {
-           CONTROL "B1", 1, BUTTON, BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 130, 78, 50, 11
-           CONTROL "B2", 2, BUTTON, BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 187, 78, 50, 11
-        }
-        """
-
-        dialog = create_dialog_from_rc(rc)
-        ...
     '''
     control_type_map = {
         'button': Button,

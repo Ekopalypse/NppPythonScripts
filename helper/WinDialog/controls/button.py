@@ -17,9 +17,6 @@ Example Usage:
     default_button = DefaultButton(title="OK", size=(80, 25), position=(10, 50))
 
 For detailed documentation on each button control class, refer to their respective docstrings.
-
-Note: This module requires the `__control_template` module and the `win_helper` module.
-
 '''
 
 from dataclasses import dataclass
@@ -146,7 +143,6 @@ class Button(Control):
     style: int = Control.style | WS.TABSTOP | BS.CENTER | BS.PUSHLIKE | BS.FLAT
     window_class: str = 'Button'
 
-    # button notification callbacks
     on_click         = WM_CommandDelegator(BN.CLICKED)
     on_paint         = WM_CommandDelegator(BN.PAINT)
     on_hilite        = WM_CommandDelegator(BN.HILITE)
@@ -236,6 +232,12 @@ class CheckBoxButton(Button):
         By default, the checkbox button control is in a two-state mode (checked or unchecked).
         This method modifies the style of the control to enable a three-state mode, allowing
         an indeterminate state in addition to checked and unchecked states.
+
+        Parameters:
+            None.
+
+        Returns:
+            None.
         '''
         self.style -= BS.AUTOCHECKBOX
         self.style |=BS.AUTO3STATE
@@ -287,7 +289,6 @@ class SplitButton(Button):
         on_disable, on_doubleclicked, on_setfocus, and on_killfocus attributes from the Button class.
     '''
 
-# GroupBox does not inherit from Button as it is not clickable
 @dataclass
 class GroupBox(Control):
     '''
@@ -317,9 +318,5 @@ class GroupBox(Control):
         The GroupBox class does not inherit any event handler attributes from the Control class
         as it is not a clickable control. It is used as a container for grouping related controls.
     '''
-    # title: str = ''
-    # size: (int, int) = (50, 11)
-    # position: (int, int) = (0, 0)
     style: int = Control.style | BS.GROUPBOX | WS.GROUP
-    # ex_style: int = 0
     window_class: str = 'Button'

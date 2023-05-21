@@ -1,4 +1,16 @@
-""" Dialog EDIT control implementation """
+"""
+EDIT Control Implementations
+
+Provides a class for creating a edit control for dialogs.
+
+The edit control is implemented as data class that inherit from the `Control` class defined in the `__control_template` module.
+It includes attributes for configuring the control's appearance, position, and behavior.
+
+Example Usage:
+
+
+For detailed documentation, refer to the respective docstrings.
+"""
 from dataclasses import dataclass
 from enum import IntEnum
 from .__control_template import Control
@@ -83,7 +95,40 @@ class EN(IntEnum):
 
 @dataclass
 class TextBox(Control):
-    """ Implementation of a textbox control """
+    """
+    Represents an edit control.
+
+    Args:
+        style (int): The style of the text box control. Defaults to a combination of styles that include
+                     child, visible, border, tab stop, left alignment, multiline, and want return.
+        window_class (str): The window class name of the text box control. Defaults to 'Edit'.
+
+    Attributes:
+        hwnd (int): The handle of the text box control.
+
+    Notifications:
+        The following notification callbacks can be assigned to handle specific events:
+        - on_setfocus: Sent when the text box control receives the keyboard focus.
+        - on_killfocus: Sent when the text box control loses the keyboard focus.
+        - on_change: Sent when the user has taken an action that may have altered the text in the text box control.
+        - on_update: Sent when the text box control is about to redraw itself.
+        - on_errspace: Sent when the text box control cannot allocate enough memory to meet a specific request.
+        - on_maxtext: Sent when the current text insertion has exceeded the specified maximum number of characters.
+        - on_hscroll: Sent when the user clicks the horizontal scroll bar of the text box control.
+        - on_vscroll: Sent when the user clicks the vertical scroll bar of the text box control.
+        - on_align_ltr_ec: Sent when the user has changed the text box control direction to left-to-right.
+        - on_align_rtl_ec: Sent when the user has changed the text box control direction to right-to-left.
+
+    Methods:
+        set_text(text: str) -> None:
+            Sets the text of the text box control.
+
+        get_text() -> str:
+            Retrieves the text from the text box control.
+
+        grab_focus() -> None:
+            Sets the keyboard focus to the text box control.
+    """
     style: int = WS.CHILD | WS.VISIBLE | WS.BORDER | WS.TABSTOP | ES.LEFT | ES.MULTILINE | ES.WANTRETURN
     window_class: str = 'Edit'
 
@@ -105,13 +150,34 @@ class TextBox(Control):
     # on_after_paste = WM_CommandDelegator(EN.AFTER_PASTE)    #
 
     def set_text(self, text):
+        """
+        Sets the text of the text box control.
+
+        Args:
+            text (str): The text to be set in the text box control.
+
+        Returns:
+            None
+        """
         SetWindowText(self.hwnd, text)
 
     def get_text(self):
+        """
+        Retrieves the text from the text box control.
+
+        Returns:
+            str: The text contained in the text box control.
+        """
         length = GetWindowTextLength(self.hwnd) + 1
         buffer = ctypes.create_unicode_buffer(length)
         GetWindowText(self.hwnd, buffer, length)
         return buffer.value
 
     def grab_focus(self):
+        """
+        Sets the keyboard focus to the text box control.
+
+        Returns:
+            None
+        """
         SetFocus(self.hwnd)

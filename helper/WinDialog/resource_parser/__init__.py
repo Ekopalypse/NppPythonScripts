@@ -1,3 +1,14 @@
+"""
+This module provides functions and classes for parsing resource script code.
+
+Functions:
+    - parser(rc_code): Parses the provided RC code and returns a DialogExResource object representing the dialog resource.
+
+Classes:
+    - DialogExResource: Represents a dialog resource extracted from an RC file.
+    - FONT: Represents a font used in a dialog.
+    - ControlStatement: Represents a control statement within a dialog.
+"""
 from dataclasses import dataclass
 from ..win_helper import (
     WindowStyle as WS,
@@ -34,6 +45,16 @@ STYLE_MAP = {
 
 @dataclass
 class FONT:
+    """
+    Represents a font used in a dialog.
+
+    Attributes:
+        pointsize (int): The point size of the font.
+        typeface (str): The typeface or font family.
+        weight (int): The weight of the font.
+        italic (int): Indicates whether the font is italic (1 for True, 0 for False).
+        charset (int): The character set used by the font.
+    """
     pointsize: int = None
     typeface: str = None
     weight: int = None
@@ -52,6 +73,19 @@ class FONT:
 
 @dataclass
 class ControlStatement:
+    """
+    Represents a control statement within a dialog.
+
+    Attributes:
+        title (str): The title or text associated with the control.
+        id_ (int): The control ID.
+        control_class (str): The control class.
+        style (int): The combined value of control styles.
+        position (tuple[int, int]): The position of the control (x, y).
+        size (tuple[int, int]): The size of the control (width, height).
+        ex_style (int): The combined value of extended control styles.
+        name (str): The name or label associated with the control.
+    """
     # ('', '1', 'EDIT', ['ES_LEFT', 'WS_CHILD', 'WS_VISIBLE', 'WS_BORDER', 'WS_TABSTOP'], 6, 5, 240, 14),
     title: str = ''
     id_ : int = None
@@ -76,6 +110,18 @@ class ControlStatement:
 
 @dataclass
 class DialogExResource:
+    """
+    Represents a dialog resource with associated attributes.
+
+    Attributes:
+        styles (int): The combined value of styles.
+        ex_styles (int): The combined value of extended styles.
+        title (str): The title or caption of the dialog.
+        size (tuple[int, int]): The size of the dialog (width, height).
+        position (tuple[int, int]): The position of the dialog (x, y).
+        font (FONT): The font used in the dialog.
+        controls (list[ControlStatement]): The list of control statements in the dialog.
+    """
     styles: int = None
     ex_styles: int = 0
     title: str = ''
@@ -89,6 +135,15 @@ class DialogExResource:
 
 # TODO: needs to be revised if VS generated rc files are considered.
 def parser(rc_code):
+    """
+    Parse the RC (Resource Compiler) code and create a DialogExResource object.
+
+    Parameters:
+        rc_code (str): The RC code to parse.
+
+    Returns:
+        DialogExResource: The parsed DialogExResource object.
+    """
     dlg = DialogExResource()
     for line_ in rc_code.splitlines():
         line = line_.strip()
@@ -113,6 +168,15 @@ def parser(rc_code):
     return dlg
 
 def _get_extended_style_value(styles):
+    """
+    Get the combined value of extended styles from a list of style names.
+
+    Parameters:
+        styles (list): A list of extended style names.
+
+    Returns:
+        int: The combined value of the extended styles.
+    """
     value = 0
     for style in styles:
         klass, _, member = style.partition('_EX_')
@@ -122,6 +186,15 @@ def _get_extended_style_value(styles):
     return value
 
 def _get_style_value(styles):
+    """
+    Get the combined value of styles from a list of style names.
+
+    Parameters:
+        styles (list): A list of style names.
+
+    Returns:
+        int: The combined value of the styles.
+    """
     value = 0
     for style in styles:
         klass, _, member = style.partition('_')
