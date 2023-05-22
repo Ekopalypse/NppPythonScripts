@@ -6,7 +6,7 @@ from ..win_helper import SendMessage
 
 import ctypes
 from ctypes.wintypes import (
-	UINT, LPARAM, INT, LPCWSTR,PUINT
+	UINT, LPARAM, INT, LPCWSTR, PUINT
 )
 
 class LVCOLUMN(ctypes.Structure):

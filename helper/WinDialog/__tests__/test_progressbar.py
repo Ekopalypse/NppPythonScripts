@@ -1,7 +1,7 @@
 from Npp import console
 from WinDialog import (
     Dialog, create_dialog_from_rc,
-    Button, ProgressBar
+    Button, ProgressBar, PBST
 )
 
 console.show()
@@ -19,6 +19,31 @@ FONT 9, "Segoe UI"
 }
 '''
 
+def do_test():
+    assert(dlg.msctls_progress32_0.get_step_value() == 10)
+    assert(dlg.msctls_progress32_0.step() is None)
+    assert(dlg.msctls_progress32_0.step() is None)
+    assert(dlg.msctls_progress32_0.get_position() == 20)
+    assert(dlg.msctls_progress32_0.set_step_value(42) is None)
+    assert(dlg.msctls_progress32_0.get_step_value() == 42)
+    assert(dlg.msctls_progress32_0.set_position(13) == 20)
+    assert(dlg.msctls_progress32_0.get_position() == 13)
+    assert(dlg.msctls_progress32_0.deltapos(2) == 13)
+    assert(dlg.msctls_progress32_0.get_position() == 15)
+    assert(dlg.msctls_progress32_0.set_range(0, 150) is None)
+    assert(dlg.msctls_progress32_0.get_range(False, both=True) == (0, 150))
+    assert(dlg.msctls_progress32_0.set_range32(0, 0xfffffe) == (0, 150))
+    assert(dlg.msctls_progress32_0.set_range32(0, 0xffffff) == (0, 65534))
+    assert(dlg.msctls_progress32_0.get_range(False, both=True) == (0, 16777215))
+    assert(dlg.msctls_progress32_0.set_barcolor(0xc2b656) == 4278190080)
+    assert(dlg.msctls_progress32_0.get_barcolor() == 12760662)
+    assert(dlg.msctls_progress32_0.set_marquee(turn_on=True, anmiation_time=1000) is None)
+    assert(dlg.msctls_progress32_0.set_bkcolor(0x756ce0) == 4278190080)
+    assert(dlg.msctls_progress32_0.get_bkcolor() == 7695584)
+    assert(dlg.msctls_progress32_0.set_state(PBST.ERROR) == PBST.NORMAL)
+    assert(dlg.msctls_progress32_0.get_state() == PBST.ERROR)
+    print('done')
+
 def do_step():
     dlg.msctls_progress32_0.step()
     print(dlg.msctls_progress32_0.get_position())
@@ -27,6 +52,9 @@ def init_progressbar():
     dlg.msctls_progress32_0.set_position(0)
     dlg.msctls_progress32_0.set_step_value(13)
     dlg.msctls_progress32_0.set_range(0, 65)
+    dlg.msctls_progress32_0.set_barcolor(0xc2b656)
+    dlg.msctls_progress32_0.set_marquee(turn_on=True, anmiation_time=1000)
+    dlg.msctls_progress32_0.set_bkcolor(0x756ce0)
 
 dlg = create_dialog_from_rc(rc_code=rc)
 dlg.button_0.on_click = do_step

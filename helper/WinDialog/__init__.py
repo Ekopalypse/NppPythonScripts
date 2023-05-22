@@ -60,7 +60,7 @@ __all__ = ['Dialog',
            'ListBox', 'LBS',
            'TextBox', 'ES',
            'ListView', 'LVS', 'LVS_EX',
-           'ProgressBar', 'PBS',
+           'ProgressBar', 'PBS', 'PBST'
            'StatusBar', 'SBARS',
            'UpDown', 'UDS',
            'Scintilla',
@@ -85,7 +85,7 @@ from .controls.combobox import ComboBox, ComboBoxEx, CBS, CBES_EX
 from .controls.listbox import ListBox, LBS
 from .controls.edit import TextBox, ES
 from .controls.syslistview32 import ListView, LVS, LVS_EX
-from .controls.msctls_progress32 import ProgressBar, PBS
+from .controls.msctls_progress32 import ProgressBar, PBS, PBST
 from .controls.msctls_statusbar32 import StatusBar, SBARS
 from .controls.msctls_updown32 import UpDown, UDS
 from .controls.scintilla import Scintilla

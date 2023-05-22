@@ -11,15 +11,15 @@ Example:
 """
 from dataclasses import dataclass
 from enum import IntEnum
+from typing import Union, Tuple
 from .__control_template import Control
 from ..win_helper import (
-    SendMessage, WM_USER, CCM
+    SendMessage, WM_USER, CCM, LOWORD, HIWORD
 )
 import ctypes
 from ctypes.wintypes import INT
 
 class PBRANGE(ctypes.Structure):
-    """ implementation of a PBRANGE structure """
     _fields_ = [('iLow',  INT),
                 ('iHigh', INT),
                 ]
@@ -87,13 +87,141 @@ class ProgressBar(Control):
         set_position(value: int) -> None:
             Set the position of the progress bar.
 
-    Note:
-        - The values passed to the progress bar methods should be within the range of 0 to 65535 (0xFFFF).
+        deltapos(advance_by_value: int) -> int:
+            Advances the current position of a progress bar by a specified increment.
+
+        get_range(value: bool=False, both: bool=False) -> Union[int, Tuple[int, int]]:
+            Retrieves information about the current high and low limits of a given progress bar control.
+
+        set_range(min_value: int, max_value: int) -> None:
+            Set the range of the progress bar control.
+
+        set_range32(min_val: int, max_val: int) -> int:
+            Sets the minimum and maximum values for a progress bar to 32-bit values.
+
+        get_barcolor() -> int:
+            Gets the background color of the progress bar.
+
+        set_barcolor(color: int) -> None:
+            Sets the color of the progress indicator bar in the progress bar control.
+
+        set_marquee(turn_on: bool=False, anmiation_time: int=0) -> None:
+            Sets the progress bar to marquee mode.
+
+        get_bkcolor() -> int:
+            Gets the background color of the progress bar.
+
+        set_bkcolor(color: int) -> None:
+            Sets the background color in the progress bar.
+
+        get_state() -> PBST:
+            Gets the state of the progress bar.
+
+        set_state(value: PBST) -> PBST:
+            Sets the state of the progress bar.
+
     """
     window_class: str = 'msctls_progress32'
     step_value:int = 10
 
-    def set_range(self, min_value, max_value):
+    def step(self) -> None:
+        """
+        Advance the progress bar by one step.
+
+        Returns:
+            None
+        """
+        SendMessage(self.hwnd, PBM.STEPIT, 0, 0)
+
+    def get_step_value(self) -> int:
+        """
+        Get the current step value.
+
+        Returns:
+            int: The current step value.
+        """
+        return SendMessage(self.hwnd, PBM.GETSTEP, 0, 0)
+
+    def set_step_value(self, value: int) -> None:
+        """
+        Set the step value of the progress bar.
+
+        Args:
+            value (int): The step value to set.
+
+        Raises:
+            ValueError: If the provided value is not within the valid range.
+
+        Returns:
+            None
+        """
+        if not (0 <= value <= 0xFFFF):
+            raise ValueError(f'Valid values are in range of 0 to {0xFFFF}')
+        SendMessage(self.hwnd, PBM.SETSTEP, value, 0)
+
+    def get_position(self) -> int:
+        """
+        Get the current position of the progress bar.
+
+        Returns:
+            int: The current position of the progress bar.
+        """
+        return SendMessage(self.hwnd, PBM.GETPOS, 0, 0)
+
+    def set_position(self, value: int) -> None:
+        """
+        Set the position of the progress bar.
+
+        Args:
+            value (int): The position value to set.
+
+        Raises:
+            ValueError: If the provided value is not within the valid range.
+
+        Returns:
+            None
+        """
+        if not (0 <= value <= 0xFFFF):
+            raise ValueError(f'Valid values are in range of 0 to {0xFFFF}')
+        return SendMessage(self.hwnd, PBM.SETPOS, value, 0)
+
+    def deltapos(self, advance_by_value: int) -> int:
+        """
+        Advances the current position of a progress bar by a specified increment.
+
+        Args:
+            advance_by_value (int): The position value to set.
+
+        Returns:
+            int: the previous position
+        """
+        return SendMessage(self.hwnd, PBM.DELTAPOS, advance_by_value, 0)
+
+    def get_range(self, value: bool=False, both: bool=False) -> Union[int, Tuple[int, int]]:
+        """
+        Retrieves information about the current high and low limits of a given progress bar control.
+
+        Args:
+            value (bool): Specifies which limit value is to be used as the return value of the function.
+                          - True: Return the low limit.
+                          - False: Return the high limit.
+                          (default=False)
+            both (bool):  Specifies whether both limits should be returned.
+                          - True: Return both limits as a tuple of two integers.
+                          - False: Return only the specified limit.
+                          (default=False)
+
+        Returns:
+            int/(int, int): The specified limit(s).
+        """
+        if both:
+            pbrange = PBRANGE()
+            SendMessage(self.hwnd, PBM.GETRANGE, value, ctypes.addressof(pbrange))
+            return (pbrange.iLow, pbrange.iHigh)
+        else:
+            return SendMessage(self.hwnd, PBM.GETRANGE, value, 0)
+
+    def set_range(self, min_value: int, max_value: int) -> None:
         """
         Set the range of the progress bar control.
 
@@ -111,63 +239,106 @@ class ProgressBar(Control):
             raise ValueError(f'Valid values are in range of 0 to {0xFFFF}')
         SendMessage(self.hwnd, PBM.SETRANGE, 0, ((max_value << 16) & 0xFFFF0000) + (min_value & 0xFFFF))
 
-    def step(self):
+    def set_range32(self, min_val: int, max_val: int) -> Tuple[int, int]:
         """
-        Advance the progress bar by one step.
-
-        Returns:
-            None
-        """
-        SendMessage(self.hwnd, PBM.STEPIT, 0, 0)
-
-    def get_step_value(self):
-        """
-        Get the current step value.
-
-        Returns:
-            int: The current step value.
-        """
-        return SendMessage(self.hwnd, PBM.GETSTEP, 0, 0)
-
-    def set_step_value(self, value):
-        """
-        Set the step value of the progress bar.
+        Sets the minimum and maximum values for a progress bar to 32-bit values.
 
         Args:
-            value (int): The step value to set.
-
-        Raises:
-            ValueError: If the provided value is not within the valid range.
+            min_val (int): The minimum value to set.
+            max_val (int): The minimum value to set.
 
         Returns:
-            None
+            (int, int): The previous 16-bit low and 16-bit high limits.
+                 If the previous ranges were 32-bit values, the return value consists of the LOWORDs of both 32-bit limits.
         """
-        if not (0 <= value <= 0xFFFF):
-            raise ValueError(f'Valid values are in range of 0 to {0xFFFF}')
-        SendMessage(self.hwnd, PBM.SETSTEP, value, 0)
+        ret_val = SendMessage(self.hwnd, PBM.SETRANGE32, min_val, max_val)
 
-    def get_position(self):
-        """
-        Get the current position of the progress bar.
+        return LOWORD(ret_val), HIWORD(ret_val)
 
-        Returns:
-            int: The current position of the progress bar.
+    def get_barcolor(self) -> int:
         """
-        return SendMessage(self.hwnd, PBM.GETPOS, 0, 0)
-
-    def set_position(self, value):
-        """
-        Set the position of the progress bar.
+        Gets the background color of the progress bar.
 
         Args:
-            value (int): The position value to set.
+            None
 
-        Raises:
-            ValueError: If the provided value is not within the valid range.
+        Returns:
+            int: The color of the progress bar.
+        """
+        return SendMessage(self.hwnd, PBM.GETBARCOLOR, 0, 0)
+
+    def set_barcolor(self, color: int) -> None:
+        """
+        Sets the color of the progress indicator bar in the progress bar control.
+
+        Args:
+            color (int): The value that specifies the new progress indicator bar color.
 
         Returns:
             None
         """
-        if not (0 <= value <= 0xFFFF):
-            raise ValueError(f'Valid values are in range of 0 to {0xFFFF}')
-        return SendMessage(self.hwnd, PBM.SETPOS, value, 0)
+        return SendMessage(self.hwnd, PBM.SETBARCOLOR, 0, color)
+
+    def set_marquee(self, turn_on: bool=False, anmiation_time: int=0) -> None:
+        """
+        Sets the progress bar to marquee mode.
+
+        Args:
+            turn_on (bool): Indicates whether to turn the marquee mode on or off.
+            anmiation_time (int): Time, in milliseconds, between marquee animation updates.
+                                  If this parameter is zero, the marquee animation is updated every 30 milliseconds.
+        Returns:
+            None
+        """
+        SendMessage(self.hwnd, PBM.SETMARQUEE, turn_on, anmiation_time)
+
+    def get_bkcolor(self) -> int:
+        """
+        Gets the background color of the progress bar.
+
+        Args:
+            None
+
+        Returns:
+            int: The progress background color.
+        """
+        return SendMessage(self.hwnd, PBM.GETBKCOLOR, 0, 0)
+
+    def set_bkcolor(self, color: int) -> None:
+        """
+        Sets the background color in the progress bar.
+
+        Args:
+            color (int): The value that specifies the new progress background color.
+
+        Returns:
+            None
+        """
+        return SendMessage(self.hwnd, PBM.SETBKCOLOR, 0, color)
+
+    def get_state(self) -> PBST:
+        """
+        Gets the state of the progress bar.
+
+        Args:
+            None
+
+        Returns:
+            PBST: Returns the current state.
+        """
+        return PBST(SendMessage(self.hwnd, PBM.GETSTATE, 0, 0))
+
+    def set_state(self, value: PBST) -> PBST:
+        """
+        Sets the state of the progress bar.
+
+        Args:
+            value (PBST): State of the progress bar that is being set.
+
+        Raises:
+            ValueError: If the provided values are not within the valid range.
+
+        Returns:
+            PBST: Returns the previous state.
+        """
+        return PBST(SendMessage(self.hwnd, PBM.SETSTATE, PBST(value).value, 0))
