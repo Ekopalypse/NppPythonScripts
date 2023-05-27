@@ -22,16 +22,16 @@ FONT 9, "Segoe UI"
 '''
 
 def get_text():
-    print(dlg.edit_0.get_text())
+    print(dlg.edit_0.getText())
 
 def set_text():
-    dlg.edit_0.set_text('1234567890')
+    dlg.edit_0.setText('1234567890')
 
 dlg = create_dialog_from_rc(rc_code=rc)
 dlg.center = True
 dlg.edit_0.on_change = get_text
-dlg.button_0.on_click = get_text
-dlg.button_1.on_click = set_text
+dlg.button_0.onClick = get_text
+dlg.button_1.onClick = set_text
 dlg.show()
 
 
@@ -43,16 +43,16 @@ class TextBoxDialog(Dialog):
         self.textbox = TextBox('123', (240, 12), (5, 5))
         self.textbox.on_change = self.get_text
         self.button = Button('Get Text', (50, 14), (100, 35))
-        self.button.on_click = self.get_text
+        self.button.onClick = self.get_text
         self.button2 = Button('Set Text', (50, 14), (100, 55))
-        self.button2.on_click = self.set_text
+        self.button2.onClick = self.set_text
 
         self.show()
 
     def get_text(self):
-        print(self.textbox.get_text())
+        print(self.textbox.getText())
 
     def set_text(self):
-        self.textbox.set_text('1234567890')
+        self.textbox.setText('1234567890')
 
 TextBoxDialog()

@@ -8,7 +8,10 @@ The listbox control is implemented as data classes that inherit from the `Contro
 It includes attributes for configuring the control's appearance, position, and behavior.
 
 Example Usage:
+    from WinDialog import ListBox
 
+    # Create a list box control
+    list_box = ListBox('', (240, 60), (5, 5))
 
 """
 from dataclasses import dataclass
@@ -99,19 +102,33 @@ class ListBox(Control):
 
     Attributes:
         style (int): The style of the listbox control.
-        window_class (str): The window class of the listbox control.
+        windowClass (str): The window class of the listbox control.
         __items (list): The list of items in the listbox control.
 
     Notifications:
-        - on_errspace: Sent when the listbox cannot allocate enough memory to meet a specific request.
-        - on_selchange: Sent when the selection in the listbox has changed.
-        - on_dblclk: Sent when the user double-clicks an item in the listbox.
-        - on_selcancel: Sent when the selection in the listbox has been canceled.
-        - on_setfocus: Sent when the listbox receives the keyboard focus.
-        - on_killfocus: Sent when the listbox loses the keyboard focus.
+        onErrSpace: Sent when the listbox cannot allocate enough memory to meet a specific request.
+        onSelChange: Sent when the selection in the listbox has changed.
+        onDblClk: Sent when the user double-clicks an item in the listbox.
+        onSelCancel: Sent when the selection in the listbox has been canceled.
+        onSetFocus: Sent when the listbox receives the keyboard focus.
+        onKillFocus: Sent when the listbox loses the keyboard focus.
+
+    Methods:
+        def clear(self) -> None:
+            Clear the listbox.
+
+        def addStrings(self, items: List[str]) -> None:
+            Add a list of strings to the listbox.
+
+        def addString(self, item: str) -> None:
+            Add a string to the listbox.
+
+        def getSelectedItem(self) -> int:
+            Get the index of the currently selected item in the listbox.
+
     """
     style: int = WS.CHILD | WS.VISIBLE | LBS.HASSTRINGS | LBS.STANDARD
-    window_class: str = 'Listbox'
+    windowClass: str = 'Listbox'
     __items: list = None
 
     def __post_init__(self):
@@ -119,12 +136,12 @@ class ListBox(Control):
             self.__items = []
 
     # listbox notification callbacks
-    on_errspace = WM_CommandDelegator(LBN.ERRSPACE)
-    on_selchange = WM_CommandDelegator(LBN.SELCHANGE)
-    on_dblclk = WM_CommandDelegator(LBN.DBLCLK)
-    on_selcancel = WM_CommandDelegator(LBN.SELCANCEL)
-    on_setfocus = WM_CommandDelegator(LBN.SETFOCUS)
-    on_killfocus = WM_CommandDelegator(LBN.KILLFOCUS)
+    onErrSpace = WM_CommandDelegator(LBN.ERRSPACE)
+    onSelChange = WM_CommandDelegator(LBN.SELCHANGE)
+    onDblClk = WM_CommandDelegator(LBN.DBLCLK)
+    onSelCancel = WM_CommandDelegator(LBN.SELCANCEL)
+    onSetFocus = WM_CommandDelegator(LBN.SETFOCUS)
+    onKillFocus = WM_CommandDelegator(LBN.KILLFOCUS)
 
     def clear(self):
         """
@@ -138,7 +155,7 @@ class ListBox(Control):
         self.__items.clear()
         SendMessage(self.hwnd, LB.RESETCONTENT, 0, 0)
 
-    def add_strings(self, items):
+    def addStrings(self, items):
         """
         Add a list of strings to the listbox.
 
@@ -159,7 +176,7 @@ class ListBox(Control):
             lp_item = ctypes.addressof(self.__items[i])
             SendMessage(self.hwnd, LB.ADDSTRING, 0, lp_item)
 
-    def add_string(self, item):
+    def addString(self, item):
         """
         Add a string to the listbox.
 
@@ -175,11 +192,12 @@ class ListBox(Control):
         if not isinstance(item, str):
             raise ValueError('Item is not of type string')
 
-        lp_item = ctypes.addressof(ctypes.create_unicode_buffer(item))
+        self.__items.append(ctypes.create_unicode_buffer(item))
+        lp_item = ctypes.addressof(self.__items[-1])
         SendMessage(self.hwnd, LB.ADDSTRING, 0, lp_item)
 
 
-    def get_selected_item(self):
+    def getSelectedItem(self):
         """
         Get the index of the currently selected item in the listbox.
 

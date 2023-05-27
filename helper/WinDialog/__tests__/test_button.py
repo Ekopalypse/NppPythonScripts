@@ -1,5 +1,4 @@
-from Npp import console
-from dataclasses import dataclass
+
 from WinDialog import (
     Dialog, create_dialog_from_rc,
     Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton,
@@ -28,10 +27,10 @@ FONT 9, "Segoe UI"
 
 dlg = create_dialog_from_rc(rc_code=rc)
 dlg.center = True
-dlg.button_1.on_click = lambda: print('button_1 on_click')
-dlg.button_2.on_click = lambda: print('three state button clicked')
-dlg.button_9.on_click = dlg.terminate
-dlg.button_10.on_click = lambda: print('button_10 on_click')
+dlg.button_1.onClick = lambda: print('button_1 on_click')
+dlg.button_2.onClick = lambda: print('three state button clicked')
+dlg.button_9.onClick = dlg.terminate
+dlg.button_10.onClick = lambda: print('button_10 on_click')
 dlg.show()
 
 class ButtonDialog(Dialog):
@@ -40,10 +39,10 @@ class ButtonDialog(Dialog):
         self.size = (250, 200)
         self.center = True
         self.btn1 = CheckBoxButton(title='Simple', size=(90,14), position=(10, 10))
-        self.btn1.on_click = lambda: print('btn1 on_click')
+        self.btn1.onClick = lambda: print('btn1 on_click')
         self.btn2 = CheckBoxButton(title='Three state check box', size=(90,14), position=(10, 30))
-        self.btn2.set_three_state()
-        self.btn2.on_click = self.three_state_btn_click
+        self.btn2.setThreeState()
+        self.btn2.onClick = self.three_state_btn_click
 
         # A new group of radio buttons,
         # all following radio buttons are part of this group
@@ -57,10 +56,10 @@ class ButtonDialog(Dialog):
         self.btn4b = RadioButton('Radio button 2', (60,14), (90, 100))
 
         self.btn5 = DefaultButton(title='Close dialog', size=(80,22), position=(10,130))
-        self.btn5.on_click = self.terminate
+        self.btn5.onClick = self.terminate
 
         self.btn6 = Button('Normal push button', (80,22), (90,130))
-        self.btn6.on_click = lambda: print('btn6 on_click')
+        self.btn6.onClick = lambda: print('btn6 on_click')
 
         self.btn7 = CommandButton('Command link', (100,26), (10,160))
 

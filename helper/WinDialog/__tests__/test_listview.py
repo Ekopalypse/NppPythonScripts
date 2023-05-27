@@ -1,8 +1,6 @@
 
 from WinDialog import (
-    Dialog, create_dialog_from_rc,
-    ListView,
-    Button
+    Dialog, create_dialog_from_rc, ListView
 
 )
 

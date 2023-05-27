@@ -24,7 +24,7 @@ from enum import IntEnum
 from .__control_template import Control
 from ..win_helper import (
     WindowStyle as WS,
-    WM_CommandDelegator
+    WM_CommandDelegator, SendMessage
 )
 
 
@@ -130,27 +130,53 @@ class Button(Control):
     Attributes:
         Inherited Attributes:
             See :class:`Control`
-        on_click (WM_CommandDelegator): Handler for the BN.CLICKED notification.
-        on_paint (WM_CommandDelegator): Handler for the BN.PAINT notification.
-        on_hilite (WM_CommandDelegator): Handler for the BN.HILITE notification.
-        on_unhilite (WM_CommandDelegator): Handler for the BN.UNHILITE notification.
-        on_disable (WM_CommandDelegator): Handler for the BN.DISABLE notification.
-        on_doubleclicked (WM_CommandDelegator): Handler for the BN.DOUBLECLICKED notification.
-        on_setfocus (WM_CommandDelegator): Handler for the BN.SETFOCUS notification.
-        on_killfocus (WM_CommandDelegator): Handler for the BN.KILLFOCUS notification.
+
+    Notifications:
+        onClick (WM_CommandDelegator): Handler for the BN.CLICKED notification.
+        onPaint (WM_CommandDelegator): Handler for the BN.PAINT notification.
+        onHilite (WM_CommandDelegator): Handler for the BN.HILITE notification.
+        onUnhilite (WM_CommandDelegator): Handler for the BN.UNHILITE notification.
+        onDisable (WM_CommandDelegator): Handler for the BN.DISABLE notification.
+        onDoubleClicked (WM_CommandDelegator): Handler for the BN.DOUBLECLICKED notification.
+        onSetFocus (WM_CommandDelegator): Handler for the BN.SETFOCUS notification.
+        onKillFocus (WM_CommandDelegator): Handler for the BN.KILLFOCUS notification.
     '''
     size: (int, int) = (50, 11)
     style: int = Control.style | WS.TABSTOP | BS.CENTER | BS.PUSHLIKE | BS.FLAT
-    window_class: str = 'Button'
+    windowClass: str = 'Button'
 
-    on_click         = WM_CommandDelegator(BN.CLICKED)
-    on_paint         = WM_CommandDelegator(BN.PAINT)
-    on_hilite        = WM_CommandDelegator(BN.HILITE)
-    on_unhilite      = WM_CommandDelegator(BN.UNHILITE)
-    on_disable       = WM_CommandDelegator(BN.DISABLE)
-    on_doubleclicked = WM_CommandDelegator(BN.DOUBLECLICKED)
-    on_setfocus      = WM_CommandDelegator(BN.SETFOCUS)
-    on_killfocus     = WM_CommandDelegator(BN.KILLFOCUS)
+    onClick         = WM_CommandDelegator(BN.CLICKED)
+    onPaint         = WM_CommandDelegator(BN.PAINT)
+    onHilite        = WM_CommandDelegator(BN.HILITE)
+    onUnhilite      = WM_CommandDelegator(BN.UNHILITE)
+    onDisable       = WM_CommandDelegator(BN.DISABLE)
+    onDoubleClicked = WM_CommandDelegator(BN.DOUBLECLICKED)
+    onSetFocus      = WM_CommandDelegator(BN.SETFOCUS)
+    onKillFocus     = WM_CommandDelegator(BN.KILLFOCUS)
+
+    def getCheckState(self):
+        '''
+        Gets the checkbox button check state.
+
+        Args:
+            None
+
+        Returns:
+            BST: The current check value.
+        '''
+        return BST(SendMessage(self.hwnd, BM.GETCHECK, 0, 0))
+
+    def setCheckState(self, value):
+        '''
+        Sets the checkbox button check state.
+
+        Args:
+            None
+
+        Returns:
+            None
+        '''
+        SendMessage(self.hwnd, BM.SETCHECK, value, 0)
 
 
 @dataclass
@@ -172,9 +198,10 @@ class DefaultButton(Button):
         default = DefaultButton(title="Enable Option", size=(120, 20), position=(10, 10))
 
     Note:
-        The DefaultButton class inherits the on_click, on_paint, on_hilite, on_unhilite,
-        on_disable, on_doubleclicked, on_setfocus, and on_killfocus attributes from the Button class.
+        The DefaultButton class inherits the onClick, onPaint, onHilite, onUnhilite,
+        onDisable, onDoubleClicked, onSetFocus, and onKillFocus attributes from the Button class.
     '''
+
 
 @dataclass
 class CommandButton(Button):
@@ -195,8 +222,8 @@ class CommandButton(Button):
         command = CommandButton(title="Enable Option", size=(120, 20), position=(10, 10))
 
     Note:
-        The CommandButton class inherits the on_click, on_paint, on_hilite, on_unhilite,
-        on_disable, on_doubleclicked, on_setfocus, and on_killfocus attributes from the Button class.
+        The CommandButton class inherits the onClick, onPaint, onHilite, onUnhilite,
+        onDisable, onDoubleClicked, onSetFocus, and onKillFocus attributes from the Button class.
     '''
 
 @dataclass
@@ -211,6 +238,16 @@ class CheckBoxButton(Button):
         Inherited Attributes:
             See :class:`Button`
 
+    Methods:
+        setThreeState() -> None:
+            Sets the checkbox button control to a three-state mode.
+
+        getCheckState() -> BST:
+            Gets the state of the checkbox button control.
+
+        setCheckState():
+            Sets the state of the checkbox button control.
+
     Example Usage:
         from dialog_controls import CheckBoxButton
 
@@ -218,14 +255,15 @@ class CheckBoxButton(Button):
         checkbox = CheckBoxButton(title="Enable Option", size=(120, 20), position=(10, 10))
 
         # Set the checkbox to a three-state mode
-        checkbox.set_three_state()
+        checkbox.setThreeState()
 
     Note:
-        The CheckBoxButton class inherits the on_click, on_paint, on_hilite, on_unhilite,
-        on_disable, on_doubleclicked, on_setfocus, and on_killfocus attributes from the Button class.
+        The CheckBoxButton class inherits the onClick, onPaint, onHilite, onUnhilite,
+        onDisable, onDoubleClicked, onSetFocus, and onKillFocus attributes from the Button class.
     '''
     style: int = Control.style | WS.TABSTOP | BS.AUTOCHECKBOX | BS.FLAT
-    def set_three_state(self):
+
+    def setThreeState(self):
         '''
         Sets the checkbox button control to a three-state mode.
 
@@ -233,7 +271,7 @@ class CheckBoxButton(Button):
         This method modifies the style of the control to enable a three-state mode, allowing
         an indeterminate state in addition to checked and unchecked states.
 
-        Parameters:
+        Args:
             None.
 
         Returns:
@@ -245,7 +283,6 @@ class CheckBoxButton(Button):
 
 @dataclass
 class RadioButton(Button):
-    style: int = Control.style | WS.TABSTOP | BS.AUTORADIOBUTTON | BS.FLAT
     '''
     Represents a radio button control.
 
@@ -255,6 +292,13 @@ class RadioButton(Button):
         Inherited Attributes:
             See :class:`Button`
 
+    Methods:
+        getCheckState() -> BST:
+            Gets the state of the radio button control.
+
+        setCheckState():
+            Sets the state of the radio button control.
+
     Example Usage:
         from dialog_controls import RadioButton
 
@@ -262,13 +306,14 @@ class RadioButton(Button):
         radio = RadioButton(title="Enable Option", size=(120, 20), position=(10, 10))
 
     Note:
-        The RadioButton class inherits the on_click, on_paint, on_hilite, on_unhilite,
-        on_disable, on_doubleclicked, on_setfocus, and on_killfocus attributes from the Button class.
+        The RadioButton class inherits the onClick, onPaint, onHilite, onUnhilite,
+        onDisable, onDoubleClicked, onSetFocus, and onKillFocus attributes from the Button class.
     '''
+    style: int = Control.style | WS.TABSTOP | BS.AUTORADIOBUTTON | BS.FLAT
+
 
 @dataclass
 class SplitButton(Button):
-    style: int = Control.style | WS.TABSTOP | BS.SPLITBUTTON
     '''
     Represents a split button control.
 
@@ -285,9 +330,11 @@ class SplitButton(Button):
         split = SplitButton(title="Enable Option", size=(120, 20), position=(10, 10))
 
     Note:
-        The SplitButton class inherits the on_click, on_paint, on_hilite, on_unhilite,
-        on_disable, on_doubleclicked, on_setfocus, and on_killfocus attributes from the Button class.
+        The SplitButton class inherits the onClick, onPaint, onHilite, onUnhilite,
+        onDisable, onDoubleClicked, onSetFocus, and onKillFocus attributes from the Button class.
     '''
+    style: int = Control.style | WS.TABSTOP | BS.SPLITBUTTON
+
 
 @dataclass
 class GroupBox(Control):
@@ -301,8 +348,8 @@ class GroupBox(Control):
         size (tuple[int, int]): The width and height of the group box control.
         position (tuple[int, int]): The x and y coordinates of the group box control.
         style (int): The style flags for the group box control.
-        ex_style (int): The extended style flags for the group box control.
-        window_class (str): The window class name for the group box control.
+        exStyle (int): The extended style flags for the group box control.
+        windowClass (str): The window class name for the group box control.
 
     Example Usage:
         from WinDialog import GroupBox, RadioButton
@@ -319,4 +366,4 @@ class GroupBox(Control):
         as it is not a clickable control. It is used as a container for grouping related controls.
     '''
     style: int = Control.style | BS.GROUPBOX | WS.GROUP
-    window_class: str = 'Button'
+    windowClass: str = 'Button'

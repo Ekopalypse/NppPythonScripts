@@ -463,6 +463,20 @@ def HIWORD(value):
     """
     return (value >>16) & 0xFFFF
 
+def MAKELPARAM(low, high):
+    """
+    Constructs a LPARAM value from two 16-bit values.
+
+    Args:
+        low: The lower 16 bits value.
+        high: The upper 16 bits value.
+
+    Returns:
+        LPARAM: The combined 32-bit value where low occupies the lower 16 bits
+        and high occupies the upper 16 bits.
+    """
+    return (low & 0xFFFF) | ((high & 0xFFFF) << 16)
+MAKELONG = MAKELPARAM
 
 class NMITEMACTIVATE(ctypes.Structure):
     _fields_ = [('hdr',       LPNMHDR),
@@ -493,6 +507,33 @@ class CCM(IntEnum):
     DPISCALE            = FIRST + 0xc    # wParam == Awareness
 
 
+class NM(IntEnum):
+    FIRST                = 0
+    OUTOFMEMORY          = FIRST-1
+    CLICK                = FIRST-2    # uses NMCLICK struct
+    DBLCLK               = FIRST-3
+    RETURN               = FIRST-4
+    RCLICK               = FIRST-5    # uses NMCLICK struct
+    RDBLCLK              = FIRST-6
+    SETFOCUS             = FIRST-7
+    KILLFOCUS            = FIRST-8
+    CUSTOMDRAW           = FIRST-12
+    HOVER                = FIRST-13
+    NCHITTEST            = FIRST-14   # uses NMMOUSE struct
+    KEYDOWN              = FIRST-15   # uses NMKEY struct
+    RELEASEDCAPTURE      = FIRST-16
+    SETCURSOR            = FIRST-17   # uses NMMOUSE struct
+    CHAR                 = FIRST-18   # uses NMCHAR struct
+    TOOLTIPSCREATED      = FIRST-19   # notify of when the tooltips window is create
+    LDOWN                = FIRST-20
+    RDOWN                = FIRST-21
+    THEMECHANGED         = FIRST-22
+    FONTCHANGED          = FIRST-23
+    CUSTOMTEXT           = FIRST-24   # uses NMCUSTOMTEXT struct
+    TVSTATEIMAGECHANGING = FIRST-24   # uses NMTVSTATEIMAGECHANGING struct, defined after HTREEITEM
+    LAST                 = FIRST-99
+
+
 class WM_CommandDelegator:
     '''
         A descriptor class that acts as a delegator for Windows WM_COMMAND notifications.
@@ -502,7 +543,7 @@ class WM_CommandDelegator:
         self.id = wm_command_id
 
     def __set__(self, control, value):
-        control.registered_commands[self.id] = value
+        control.registeredCommands[self.id] = value
 
 
 class WM_NotifyDelegator:
@@ -515,4 +556,4 @@ class WM_NotifyDelegator:
         self.returned_struct = returned_struct
 
     def __set__(self, control, value):
-        control.registered_notifications[self.id] = (value, self.returned_struct)
+        control.registeredNotifications[self.id] = (value, self.returned_struct)

@@ -16,14 +16,15 @@ from ..win_helper import (
     DialogBoxStyles as DS
 )
 from ..controls.button import BS
-from ..controls.static import SS
-from ..controls.edit import ES
+from ..controls.label import SS
+from ..controls.textbox import ES
 from ..controls.listbox import LBS
-from ..controls.syslistview32 import LVS, LVS_EX
+from ..controls.listview import LVS, LVS_EX
 from ..controls.combobox import CBS, CBES_EX
-from ..controls.msctls_progress32 import PBS
-from ..controls.msctls_statusbar32 import SBARS
-from ..controls.msctls_updown32 import UDS
+from ..controls.progressbar import PBS
+from ..controls.statusbar import SBARS
+from ..controls.updown import UDS
+from ..controls.treeview import TVS, TVS_EX
 
 
 STYLE_MAP = {
@@ -41,6 +42,8 @@ STYLE_MAP = {
     'PBS': PBS,
     'SBARS': SBARS,
     'UDS': UDS,
+    'TVS': TVS,
+    'TVS_EX': TVS_EX
 }
 
 @dataclass
@@ -83,7 +86,7 @@ class ControlStatement:
         style (int): The combined value of control styles.
         position (tuple[int, int]): The position of the control (x, y).
         size (tuple[int, int]): The size of the control (width, height).
-        ex_style (int): The combined value of extended control styles.
+        exStyle (int): The combined value of extended control styles.
         name (str): The name or label associated with the control.
     """
     # ('', '1', 'EDIT', ['ES_LEFT', 'WS_CHILD', 'WS_VISIBLE', 'WS_BORDER', 'WS_TABSTOP'], 6, 5, 240, 14),
@@ -93,7 +96,7 @@ class ControlStatement:
     style: int = None
     position: (int, int) = None
     size: (int, int) = None
-    ex_style: int = 0
+    exStyle: int = 0
     name: str = None
 
     def __init__(self, line):
@@ -105,7 +108,7 @@ class ControlStatement:
         self.style = _get_style_value([x.strip() for x in style.split('|')])
         self.position = (int(x), int(y))
         self.size = int(width), int(height)
-        self.ex_style = _get_extended_style_value(ex_style)
+        self.exStyle = _get_extended_style_value(ex_style)
 
 
 @dataclass
@@ -115,7 +118,7 @@ class DialogExResource:
 
     Attributes:
         styles (int): The combined value of styles.
-        ex_styles (int): The combined value of extended styles.
+        exStyle (int): The combined value of extended styles.
         title (str): The title or caption of the dialog.
         size (tuple[int, int]): The size of the dialog (width, height).
         position (tuple[int, int]): The position of the dialog (x, y).
@@ -123,7 +126,7 @@ class DialogExResource:
         controls (list[ControlStatement]): The list of control statements in the dialog.
     """
     styles: int = None
-    ex_styles: int = 0
+    exStyle: int = 0
     title: str = ''
     size: (int, int) = (300, 400)
     position: (int, int) = (0, 0)
@@ -152,7 +155,7 @@ def parser(rc_code):
         elif line.startswith('STYLE'):
             dlg.styles = _get_style_value([x.strip() for x in line.replace('STYLE', '').split('|')])
         elif line.startswith('EXSTYLE'):
-            dlg.ex_styles = _get_extended_style_value([x.strip() for x in line.replace('EXSTYLE', '').split('|')])
+            dlg.exStyle = _get_extended_style_value([x.strip() for x in line.replace('EXSTYLE', '').split('|')])
         elif line.startswith('CAPTION'):
             dlg.title = line.replace('CAPTION', '').strip().strip('"')
         elif line.startswith('FONT'):

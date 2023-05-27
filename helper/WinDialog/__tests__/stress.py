@@ -1,5 +1,4 @@
-from Npp import notepad
-from WinDialog import Dialog, Button, create_dialog_from_rc
+from WinDialog import create_dialog_from_rc
 
 rc = '''
 1 DIALOGEX 0, 0, 405, 305
@@ -420,7 +419,7 @@ def on_click():
 
 dlg = create_dialog_from_rc(rc_code=rc)
 dlg.title = "MOVE ME AROUND FAST!!! - DELAY IN UPDATING THE POSITION"
-dlg.button_0.on_click = on_click
-dlg.button_1.on_click = on_cancel
+dlg.button_0.onClick = on_click
+dlg.button_1.onClick = on_cancel
 
 dlg.show()

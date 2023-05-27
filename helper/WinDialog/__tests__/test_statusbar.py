@@ -1,8 +1,9 @@
 from Npp import console
 from WinDialog import (
     Dialog, create_dialog_from_rc,
-    Button, StatusBar, SBARS
+    Button, StatusBar
 )
+from WinDialog.controls.statusbar import SBARS
 
 console.show()
 
@@ -19,10 +20,10 @@ FONT 9, "Segoe UI"
 '''
 
 def set_message():
-    dlg.msctls_statusbar32_0.set_text('Some message to display')
+    dlg.msctls_statusbar32_0.setText('Some message to display')
 
 dlg = create_dialog_from_rc(rc_code=rc)
-dlg.button_0.on_click = set_message
+dlg.button_0.onClick = set_message
 dlg.center = True
 dlg.show()
 
@@ -34,9 +35,9 @@ class StatusBarDialog(Dialog):
         self.btn_set_msg = Button('Set statusbar text', (122, 14), (31, 43))
         self.status_bar = StatusBar('', (249, 12), (0, 88))
         self.status_bar.style += SBARS.SIZEGRIP
-        self.btn_set_msg.on_click = self.set_message
+        self.btn_set_msg.onClick = self.set_message
         self.show()
 
     def set_message(self):
-        self.status_bar.set_text('Some message to display')
+        self.status_bar.setText('Some message to display')
 StatusBarDialog()

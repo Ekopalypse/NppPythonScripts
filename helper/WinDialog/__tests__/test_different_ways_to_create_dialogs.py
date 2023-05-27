@@ -38,7 +38,7 @@ ok_btn = Button(title='&OK', size=(50, 11), position=(130, 78))
 ok_btn.on_click = on_ok
 close_btn = Button(title='&Close', size=(50, 11), position=(187, 78))
 close_btn.on_click = on_close
-dlg.control_list = [ok_btn, close_btn]
+dlg.controlList = [ok_btn, close_btn]
 dlg.show()
 print(id(dlg))
 del(dlg)

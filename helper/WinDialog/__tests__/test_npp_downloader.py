@@ -1,9 +1,5 @@
 
-from Npp import console
-from dataclasses import dataclass
-from WinDialog import (
-    Dialog, create_dialog_from_rc,
-)
+from WinDialog import create_dialog_from_rc
 
 rc = '''
 1 DIALOGEX 0, 0, 366, 230
