@@ -44,8 +44,8 @@ FONT 9, "Segoe UI"
 }
 '''
 dlg = create_dialog_from_rc(rc_code=rc)
-dlg.button_1.on_click = lambda: print('oookaayyy')
-dlg.button_2.on_click = dlg.terminate
+dlg.button_1.onClick = lambda: print('oookaayyy')
+dlg.button_2.onClick = dlg.terminate
 dlg.center = True
 dlg.show()
 ```
@@ -58,9 +58,9 @@ class MyDialog(Dialog):
         super().__init__(title)
         self.size = (250, 100)
         self.btn1 = Button(title='&Okay', size=(50, 11), position=(130, 78))
-        self.btn1.on_click = lambda: print('oookaayyy')
+        self.btn1.onClick = lambda: print('oookaayyy')
         self.btn2 = Button(title='&Close Dialog', size=(50, 11), position=(187, 78))
-        self.btn2.on_click = self.on_close
+        self.btn2.onClick = self.on_close
         self.center = True
         self.show()
 
