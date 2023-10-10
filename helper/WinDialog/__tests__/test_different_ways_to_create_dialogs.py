@@ -24,8 +24,8 @@ FONT 9, "Segoe UI"
 '''
 dlg = create_dialog_from_rc(rc_code=rc)
 dlg.center = True
-dlg.button_1.on_click = on_ok
-dlg.close_btn.on_click = on_close
+dlg.button_1.onClick = on_ok
+dlg.close_btn.onClick = on_close
 dlg.show()
 print(id(dlg))
 del(dlg)
@@ -35,9 +35,9 @@ dlg = Dialog(title='Created by direct use of the Dialog class')
 dlg.size = (250, 100)
 dlg.center = True
 ok_btn = Button(title='&OK', size=(50, 11), position=(130, 78))
-ok_btn.on_click = on_ok
+ok_btn.onClick = on_ok
 close_btn = Button(title='&Close', size=(50, 11), position=(187, 78))
-close_btn.on_click = on_close
+close_btn.onClick = on_close
 dlg.controlList = [ok_btn, close_btn]
 dlg.show()
 print(id(dlg))
@@ -51,10 +51,10 @@ class TestDialog(Dialog):
         self.center = True
 
         self.ok_btn = Button(title='&OK', size=(50, 11), position=(130, 78))
-        self.ok_btn.on_click = self.on_ok
+        self.ok_btn.onClick = self.on_ok
 
         self.close_btn = Button(title='&Close', size=(50, 11), position=(187, 78))
-        self.close_btn.on_click = self.on_close
+        self.close_btn.onClick = self.on_close
 
         self.show()
 
