@@ -138,6 +138,8 @@ class Dialog:
         registeredNotifications (Dict): A dictionary of registered notification messages and their associated handlers.
         initialize (Callable): A callback function called during the initialization of the dialog.
         closeOnEscapeKey (Bool): Specifies whether the dialog should be closed when the escape key is pressed. (defaults to True)
+        onClose (Callable): A callback function called closing the dialog.
+
 
     Note:
         The Dialog class is intended to be subclassed for specific dialog implementations.
@@ -188,6 +190,21 @@ class Dialog:
         This method is intended to be overridden by a concrete class.
         It is executed after all controls have been created but before the dialog is displayed.
         Concrete implementations should provide custom logic to set up initial values, states, and configurations of the controls.
+
+        Args:
+            None.
+
+        Returns:
+            None
+        '''
+        pass
+
+    def onClose(self):
+        '''
+        Called when a dialog box is closed/exited.
+
+        This method is intended to be overridden by a concrete class.
+        It is executed just before EndDialog is called.
 
         Args:
             None.
@@ -316,7 +333,7 @@ class Dialog:
 
     def terminate(self):
         '''
-        This method terminates the dialog and closes its window.
+        This method calls the onClose callback and then exits the dialog and closes its window.
 
         Args:
             None.
@@ -325,6 +342,7 @@ class Dialog:
             None
         '''
         if self.hwnd:
+            self.onClose()
             EndDialog(self.hwnd, 0)
 
     def __align_struct(self, tmp):
