@@ -1,7 +1,8 @@
 from ctypes import create_unicode_buffer
 from ctypes.wintypes import DWORD, WORD, SHORT
 from ..win_helper import (
-    WindowStyle as WS
+    WindowStyle as WS,
+    EnableWindow
 )
 
 from dataclasses import dataclass, field
@@ -26,13 +27,15 @@ class Control:
         hwnd (int): The handle of the control's window.
         registeredCommands (Dict): A dictionary of registered command messages and their associated handlers.
         registeredNotifications (Dict): A dictionary of registered notification messages and their associated handlers.
+        isEnabled (bool): Indicates the state of the control, defaults to True == enabled.
 
     Methods:
         create(self) -> bytearray:
             Create the control template structure.
 
-            Returns:
-                The byte array representing the control template structure.
+        enable(self, state: bool) -> None:
+            Enables or disables a control.
+
 
     Note:
         Do not instantiate this class directly. It should be subclassed by specific controls.
@@ -48,6 +51,7 @@ class Control:
     hwnd: int                     = None
     registeredCommands: Dict      = field(default_factory=dict)
     registeredNotifications: Dict = field(default_factory=dict)
+    isEnabled: bool               = True
 
 
     def create(self) -> bytearray:
@@ -76,3 +80,18 @@ class Control:
         self._array += create_unicode_buffer(self.title)
         self._array += WORD(0)  # extraCount
         return self._array
+
+    def enable(self, state: bool):
+        '''
+        Enables or disables a control.
+
+        Args:
+            state (bool): Indicates whether to enable or disable the window.
+                If this parameter is True, the window is enabled.
+                If the parameter is False, the window is disabled.
+
+        Returns:
+            None
+
+        '''
+        self.isEnabled = EnableWindow(self.hwnd, state)

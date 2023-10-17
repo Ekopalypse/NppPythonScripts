@@ -20,7 +20,7 @@ from .__control_template import Control
 from ..win_helper import (
     WindowStyle as WS,
     WM_CommandDelegator,
-    SetWindowText, GetWindowTextLength, GetWindowText, SetFocus
+    SetWindowText, GetWindowTextLength, GetWindowText, SetFocus, SendMessage
 )
 import ctypes
 
@@ -81,6 +81,7 @@ class EM(IntEnum):
     SETIMESTATUS        = 0x00D8
     GETIMESTATUS        = 0x00D9
     ENABLEFEATURE       = 0x00DA
+    SETCUEBANNER        = 0x1500 + 1  # ECM
 
 class EN(IntEnum):
     SETFOCUS     = 0x0100
@@ -131,6 +132,10 @@ class TextBox(Control):
 
         grabFocus() -> None:
             Sets the keyboard focus to the text box control.
+
+        setCueBanner(text: str) -> None:
+            Sets the textual cue that is displayed by the edit control to prompt the user for information.
+
     """
     style: int = WS.CHILD | WS.VISIBLE | WS.BORDER | WS.TABSTOP | ES.LEFT | ES.MULTILINE | ES.WANTRETURN
     windowClass: str = 'Edit'
@@ -185,3 +190,7 @@ class TextBox(Control):
             None
         """
         SetFocus(self.hwnd)
+
+    def setCueBanner(self, text):
+        self.banner = ctypes.create_unicode_buffer(text)
+        SendMessage(self.hwnd, EM.SETCUEBANNER, 1, ctypes.addressof(self.banner))

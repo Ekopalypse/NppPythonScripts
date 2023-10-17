@@ -126,6 +126,9 @@ class ListBox(Control):
         def getSelectedItem(self) -> int:
             Get the index of the currently selected item in the listbox.
 
+        def getSelectedItemText(self) -> str:
+            Get the text of the currently selected item in the listbox.
+
     """
     style: int = WS.CHILD | WS.VISIBLE | LBS.HASSTRINGS | LBS.STANDARD
     windowClass: str = 'Listbox'
@@ -202,9 +205,22 @@ class ListBox(Control):
         Get the index of the currently selected item in the listbox.
 
         In a single-selection listbox, the return value is the zero-based index of the currently selected item.
-        If there is no selection, the return value is LB_ERR.
+        If there is no selection, the return value is -1.
 
         Returns:
             int: The index of the currently selected item.
         """
         return SendMessage(self.hwnd, LB.GETCURSEL, 0, 0)
+
+
+    def getSelectedItemText(self):
+        """
+        Get the text of the currently selected item in the listbox.
+
+        If there is no selection, the return value is None.
+
+        Returns:
+            str: The text of the currently selected item.
+        """
+        index = self.getSelectedItem()
+        return None if index == -1 else self.__items[index].value

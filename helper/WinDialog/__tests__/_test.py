@@ -1,7 +1,8 @@
 from Npp import console
 from WinDialog import (
     Dialog, create_dialog_from_rc,
-    Button
+    Button,
+    registerHotkey
 )
 from WinDialog.controls.button import BST
 
@@ -25,6 +26,11 @@ def on_init():
     dlg.button_1.setCheckState(BST.CHECKED)
     print(dlg.button_0.getCheckState())
     print(dlg.button_1.getCheckState())
+
+@registerHotkey("Alt+C")
+def test():
+    print('registerHotkey')
+
 
 dlg = create_dialog_from_rc(rc_code=rc)
 dlg.initialize = on_init

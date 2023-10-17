@@ -30,7 +30,7 @@ gdi32 = ctypes.WinDLL('gdi32', use_last_error=True)
 kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
 comctl32 = ctypes.WinDLL('comctl32', use_last_error=True)
 
-LRESULT = LPARAM
+LRESULT = ctypes.c_ssize_t
 DIALOGPROC = ctypes.WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM)
 
 SendMessage = user32.SendMessageW
@@ -45,7 +45,7 @@ DialogBoxIndirectParam = user32.DialogBoxIndirectParamW
 DialogBoxIndirectParam.restype = INT_PTR
 DialogBoxIndirectParam.argtypes = [HINSTANCE, POINTER(ctypes.c_ubyte), HWND, DIALOGPROC, LPARAM]
 
-CreateDialogIndirectParam = user32.CreateDialogIndirectParamW #DialogBoxParamW
+CreateDialogIndirectParam = user32.CreateDialogIndirectParamW
 CreateDialogIndirectParam.argtypes = [HINSTANCE, POINTER(ctypes.c_ubyte), HWND, DIALOGPROC, LPARAM] #
 CreateDialogIndirectParam.restype = HWND
 
@@ -163,19 +163,35 @@ FindWindowEx.argtypes = [HWND, HWND, LPCWSTR, LPCWSTR]
 SetFocus = user32.SetFocus
 SetFocus.restype = HWND
 SetFocus.argtypes = [HWND]
-# GetDialogBaseUnits = user32.GetDialogBaseUnits
-# GetDialogBaseUnits.restype = LONG
-# GetDialogBaseUnits.argtypes = []
 
-# MulDiv = kernel32.MulDiv
-# MulDiv.restype = INT
-# MulDiv.argtypes = [INT, INT, INT]
+RegisterHotKey = user32.RegisterHotKey
+RegisterHotKey.restype = BOOL
+RegisterHotKey.argtypes = [HWND, INT, UINT, UINT]
 
-# MapDialogRect = user32.MapDialogRect
-# MapDialogRect.restype = BOOL
-# MapDialogRect.argtypes = [HWND, POINTER(RECT)]
+UnregisterHotKey = user32.UnregisterHotKey
+UnregisterHotKey.restype = BOOL
+UnregisterHotKey.argtypes = [HWND, INT]
 
-SWP_NOSIZE = 1
+EnableWindow = user32.EnableWindow
+EnableWindow.restype = BOOL
+EnableWindow.argtypes = [HWND, BOOL]
+
+class SWP(IntEnum):
+    NOSIZE          = 0x0001  #
+    NOMOVE          = 0x0002  #
+    NOZORDER        = 0x0004  #
+    NOREDRAW        = 0x0008  #
+    NOACTIVATE      = 0x0010  #
+    FRAMECHANGED    = 0x0020  #  /* The frame changed: send WM_NCCALCSIZE */
+    SHOWWINDOW      = 0x0040  #
+    HIDEWINDOW      = 0x0080  #
+    NOCOPYBITS      = 0x0100  #
+    NOOWNERZORDER   = 0x0200  #  /* Don't do owner Z ordering */
+    NOSENDCHANGING  = 0x0400  #  /* Don't send WM_WINDOWPOSCHANGING */
+    DRAWFRAME       = FRAMECHANGED  #
+    NOREPOSITION    = NOOWNERZORDER  #
+    DEFERERASE      = 0x2000  #
+    ASYNCWINDOWPOS  = 0x4000  #
 
 class GWL(IntEnum):
     WNDPROC        = -4
@@ -414,6 +430,7 @@ class WinMessages(IntEnum):
     NOTIFY = 78
     PAINT = 15
     SIZE = 5
+    HOTKEY = 786
 
 class ShowWindowCommands(IntEnum):
     HIDE = 0

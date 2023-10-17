@@ -63,10 +63,10 @@ __version__ = '0.2'
 __author__ = 'ekopalypse'
 
 from .win_helper import (
-    SWP_NOSIZE,
+    SWP,
     DIALOGPROC, DialogBoxIndirectParam, LPNMHDR,
     GetDlgItem, EndDialog,
-    GetWindowRect, CopyRect, OffsetRect, SetWindowPos, GetModuleHandle,
+    GetWindowRect, CopyRect, OffsetRect, SetWindowPos, GetModuleHandle, SetWindowText, RegisterHotKey, UnregisterHotKey,
     WinMessages as WM,
     WindowStyle as WS,
     DialogBoxStyles as DS
@@ -105,6 +105,13 @@ from ctypes import wintypes, create_unicode_buffer
 from dataclasses import dataclass, field
 from typing import Dict, List
 
+def registerHotkey(hotkey):
+    print(f'registerHotkey:{hotkey}')
+    def wrapper(func):
+        func._hotkey = hotkey
+        return func
+    return wrapper
+
 
 @dataclass
 class Dialog:
@@ -138,6 +145,9 @@ class Dialog:
         registeredNotifications (Dict): A dictionary of registered notification messages and their associated handlers.
         initialize (Callable): A callback function called during the initialization of the dialog.
         closeOnEscapeKey (Bool): Specifies whether the dialog should be closed when the escape key is pressed. (defaults to True)
+        registeredHotkeys  (Dict): A dictionary of registered hotkeys and their associated handlers.
+            A hotkey must be specified as a string in the form (optional_modifier+optional_modifier+optional_modifier+key),
+              e.g. ("CTRL+SHIFT+A"), no spaces are allowed within the string.
         onClose (Callable): A callback function called closing the dialog.
 
 
@@ -182,6 +192,7 @@ class Dialog:
         self.controlList = []
         self.registeredCommands = {}
         self.registeredNotifications = {}
+        self.registeredHotkeys = {}
 
     def initialize(self):
         '''
@@ -213,6 +224,18 @@ class Dialog:
             None
         '''
         pass
+
+    def setTitle(self, new_title):
+        """
+        Sets the title of the dialog window.
+
+        Args:
+            text (str): The text to be set in the dialog window.
+
+        Returns:
+            None
+        """
+        SetWindowText(self.hwnd, new_title)
 
     def __create_dialog_window(self):
         '''
@@ -271,6 +294,22 @@ class Dialog:
             for i, control in enumerate(self.controlList):
                 self.controlList[i].hwnd = GetDlgItem(hwnd, control.id)
 
+            for ident, key in enumerate(dir(self)):
+                method = getattr(self, key)
+                if hasattr(method, "_hotkey") and callable(method):
+                    _hotkey = method._hotkey.lower()
+                    mod = 0
+                    mod += 0x1 if 'alt' in _hotkey else 0
+                    mod += 0x2 if 'ctrl' in _hotkey else 0
+                    mod += 0x4 if 'shift' in _hotkey else 0
+                    hotkey_parts = _hotkey.split('+')
+                    _key = [x for x in hotkey_parts if x not in ("ctrl", "alt", "shift")]
+                    if len(_key) == 1:
+                        __key = ord(_key[0].upper())
+                        if RegisterHotKey(self.hwnd, ident, mod, __key):
+                            wparam = ( __key << 16) + mod
+                            self.registeredHotkeys[(ident, wparam)] = method
+
             self.initialize()
 
             if self.center:
@@ -288,19 +327,19 @@ class Dialog:
 
                 center_x = rcOwner.left + (rc.right // 2)
                 center_y = rcOwner.top + (rc.bottom // 2)
-                SetWindowPos(hwnd, 0, center_x, center_y, 0, 0, SWP_NOSIZE)
+                SetWindowPos(hwnd, 0, center_x, center_y, 0, 0, SWP.NOSIZE)
 
                 return True
 
         elif msg == WM.CLOSE:
-            EndDialog(hwnd, 0)  # this is executed by clicking the X in the upper right corner
+            self.terminate()  # this is executed by clicking the X in the upper right corner
 
         elif msg == WM.COMMAND:
             if wparam in self.registeredCommands:
                 self.registeredCommands[wparam]()
                 return True
             elif wparam==2 and lparam==0 and self.closeOnEscapeKey:
-                EndDialog(hwnd, 0)
+                self.terminate()
 
         elif msg == WM.NOTIFY:
             lpnmhdr = ctypes.cast(lparam, LPNMHDR)
@@ -309,6 +348,11 @@ class Dialog:
                 args = ctypes.cast(lparam, self.registeredNotifications[notif_key][1])
                 self.registeredNotifications[notif_key][0](args.contents)
                 return True
+
+        elif msg == WM.HOTKEY:
+            if (wparam, lparam) in self.registeredHotkeys:
+                self.registeredHotkeys[(wparam, lparam)]()
+
         return False
 
     def show(self):
@@ -342,6 +386,8 @@ class Dialog:
             None
         '''
         if self.hwnd:
+            for k in self.registeredHotkeys.keys():
+                UnregisterHotKey(self.hwnd, k[0])
             self.onClose()
             EndDialog(self.hwnd, 0)
 

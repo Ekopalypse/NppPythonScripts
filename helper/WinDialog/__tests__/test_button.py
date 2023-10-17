@@ -31,6 +31,7 @@ dlg.button_1.onClick = lambda: print('button_1 on_click')
 dlg.button_2.onClick = lambda: print('three state button clicked')
 dlg.button_9.onClick = dlg.terminate
 dlg.button_10.onClick = lambda: print('button_10 on_click')
+dlg.onClose = lambda: print('Dialog is going to close')
 dlg.show()
 
 class ButtonDialog(Dialog):
@@ -65,8 +66,8 @@ class ButtonDialog(Dialog):
 
         self.show()
 
-    def on_close(self):
-        self.terminate()
+    def onClose(self):
+        print("Dialog is going to close")
 
     def three_state_btn_click(self):
         print("three state button clicked")
