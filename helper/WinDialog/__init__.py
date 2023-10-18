@@ -71,7 +71,7 @@ from .win_helper import (
     WindowStyle as WS,
     DialogBoxStyles as DS,
 
-    CreateDialogIndirectParam, DestroyWindow, PostQuitMessage,
+    CreateDialogIndirectParam, DestroyWindow,
     ShowWindow, UpdateWindow, MSG, GetMessage, IsDialogMessage, TranslateMessage, DispatchMessage,
 )
 from .controls.__control_template import Control
