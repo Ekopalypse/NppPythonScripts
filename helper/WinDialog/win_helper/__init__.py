@@ -176,6 +176,10 @@ EnableWindow = user32.EnableWindow
 EnableWindow.restype = BOOL
 EnableWindow.argtypes = [HWND, BOOL]
 
+PostQuitMessage = user32.PostQuitMessage
+PostQuitMessage.argtypes = [INT]
+
+
 class SWP(IntEnum):
     NOSIZE          = 0x0001  #
     NOMOVE          = 0x0002  #
@@ -431,6 +435,7 @@ class WinMessages(IntEnum):
     PAINT = 15
     SIZE = 5
     HOTKEY = 786
+    DESTROY = 2
 
 class ShowWindowCommands(IntEnum):
     HIDE = 0

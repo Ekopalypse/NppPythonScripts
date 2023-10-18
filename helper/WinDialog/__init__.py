@@ -69,7 +69,10 @@ from .win_helper import (
     GetWindowRect, CopyRect, OffsetRect, SetWindowPos, GetModuleHandle, SetWindowText, RegisterHotKey, UnregisterHotKey,
     WinMessages as WM,
     WindowStyle as WS,
-    DialogBoxStyles as DS
+    DialogBoxStyles as DS,
+
+    CreateDialogIndirectParam, DestroyWindow, PostQuitMessage,
+    ShowWindow, UpdateWindow, MSG, GetMessage, IsDialogMessage, TranslateMessage, DispatchMessage,
 )
 from .controls.__control_template import Control
 from .controls.button import Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton, SplitButton
@@ -101,12 +104,11 @@ from .resource_parser import parser
 
 from Npp import notepad
 import ctypes
-from ctypes import wintypes, create_unicode_buffer
+from ctypes import wintypes, create_unicode_buffer, pointer
 from dataclasses import dataclass, field
 from typing import Dict, List
 
 def registerHotkey(hotkey):
-    print(f'registerHotkey:{hotkey}')
     def wrapper(func):
         func._hotkey = hotkey
         return func
@@ -149,6 +151,7 @@ class Dialog:
             A hotkey must be specified as a string in the form (optional_modifier+optional_modifier+optional_modifier+key),
               e.g. ("CTRL+SHIFT+A"), no spaces are allowed within the string.
         onClose (Callable): A callback function called closing the dialog.
+        isModal (bool): Indicates if a dialog is modeless(False) or modal(True). Defaults to True
 
 
     Note:
@@ -174,7 +177,9 @@ class Dialog:
     registeredCommands: Dict      = field(default_factory=dict)
     registeredNotifications: Dict = field(default_factory=dict)
     closeOnEscapeKey: bool        = True
-    onIdOk                        = None
+    onIdOk: callable              = None
+    isModal: bool                 = True
+    # __keep_running: bool          = True
 
     def __post_init__(self):
         """
@@ -389,7 +394,11 @@ class Dialog:
             for k in self.registeredHotkeys.keys():
                 UnregisterHotKey(self.hwnd, k[0])
             self.onClose()
-            EndDialog(self.hwnd, 0)
+            if self.isModal:
+                EndDialog(self.hwnd, 0)
+            else:
+                self.__keep_running = False
+                DestroyWindow(self.hwnd)
 
     def __align_struct(self, tmp):
         '''
@@ -454,12 +463,35 @@ class Dialog:
         # print(' ,'.join(f'0x{x:>02X}' for x in dialog))
         raw_bytes = (ctypes.c_ubyte * len(dialog)).from_buffer_copy(dialog)
         hinstance = GetModuleHandle(None)
-        DialogBoxIndirectParam(hinstance,
-                               raw_bytes,
-                               self.parent,
-                               DIALOGPROC(self.__default_dialog_proc),
-                               0)
+        self.dialog_proc = DIALOGPROC(self.__default_dialog_proc)
+        if self.isModal:
+            DialogBoxIndirectParam(hinstance,
+                                   raw_bytes,
+                                   self.parent,
+                                   self.dialog_proc,
+                                   0)
+        else:
+            __hwnd = CreateDialogIndirectParam(hinstance,
+                                               raw_bytes,
+                                               self.parent,
+                                               self.dialog_proc,
+                                               0)
+            if __hwnd:
+                self.hwnd = __hwnd
+                ShowWindow(self.hwnd, 5)
+                UpdateWindow(self.hwnd)
 
+                msg = MSG()
+                lpmsg = pointer(msg)
+
+                self.__keep_running = True  # does get reset in self.terminate
+                while self.__keep_running:
+                    bRet = GetMessage(lpmsg, 0, 0, 0)
+                    if (bRet == 0) or (bRet == -1):
+                        break
+                    if not IsDialogMessage(self.hwnd, lpmsg):
+                        TranslateMessage(lpmsg)
+                        DispatchMessage(lpmsg)
 
 def create_dialog_from_rc(rc_code):
     '''
