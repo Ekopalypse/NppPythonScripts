@@ -10,11 +10,11 @@ Note:
 """
 
 import ctypes
-from ctypes import POINTER
+from ctypes import POINTER, Structure
 from ctypes.wintypes import (
 	HWND, UINT, WPARAM, LPARAM, INT, BOOL,
     MSG, HINSTANCE, RECT, HMODULE, LPCWSTR,
-    POINT
+    POINT, LONG
 )
 from enum import IntEnum
 
@@ -175,10 +175,6 @@ UnregisterHotKey.argtypes = [HWND, INT]
 EnableWindow = user32.EnableWindow
 EnableWindow.restype = BOOL
 EnableWindow.argtypes = [HWND, BOOL]
-
-PostQuitMessage = user32.PostQuitMessage
-PostQuitMessage.argtypes = [INT]
-
 
 class SWP(IntEnum):
     NOSIZE          = 0x0001  #
@@ -436,6 +432,7 @@ class WinMessages(IntEnum):
     SIZE = 5
     HOTKEY = 786
     DESTROY = 2
+    WINDOWPOSCHANGED = 71
 
 class ShowWindowCommands(IntEnum):
     HIDE = 0
@@ -579,3 +576,15 @@ class WM_NotifyDelegator:
 
     def __set__(self, control, value):
         control.registeredNotifications[self.id] = (value, self.returned_struct)
+
+class WINDOWPOS(Structure):
+    _fields_ = [
+        ("hwnd", HWND),
+        ("hwndInsertAfter", HWND),
+        ("x", INT),
+        ("y", INT),
+        ("cx", INT),
+        ("cy", INT),
+        ("flags", UINT),
+    ]
+LPWINDOWPOS = POINTER(WINDOWPOS)

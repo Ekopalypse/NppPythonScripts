@@ -73,6 +73,7 @@ from .win_helper import (
 
     CreateDialogIndirectParam, DestroyWindow,
     ShowWindow, UpdateWindow, MSG, GetMessage, IsDialogMessage, TranslateMessage, DispatchMessage,
+    LPWINDOWPOS
 )
 from .controls.__control_template import Control
 from .controls.button import Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton, SplitButton
@@ -104,7 +105,7 @@ from .resource_parser import parser
 
 from Npp import notepad
 import ctypes
-from ctypes import wintypes, create_unicode_buffer, pointer
+from ctypes import wintypes, create_unicode_buffer, pointer, cast
 from dataclasses import dataclass, field
 from typing import Dict, List
 
@@ -151,7 +152,8 @@ class Dialog:
             A hotkey must be specified as a string in the form (optional_modifier+optional_modifier+optional_modifier+key),
               e.g. ("CTRL+SHIFT+A"), no spaces are allowed within the string.
         onClose (Callable): A callback function called closing the dialog.
-        isModal (bool): Indicates if a dialog is modeless(False) or modal(True). Defaults to True
+        isModal (bool): Indicates if a dialog is modeless(False) or modal(True). (defaults to True)
+        useLastDialogPos (bool): Specifies whether a dialog box should track its position and reposition the dialog box on restart. (defaults to False)
 
 
     Note:
@@ -179,7 +181,10 @@ class Dialog:
     closeOnEscapeKey: bool        = True
     onIdOk: callable              = None
     isModal: bool                 = True
-    # __keep_running: bool          = True
+    useLastDialogPos: bool        = False
+
+    __lastDialogSize: (int, int)         = None    # resizing a dialog ... hmm ...self-position/sizing controls??
+    __lastDialogPos: (int, int)     = None
 
     def __post_init__(self):
         """
@@ -317,6 +322,10 @@ class Dialog:
 
             self.initialize()
 
+            if self.useLastDialogPos and self.__lastDialogPos:
+                SetWindowPos(hwnd, 0, self.__lastDialogPos[0], self.__lastDialogPos[1], 0, 0, SWP.NOSIZE)
+                return True
+
             if self.center:
                 rcOwner = wintypes.RECT()
                 rcDlg = wintypes.RECT()
@@ -347,16 +356,22 @@ class Dialog:
                 self.terminate()
 
         elif msg == WM.NOTIFY:
-            lpnmhdr = ctypes.cast(lparam, LPNMHDR)
+            lpnmhdr = cast(lparam, LPNMHDR)
             notif_key = (lpnmhdr.contents.code, lpnmhdr.contents.idFrom)
             if notif_key in self.registeredNotifications:
-                args = ctypes.cast(lparam, self.registeredNotifications[notif_key][1])
+                args = cast(lparam, self.registeredNotifications[notif_key][1])
                 self.registeredNotifications[notif_key][0](args.contents)
                 return True
 
         elif msg == WM.HOTKEY:
             if (wparam, lparam) in self.registeredHotkeys:
                 self.registeredHotkeys[(wparam, lparam)]()
+
+        elif msg == WM.WINDOWPOSCHANGED:
+            if self.useLastDialogPos:
+                p_wp = cast(lparam, LPWINDOWPOS)
+                self.__lastDialogSize = (p_wp.contents.cx, p_wp.contents.cy)
+                self.__lastDialogPos = (p_wp.contents.x, p_wp.contents.y)
 
         return False
 
@@ -372,13 +387,41 @@ class Dialog:
         Returns:
             None
         '''
-        # Instead of using dir(self), which always returns a sorted list,
-        # __dict__.keys is used to maintain the order of control creation.
-        for item in self.__dict__.keys():
-            obj = getattr(self, item)
-            if isinstance(obj, Control):
-                self.controlList.append(obj)
-        self.__create_dialog()
+
+        dialog = self.__create_dialog()
+        # SetWindowPos(hwnd, 0, center_x, center_y, 0, 0, SWP.NOSIZE)
+        # print(' ,'.join(f'0x{x:>02X}' for x in dialog))
+
+        raw_bytes = (ctypes.c_ubyte * len(dialog)).from_buffer_copy(dialog)
+        hinstance = GetModuleHandle(None)
+        if self.isModal:
+            DialogBoxIndirectParam(hinstance,
+                                   raw_bytes,
+                                   self.parent,
+                                   self.dialog_proc,
+                                   0)
+        else:
+            __hwnd = CreateDialogIndirectParam(hinstance,
+                                               raw_bytes,
+                                               self.parent,
+                                               self.dialog_proc,
+                                               0)
+            if __hwnd:
+                self.hwnd = __hwnd
+                ShowWindow(self.hwnd, 5)
+                UpdateWindow(self.hwnd)
+
+                msg = MSG()
+                lpmsg = pointer(msg)
+
+                self.__keep_running = True  # does get reset in self.terminate
+                while self.__keep_running:
+                    bRet = GetMessage(lpmsg, 0, 0, 0)
+                    if (bRet == 0) or (bRet == -1):
+                        break
+                    if not IsDialogMessage(self.hwnd, lpmsg):
+                        TranslateMessage(lpmsg)
+                        DispatchMessage(lpmsg)
 
     def terminate(self):
         '''
@@ -438,6 +481,14 @@ class Dialog:
             - It utilizes the __align_struct method to ensure proper memory alignment.
             - The created dialog is displayed using the DialogBoxIndirectParam function.
         """
+        # Instead of using dir(self), which always returns a sorted list,
+        # __dict__.keys is used to maintain the order of control creation.
+        self.controlList.clear()
+        for item in self.__dict__.keys():
+            obj = getattr(self, item)
+            if isinstance(obj, Control):
+                self.controlList.append(obj)
+
         controls = bytearray()
         for i, control in enumerate(self.controlList):
             if not isinstance(control, Control):
@@ -455,43 +506,14 @@ class Dialog:
             for event, func in control.registeredNotifications.items():
                 self.registeredNotifications[(event, control.id)] = func
 
+        self.dialog_proc = DIALOGPROC(self.__default_dialog_proc)
 
         self.dialog_items = len(self.controlList)
         dlg_window = self.__create_dialog_window()
         dlg_window = self.__align_struct(dlg_window)
         dialog = dlg_window + controls
-        # print(' ,'.join(f'0x{x:>02X}' for x in dialog))
-        raw_bytes = (ctypes.c_ubyte * len(dialog)).from_buffer_copy(dialog)
-        hinstance = GetModuleHandle(None)
-        self.dialog_proc = DIALOGPROC(self.__default_dialog_proc)
-        if self.isModal:
-            DialogBoxIndirectParam(hinstance,
-                                   raw_bytes,
-                                   self.parent,
-                                   self.dialog_proc,
-                                   0)
-        else:
-            __hwnd = CreateDialogIndirectParam(hinstance,
-                                               raw_bytes,
-                                               self.parent,
-                                               self.dialog_proc,
-                                               0)
-            if __hwnd:
-                self.hwnd = __hwnd
-                ShowWindow(self.hwnd, 5)
-                UpdateWindow(self.hwnd)
+        return dialog
 
-                msg = MSG()
-                lpmsg = pointer(msg)
-
-                self.__keep_running = True  # does get reset in self.terminate
-                while self.__keep_running:
-                    bRet = GetMessage(lpmsg, 0, 0, 0)
-                    if (bRet == 0) or (bRet == -1):
-                        break
-                    if not IsDialogMessage(self.hwnd, lpmsg):
-                        TranslateMessage(lpmsg)
-                        DispatchMessage(lpmsg)
 
 def create_dialog_from_rc(rc_code):
     '''
