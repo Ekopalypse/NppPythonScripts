@@ -22,7 +22,7 @@ except NameError:
     dlg = create_dialog_from_rc(rc_code=rc)
     dlg.center = False
     dlg.onClose = on_close
-    dlg.remeberLastPosition = True
+    dlg.useLastDialogPos = True
     dlg.show()
 else:
     print(f'show it:{dlg.size=} {dlg.position=}')
