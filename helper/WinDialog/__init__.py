@@ -183,8 +183,8 @@ class Dialog:
     isModal: bool                 = True
     useLastDialogPos: bool        = False
 
-    __lastDialogSize: (int, int)         = None    # resizing a dialog ... hmm ...self-position/sizing controls??
-    __lastDialogPos: (int, int)     = None
+    __lastDialogSize: (int, int)  = None  # resizing a dialog ... hmm ...self-position/sizing controls??
+    __lastDialogPos: (int, int)   = None
 
     def __post_init__(self):
         """

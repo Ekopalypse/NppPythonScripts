@@ -171,12 +171,42 @@ class Button(Control):
         Sets the checkbox button check state.
 
         Args:
-            None
+            value (BST enum): One of the BST enumeration values
 
         Returns:
             None
         '''
         SendMessage(self.hwnd, BM.SETCHECK, value, 0)
+
+    def isChecked(self) -> bool :
+        '''
+        Checks if a radio or checkbox button is checked.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if the current radio or checkbox button is checked, False otherwise
+        '''
+        if isinstance(self, CheckBoxButton) or isinstance(self, RadioButton):
+            return self.getCheckState() == BST.CHECKED
+        else:
+            return False
+
+    def setCheck(self, checked: bool = True):
+        '''
+        Helper function that either sets BST.CHECKED (True) or BST.UNCHECKED (False). (defaults to True).
+
+        Args:
+            checked (bool) Indicates whether to check or uncheck radio or checkbox buttons.
+                If this parameter is True, the button is checked.
+                If the parameter is False, the button is unchecked.
+
+        Returns:
+            None
+        '''
+
+        self.setCheckState(BST.CHECKED if checked else BST.UNCHECKED)
 
 
 @dataclass

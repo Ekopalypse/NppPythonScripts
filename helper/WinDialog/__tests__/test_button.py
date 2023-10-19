@@ -1,4 +1,5 @@
-
+from Npp import console
+console.show()
 from WinDialog import (
     Dialog, create_dialog_from_rc,
     Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton,
@@ -60,16 +61,24 @@ class ButtonDialog(Dialog):
         self.btn5.onClick = self.terminate
 
         self.btn6 = Button('Normal push button', (80,22), (90,130))
-        self.btn6.onClick = lambda: print('btn6 on_click')
+        self.btn6.onClick = self.on_click
 
         self.btn7 = CommandButton('Command link', (100,26), (10,160))
 
         self.show()
+
+    def initialize(self):
+        self.btn3a.setCheck()
 
     def onClose(self):
         print("Dialog is going to close")
 
     def three_state_btn_click(self):
         print("three state button clicked")
+        
+    def on_click(self):
+        for control in self.controlList:
+            if isinstance(control, CheckBoxButton) or isinstance(control, RadioButton):
+                print(f'{control.title} is checked: {control.isChecked()}')
 
 ButtonDialog()
