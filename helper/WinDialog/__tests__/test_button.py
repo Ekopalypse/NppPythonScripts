@@ -79,6 +79,6 @@ class ButtonDialog(Dialog):
     def on_click(self):
         for control in self.controlList:
             if isinstance(control, CheckBoxButton) or isinstance(control, RadioButton):
-                print(f'{control.title} is checked: {control.isChecked()}')
+                print(f'{control.title} is checked: {control.isChecked}')
 
 ButtonDialog()

@@ -131,6 +131,9 @@ class Button(Control):
         Inherited Attributes:
             See :class:`Control`
 
+        isChecked (bool): Indicates if a radio or checkbox button is checked.
+            Returns True if the current radio or checkbox button is checked, False otherwise
+
     Notifications:
         onClick (WM_CommandDelegator): Handler for the BN.CLICKED notification.
         onPaint (WM_CommandDelegator): Handler for the BN.PAINT notification.
@@ -178,16 +181,8 @@ class Button(Control):
         '''
         SendMessage(self.hwnd, BM.SETCHECK, value, 0)
 
+    @property
     def isChecked(self) -> bool :
-        '''
-        Checks if a radio or checkbox button is checked.
-
-        Args:
-            None
-
-        Returns:
-            bool: True if the current radio or checkbox button is checked, False otherwise
-        '''
         if isinstance(self, CheckBoxButton) or isinstance(self, RadioButton):
             return self.getCheckState() == BST.CHECKED
         else:
