@@ -69,16 +69,22 @@ class ButtonDialog(Dialog):
 
     def initialize(self):
         self.btn3a.setCheck()
+        self.btn7.enable(False)
 
     def onClose(self):
         print("Dialog is going to close")
 
     def three_state_btn_click(self):
         print("three state button clicked")
-        
+        print(f"{self.btn7.title} is enabled: {self.btn7.isEnabled}")
+        print(f"{self.btn3a.title} is checked: {self.btn3a.isChecked}")
+
     def on_click(self):
         for control in self.controlList:
             if isinstance(control, CheckBoxButton) or isinstance(control, RadioButton):
                 print(f'{control.title} is checked: {control.isChecked}')
+        self.btn7.enable(True)
+        print(f"{self.btn7.title} is enabled: {self.btn7.isEnabled}")
+
 
 ButtonDialog()

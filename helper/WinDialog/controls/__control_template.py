@@ -94,4 +94,4 @@ class Control:
             None
 
         '''
-        self.isEnabled = EnableWindow(self.hwnd, state)
+        self.isEnabled = bool(EnableWindow(self.hwnd, state))
