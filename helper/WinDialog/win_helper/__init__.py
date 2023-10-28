@@ -176,6 +176,10 @@ EnableWindow = user32.EnableWindow
 EnableWindow.restype = BOOL
 EnableWindow.argtypes = [HWND, BOOL]
 
+IsWindowEnabled = user32.IsWindowEnabled
+IsWindowEnabled.restype = BOOL
+IsWindowEnabled.argtypes = [HWND]
+
 class SWP(IntEnum):
     NOSIZE          = 0x0001  #
     NOMOVE          = 0x0002  #

@@ -2,7 +2,7 @@ from ctypes import create_unicode_buffer
 from ctypes.wintypes import DWORD, WORD, SHORT
 from ..win_helper import (
     WindowStyle as WS,
-    EnableWindow
+    EnableWindow, IsWindowEnabled
 )
 
 from dataclasses import dataclass, field
@@ -27,7 +27,8 @@ class Control:
         hwnd (int): The handle of the control's window.
         registeredCommands (Dict): A dictionary of registered command messages and their associated handlers.
         registeredNotifications (Dict): A dictionary of registered notification messages and their associated handlers.
-        isEnabled (bool): Indicates the state of the control, defaults to True == enabled.
+        isEnabled (bool): Indicates the state of the control.
+            Returns True if the control is enabled, False otherwise
 
     Methods:
         create(self) -> bytearray:
@@ -51,7 +52,6 @@ class Control:
     hwnd: int                     = None
     registeredCommands: Dict      = field(default_factory=dict)
     registeredNotifications: Dict = field(default_factory=dict)
-    isEnabled: bool               = True
 
 
     def create(self) -> bytearray:
@@ -94,4 +94,10 @@ class Control:
             None
 
         '''
-        self.isEnabled = bool(EnableWindow(self.hwnd, state))
+        EnableWindow(self.hwnd, state)
+        return self.isEnabled
+
+    @property
+    def isEnabled(self) -> bool :
+        return bool(IsWindowEnabled(self.hwnd))
+

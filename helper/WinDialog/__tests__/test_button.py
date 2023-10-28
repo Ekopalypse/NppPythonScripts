@@ -83,8 +83,8 @@ class ButtonDialog(Dialog):
         for control in self.controlList:
             if isinstance(control, CheckBoxButton) or isinstance(control, RadioButton):
                 print(f'{control.title} is checked: {control.isChecked}')
+        print(f"initial state: {self.btn7.title} is enabled: {self.btn7.isEnabled}")
         self.btn7.enable(True)
-        print(f"{self.btn7.title} is enabled: {self.btn7.isEnabled}")
-
+        print(f"enabling{i} : {self.btn7.title} is enabled: {self.btn7.isEnabled}")
 
 ButtonDialog()
