@@ -2,7 +2,8 @@ from ctypes import create_unicode_buffer
 from ctypes.wintypes import DWORD, WORD, SHORT
 from ..win_helper import (
     WindowStyle as WS,
-    EnableWindow, IsWindowEnabled
+    EnableWindow, IsWindowEnabled,
+    ShowWindow, ShowWindowCommands as SWC, IsWindowVisible,
 )
 
 from dataclasses import dataclass, field
@@ -29,6 +30,8 @@ class Control:
         registeredNotifications (Dict): A dictionary of registered notification messages and their associated handlers.
         isEnabled (bool): Indicates the state of the control.
             Returns True if the control is enabled, False otherwise
+        isVisible (bool): Indicates the visible state of the control.
+            Returns True if the control is visible, False otherwise
 
     Methods:
         create(self) -> bytearray:
@@ -36,6 +39,9 @@ class Control:
 
         enable(self, state: bool) -> None:
             Enables or disables a control.
+
+        visible(self, state: bool) -> None:
+            Makes a control visible or invisible.
 
 
     Note:
@@ -100,4 +106,24 @@ class Control:
     @property
     def isEnabled(self) -> bool :
         return bool(IsWindowEnabled(self.hwnd))
+
+    def visible(self, state: bool):
+        '''
+        Makes a control visible or invisible.
+
+        Args:
+            state (bool): Indicates whether to make the window visible or invisible.
+                If this parameter is True, the window will be made visible (shown).
+                If the parameter is False, the window will be made invisible (hidden).
+
+        Returns:
+            None
+
+        '''
+        ShowWindow(self.hwnd, SWC.SHOW if state else SWC.HIDE)
+        return self.isVisible
+
+    @property
+    def isVisible(self) -> bool :
+        return bool(IsWindowVisible(self.hwnd))
 
