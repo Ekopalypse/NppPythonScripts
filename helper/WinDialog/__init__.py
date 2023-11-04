@@ -55,7 +55,7 @@ Classes that are missing and for which there are currently no plans to include a
 """
 
 __all__ = ['Dialog',
-           'Button', 'DefaultButton', 'CheckBoxButton', 'GroupBox', 'CommandButton', 'RadioButton', 'SplitButton',
+           'Button', 'DefaultButton', 'CheckBoxButton', 'GroupBox', 'CommandButton', 'RadioButton', 'RadioPushButton', 'SplitButton',
            'Label', 'TruncatedLabel', 'BlackFramedLabel', 'CenteredLabel', 'RigthAlignedLabel',
            'ComboBox', 'ComboBoxEx', 'ListBox', 'TextBox', 'ListView', 'ProgressBar', 'StatusBar', 'UpDown', 'TreeView'
            ]
@@ -76,7 +76,7 @@ from .win_helper import (
     LPWINDOWPOS
 )
 from .controls.__control_template import Control
-from .controls.button import Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton, SplitButton
+from .controls.button import Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton, RadioPushButton, SplitButton
 from .controls.label import Label, TruncatedLabel, BlackFramedLabel, CenteredLabel, RigthAlignedLabel
 from .controls.combobox import ComboBox, ComboBoxEx
 from .controls.listbox import ListBox
