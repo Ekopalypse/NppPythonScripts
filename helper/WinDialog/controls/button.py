@@ -338,6 +338,37 @@ class RadioButton(Button):
 
 
 @dataclass
+class RadioPushButton(Button):
+    '''
+    Represents a radio button control with a pushbutton-like appearance.
+
+    The RadioPushButton class inherits from the Button class.
+
+    Attributes:
+        Inherited Attributes:
+            See :class:`Button`
+
+    Methods:
+        getCheckState() -> BST:
+            Gets the state of the radio pushbutton control.
+
+        setCheckState():
+            Sets the state of the radio pushbutton control.
+
+    Example Usage:
+        from dialog_controls import RadioPushButton
+
+        # Create a radio button control with a pushbutton appearance
+        radio = RadioPushButton(title="Enable Option", size=(120, 20), position=(10, 10))
+
+    Note:
+        The RadioPushButton class inherits the onClick, onPaint, onHilite, onUnhilite,
+        onDisable, onDoubleClicked, onSetFocus, and onKillFocus attributes from the Button class.
+    '''
+    style: int = Control.style | WS.TABSTOP | BS.AUTORADIOBUTTON | BS.FLAT | BS.PUSHLIKE
+
+
+@dataclass
 class SplitButton(Button):
     '''
     Represents a split button control.
