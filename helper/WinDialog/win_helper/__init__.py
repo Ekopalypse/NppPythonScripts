@@ -14,7 +14,7 @@ from ctypes import POINTER, Structure
 from ctypes.wintypes import (
 	HWND, UINT, WPARAM, LPARAM, INT, BOOL,
     MSG, HINSTANCE, RECT, HMODULE, LPCWSTR,
-    POINT, LONG
+    POINT, HICON, HDC, COLORREF, HBRUSH
 )
 from enum import IntEnum
 
@@ -183,6 +183,18 @@ IsWindowEnabled.argtypes = [HWND]
 IsWindowVisible = user32.IsWindowVisible
 IsWindowVisible.restype = BOOL
 IsWindowVisible.argtypes = [HWND]
+
+SetTextColor = gdi32.SetTextColor
+SetTextColor.restype = COLORREF
+SetTextColor.argtypes = [HDC, COLORREF]
+
+SetBkColor = gdi32.SetBkColor
+SetBkColor.restype = COLORREF
+SetBkColor.argtypes = [HDC, COLORREF]
+
+CreateSolidBrush = gdi32.CreateSolidBrush
+CreateSolidBrush.restype = HBRUSH
+CreateSolidBrush.argtypes = [COLORREF]
 
 class SWP(IntEnum):
     NOSIZE          = 0x0001  #
@@ -441,6 +453,20 @@ class WinMessages(IntEnum):
     HOTKEY = 786
     DESTROY = 2
     WINDOWPOSCHANGED = 71
+    CTLCOLORMSGBOX = 306
+    CTLCOLOREDIT = 307
+    CTLCOLORLISTBOX = 308
+    CTLCOLORBTN = 309
+    CTLCOLORDLG = 310
+    CTLCOLORSCROLLBAR = 311
+    CTLCOLORSTATIC = 312
+    MOUSEMOVE = 0x0200
+    LBUTTONDOWN = 0x0201
+    LBUTTONUP = 0x0202
+    LBUTTONDBLCLK = 0x0203
+    RBUTTONDOWN = 0x0204
+    RBUTTONUP = 0x0205
+    ERASEBKGND = 20
 
 class ShowWindowCommands(IntEnum):
     HIDE = 0
@@ -559,6 +585,70 @@ class NM(IntEnum):
     CUSTOMTEXT           = FIRST-24   # uses NMCUSTOMTEXT struct
     TVSTATEIMAGECHANGING = FIRST-24   # uses NMTVSTATEIMAGECHANGING struct, defined after HTREEITEM
     LAST                 = FIRST-99
+
+
+class CONT(IntEnum):
+    #   defines for docking manager
+    LEFT   = 0
+    RIGHT  = 1
+    TOP    = 2
+    BOTTOM = 3
+    MAX    = 4
+
+class DWS(IntEnum):
+    # mask params for plugins of internal dialogs
+    ICONTAB        = 0x00000001  # Icon for tabs are available
+    ICONBAR        = 0x00000002  # Icon for icon bar are available (currently not supported)
+    ADDINFO        = 0x00000004  # Additional information are in use
+    USEOWNDARKMODE = 0x00000008  # Use plugin's own dark mode
+    PARAMSALL = (ICONTAB|ICONBAR|ADDINFO|USEOWNDARKMODE)
+
+
+class DWS_DF_CONT(IntEnum):
+    # default docking values for first call of plugin
+    LEFT     =(CONT.LEFT   << 28)  # default docking on left
+    RIGHT    =(CONT.RIGHT  << 28)  # default docking on right
+    TOP      =(CONT.TOP    << 28)  # default docking on top
+    BOTTOM   =(CONT.BOTTOM << 28)  # default docking on bottom
+    FLOATING = 0x80000000          # default state is floating
+
+
+class NPPM(IntEnum):
+    WM_USER            = 1024
+    NPPMSG             = WM_USER + 1000
+    DMMSHOW            = NPPMSG + 30   # void NPPM_DMMSHOW(0, tTbData->hClient)
+    DMMHIDE            = NPPMSG + 31   # void NPPM_DMMHIDE(0, tTbData->hClient)
+    DMMUPDATEDISPINFO  = NPPMSG + 32   # void NPPM_DMMUPDATEDISPINFO(0, tTbData->hClient)
+    DMMREGASDCKDLG     = NPPMSG + 33   # void NPPM_DMMREGASDCKDLG(0, &tTbData)
+    MODELESSDIALOG     = 2036
+
+
+class DMN(IntEnum):
+    FIRST        = 1050
+    CLOSE        = FIRST + 1
+    DOCK         = FIRST + 2
+    FLOAT        = FIRST + 3
+    SWITCHIN     = FIRST + 4
+    SWITCHOFF    = FIRST + 5
+    FLOATDROPPED = FIRST + 6
+
+
+class TbData(Structure):
+    _fields_ = [
+    ('hClient',     HWND),     # client Window Handle
+    ('pszName',     LPCWSTR),  # name of plugin (shown in window)
+    ('dlgID',       INT),      # a funcItem provides the function pointer to start a dialog. Please parse here these ID
+
+    # user modifications
+    ('uMask',       UINT),     # mask params: look to above defines
+    ('hIconTab',    HICON),    # icon for tabs
+    ('pszAddInfo',  ctypes.POINTER(ctypes.c_wchar)), # for plugin to display additional informations
+
+    # internal data, do not use !!!
+    ('rcFloat',       RECT),     # floating position
+    ('iPrevCont',     INT),      # stores the privious container (toggling between float and dock)
+    ('pszModuleName', LPCWSTR),  # it's the plugin file name. It's used to identify the plugin
+    ]
 
 
 class WM_CommandDelegator:

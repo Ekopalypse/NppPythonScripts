@@ -73,7 +73,12 @@ from .win_helper import (
 
     CreateDialogIndirectParam, DestroyWindow,
     ShowWindow, UpdateWindow, MSG, GetMessage, IsDialogMessage, TranslateMessage, DispatchMessage,
-    LPWINDOWPOS
+    LPWINDOWPOS,
+    # dockable dialog
+    ExtendedWindowStyles as WS_EX,
+    DMN, NPPM, TbData, DWS, DWS_DF_CONT, RECT,
+    SendMessage, SetBkColor, SetTextColor, CreateSolidBrush,
+    LOWORD, HIWORD
 )
 from .controls.__control_template import Control
 from .controls.button import Button, DefaultButton, CheckBoxButton, GroupBox, CommandButton, RadioButton, RadioPushButton, SplitButton
@@ -105,9 +110,11 @@ from .resource_parser import parser
 
 from Npp import notepad
 import ctypes
-from ctypes import wintypes, create_unicode_buffer, pointer, cast
+from ctypes import wintypes, create_unicode_buffer, pointer, cast, addressof
 from dataclasses import dataclass, field
 from typing import Dict, List
+import threading
+
 
 def registerHotkey(hotkey):
     def wrapper(func):
@@ -513,6 +520,336 @@ class Dialog:
         dlg_window = self.__align_struct(dlg_window)
         dialog = dlg_window + controls
         return dialog
+
+class DockableDialog(threading.Thread):
+    '''
+    Dialog Class
+
+    Represents a Npp-dockable dialog window.
+
+    The Dialog class provides a template for creating and managing dockable dialog windows.
+    It encapsulates properties and behaviors common to dialog windows, such as
+    title, size, position, styles, and controls.
+
+    Attributes:
+        title (str): The title of the dialog window.
+        size ((int, int)): The width and height of the dialog window.
+        position ((int, int)): The x and y coordinates of the dialog window.
+        styles (int): The style flags for the dialog window.
+        exStyle (int): The extended style flags for the dialog window.
+        pointsize (int): The font size for the dialog window.
+        typeface (str): The font typeface for the dialog window.
+        weight (int): The font weight for the dialog window.
+        italic (int): The font italicization for the dialog window.
+        charset (int): The character set for the dialog window.
+
+        parent (int): The handle of the parent window for the dialog.
+        center (bool): Indicates whether the dialog should be centered on the screen.
+        controlList (List): A list of control instances to be added to the dialog.
+        controlStartId (int): The starting identifier for controls in the dialog.
+        hwnd (int): The handle of the dialog window.
+        registeredCommands (Dict): A dictionary of registered command messages and their associated handlers.
+        registeredNotifications (Dict): A dictionary of registered notification messages and their associated handlers.
+        initialize (Callable): A callback function called during the initialization of the dialog.
+        closeOnEscapeKey (Bool): Specifies whether the dialog should be closed when the escape key is pressed. (defaults to True)
+
+    Note:
+        The Dialog class is intended to be subclassed for specific dialog implementations.
+        It provides a base template and common functionality for creating dialog windows.
+    '''
+
+    def __init__(self, **kwargs):
+        threading.Thread.__init__(self)
+        self.title                   = kwargs.get('title', '')
+        self.size                    = (300, 400)
+        self.position                = (0, 0)
+        self.style                   = DS.SETFONT | WS.POPUP | WS.CAPTION | WS.SYSMENU
+        self.exStyle                 = WS_EX.TOOLWINDOW | WS_EX.WINDOWEDGE
+        self.pointsize               = 9
+        self.typeface                = 'Segoe UI'
+        self.weight                  = 0
+        self.italic                  = 0
+        self.charset                 = 0
+
+        self.parent                  = notepad.hwnd
+        self.controlList             = []
+        self.controlStartId          = 1025
+        self.hwnd                    = 0
+        self.registeredCommands      = {}
+        self.registeredNotifications = {}
+
+        self.isVisible               = False
+        self.focusEditor             = False
+        self.useThemeColors          = False
+        self.themedBackgroundColor   = notepad.getEditorDefaultBackgroundColor()
+        self.themedForegroundColor   = notepad.getEditorDefaultForegroundColor()
+
+        self.tbdata                  = TbData()
+        # hClient and pszName are set in run()
+        self.tbdata.dlgID            = -1
+        self.tbdata.uMask            = DWS_DF_CONT.BOTTOM | DWS.ADDINFO | DWS.USEOWNDARKMODE
+        self.tbdata.hIconTab         = None
+
+        self.add_info                = ctypes.create_unicode_buffer(1000)
+        self.add_info.value          = 'hello'
+        self.tbdata.pszAddInfo       = ctypes.cast(ctypes.pointer(self.add_info), ctypes.POINTER(ctypes.c_wchar))
+
+        self.tbdata.rcFloat          = RECT()
+        self.tbdata.iPrevCont        = -1
+        self.tbdata.pszModuleName    = "PythonScript"
+
+    def initialize(self):
+        '''
+        Initializes the dialog and its controls at runtime.
+
+        This method is intended to be overridden by a concrete class.
+        It is executed after all controls have been created but before the dialog is displayed.
+        Concrete implementations should provide custom logic to set up initial values, states, and configurations of the controls.
+
+        Args:
+            None.
+
+        Returns:
+            None
+        '''
+        pass
+
+    def setTitle(self, new_title):
+        """
+        Sets the title of the dialog window.
+
+        Args:
+            text (str): The text to be set in the dialog window.
+
+        Returns:
+            None
+        """
+        SetWindowText(self.hwnd, new_title)
+
+    def __create_dialog_window(self):
+        '''
+        Create the dialog template structure.
+
+        Args:
+            None.
+
+        Returns:
+            bytearray: The byte array representing the dialog template structure.
+
+        '''
+        # https://learn.microsoft.com/en-us/windows/win32/dlgbox/dlgtemplateex
+        self.windowClass = 0
+        _array = bytearray()
+        _array += wintypes.WORD(1)  # dlgVer
+        _array += wintypes.WORD(0xFFFF)  # signature
+        _array += wintypes.DWORD(0)  # helpID
+        _array += wintypes.DWORD(self.exStyle)
+        _array += wintypes.DWORD(self.style)
+        _array += wintypes.WORD(self.dialog_items or 0)  # cDlgItems
+        _array += wintypes.SHORT(self.position[0])  # x
+        _array += wintypes.SHORT(self.position[1])  # y
+        _array += wintypes.SHORT(self.size[0])  # width
+        _array += wintypes.SHORT(self.size[1])  # height
+        _array += wintypes.WORD(0)  # menu
+        _array += wintypes.WORD(0)  # windowClass
+        _array += create_unicode_buffer(self.title)
+        _array += wintypes.WORD(self.pointsize)
+        _array += wintypes.WORD(self.weight)
+        _array += wintypes.BYTE(self.italic)
+        _array += wintypes.BYTE(self.charset)
+        _array += create_unicode_buffer(self.typeface)
+        return _array
+
+    def __align_struct(self, tmp):
+        '''
+        Aligns the template structure to the size of a DWORD.
+
+        Args:
+            tmp: The template structure to be aligned.
+
+        Returns:
+            The aligned template structure.
+        '''
+        dword_size = ctypes.sizeof(wintypes.DWORD)
+        align = dword_size - len(tmp) % dword_size
+        if align < dword_size:
+            tmp += bytearray(align)
+        return tmp
+
+    def toggle(self):
+        SendMessage(self.parent, NPPM.DMMHIDE if self.isVisible else NPPM.DMMSHOW, 0, self.hwnd)
+        self.isVisible = not self.isVisible
+
+    def update_additional_info(self, new_message=""):
+        if self.hwnd:
+            self.add_info.value = new_message[:1000]
+            SendMessage(self.parent, NPPM.DMMUPDATEDISPINFO, 0, self.hwnd)
+
+    def dock(self):
+        self.tbdata.hClient = self.hwnd
+        self.tbdata.pszName = self.title
+        SendMessage(self.parent, NPPM.DMMREGASDCKDLG, 0, addressof(self.tbdata))
+        if self.focusEditor:
+            editor.grabFocus()
+
+    def unregister(self):
+        self.tbdata.hClient = self.hwnd
+        self.tbdata.pszName = self.title
+        SendMessage(self.parent, NPPM.DMMREGASDCKDLG, 0, addressof(self.tbdata))
+        if self.focusEditor:
+            editor.grabFocus()
+
+
+    def __default_dialog_proc(self, hwnd, msg, wparam, lparam):
+        match msg:
+            case WM.INITDIALOG:
+                self.hwnd = hwnd
+                for i, control in enumerate(self.controlList):
+                    self.controlList[i].hwnd = GetDlgItem(hwnd, control.id)
+
+                self.initialize()
+                # res = SendMessage(self.parent, NPPM.MODELESSDIALOG, 0, self.hwnd)  # MODELESSDIALOGADD=0 MODELESSDIALOGREMOVE=1
+                # print(f'NPPM.MODELESSDIALOG {res=}')
+                SetWindowPos(hwnd, 0, 0, 0, 0, 0, SWP.NOMOVE | SWP.NOSIZE | SWP.NOZORDER | SWP.FRAMECHANGED)
+                return 1
+
+            # case WM.PAINT:
+                # ps = PAINTSTRUCT()
+                # p_ps = pointer(ps)
+                # BeginPaint(self.hwnd, p_ps)
+                # EndPaint(self.hwnd, p_ps)
+
+            case WM.SIZE:
+                # reposition all elements
+                new_width = LOWORD(lparam)
+                new_height = HIWORD(lparam)
+                # RedrawWindow(self.hwnd, None, None, 1)
+                if new_height or new_width:
+                    pass  # silence the linter
+
+            case WM.COMMAND:
+                if wparam in self.registeredCommands:
+                    self.registeredCommands[wparam]()
+                    return 1
+
+            case [WM.CTLCOLOREDIT, WM.CTLCOLORLISTBOX, WM.CTLCOLORBTN, WM.CTLCOLORDLG, WM.CTLCOLORSTATIC]:
+                if not self.useThemeColors:
+                    return 0
+                hdc = cast(wparam, HDC)
+                SetTextColor(hdc, wintypes.RGB(*self.themedForegroundColor))
+                SetBkColor(hdc, wintypes.RGB(*self.themedBackgroundColor))
+                return CreateSolidBrush(wintypes.RGB(*self.themedBackgroundColor))
+
+            case WM.CTLCOLORSCROLLBAR:
+                if not self.useThemeColors:
+                    return 0
+                hdc = cast(wparam, HDC)
+                SetTextColor(hdc, wintypes.RGB(*self.themedBackgroundColor))
+                SetBKColor(hdc, wintypes.RGB(*self.themedForegroundColor))
+                return CreateSolidBrush(wintypes.RGB(*self.themedForegroundColor))
+
+            case WM.NOTIFY:
+                lpnmhdr = ctypes.cast(lparam, LPNMHDR)
+                __msg = LOWORD(lpnmhdr.contents.code)
+                match __msg:
+                    case DMN.CLOSE:
+                        self.isVisible = False
+                    case DMN.FLOAT:
+                        self.isVisible = True
+                    case DMN.DOCK:
+                        self.isVisible = True
+                notif_key = (lpnmhdr.contents.code, lpnmhdr.contents.idFrom)
+                if notif_key in self.registeredNotifications:
+                    args = ctypes.cast(lparam, self.registeredNotifications[notif_key][1])
+                    self.registeredNotifications[notif_key][0](args.contents)
+                    return 1
+        return 0
+
+    def show(self):
+        '''
+        This method displays the dialog on the screen and starts its message loop,
+        allowing user interaction with the controls. The method blocks until the
+        dialog is closed.
+
+        Args:
+            None.
+
+        Returns:
+            None
+        '''
+        # Instead of using dir(self), which always returns a sorted list,
+        # __dict__.keys is used to maintain the order of control creation.
+        for item in self.__dict__.keys():
+            obj = getattr(self, item)
+            if isinstance(obj, Control):
+                self.controlList.append(obj)
+
+        self.start()  # start the thread and create the dialog
+
+    def run(self):
+        """
+        Create the dialog window and its controls.
+
+        This method constructs the dialog window by creating its controls and setting up event handling.
+        It iterates over the controlList, assigns unique IDs to the controls, creates control structures,
+        aligns them to match memory requirements, and registers event handlers for commands and notifications.
+
+        Args:
+            None.
+
+        Returns:
+            None.
+
+        Raises:
+            TypeError: If a control in controlList is not an instance of Control.
+
+        Notes:
+            - This method is called internally during the creation of the Dialog object.
+            - It utilizes the __align_struct method to ensure proper memory alignment.
+            - The created dialog is displayed using the DialogBoxIndirectParam function.
+        """
+        controls = bytearray()
+        for i, control in enumerate(self.controlList):
+            if not isinstance(control, Control):
+                raise TypeError(f"{control} is not an instance of Control")
+            control.id = self.controlStartId + i
+            control_struct = control.create()
+            controls += self.__align_struct(control_struct)
+            for event, func in control.registeredCommands.items():
+                # mimicking what MS does internally allows us to directly use wparam in __default_dialog_proc
+                self.registeredCommands[(event << 16) + control.id] = func
+
+            for event, func in control.registeredNotifications.items():
+                self.registeredNotifications[(event, control.id)] = func
+
+        self.dialog_items = len(self.controlList)
+        dlg_window = self.__create_dialog_window()
+        dlg_window = self.__align_struct(dlg_window)
+        dialog = dlg_window + controls
+        raw_bytes = (ctypes.c_ubyte * len(dialog)).from_buffer_copy(dialog)
+        hinstance = GetModuleHandle(None)
+
+        self.dialogProc = DIALOGPROC(self.__default_dialog_proc)  # DO NOT REMOVE - otherwise ... crashing (!??)
+        self.hwnd = CreateDialogIndirectParam(hinstance,
+                                              raw_bytes,
+                                              self.parent,
+                                              self.dialogProc,
+                                              0)
+        if self.hwnd:
+            self.dock()
+            ShowWindow(self.hwnd, 5)
+            UpdateWindow(self.hwnd)
+
+            msg = MSG()
+            lpmsg = pointer(msg)
+
+            while True:
+                bRet = GetMessage(lpmsg, 0, 0, 0)
+                if (bRet == 0) or (bRet == -1):
+                    break
+                if not IsDialogMessage(self.hwnd, lpmsg):
+                    TranslateMessage(lpmsg)
+                    DispatchMessage(lpmsg)
 
 
 def create_dialog_from_rc(rc_code):
