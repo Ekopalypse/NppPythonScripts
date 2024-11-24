@@ -144,22 +144,13 @@ GetWindowTextLength = user32.GetWindowTextLengthW
 GetWindowTextLength.restype = INT
 GetWindowTextLength.argtypes = [HWND]
 
-if ctypes.sizeof(ctypes.c_voidp) == 4:
-    GetWindowLong = user32.GetWindowLongW
-    GetWindowLong.restype = LONG
-    GetWindowLong.argtypes = [HWND, INT]
+GetWindowLong = user32.GetWindowLongPtrW if ctypes.sizeof(ctypes.c_voidp) == 8 else GetWindowLongW
+GetWindowLong.restype = LONG_PTR
+GetWindowLong.argtypes = [HWND, INT]
 
-    SetWindowLong = user32.SetWindowLongW
-    SetWindowLong.restype = LONG
-    SetWindowLong.argtypes = [HWND, INT, LONG]
-else:
-    GetWindowLong = user32.GetWindowLongPtrW
-    GetWindowLong.restype = LONG_PTR
-    GetWindowLong.argtypes = [HWND, INT]
-
-    SetWindowLong = user32.SetWindowLongPtrW
-    SetWindowLong.restype = LONG_PTR
-    SetWindowLong.argtypes = [HWND, INT, LONG_PTR]
+SetWindowLong = user32.SetWindowLongPtrW if ctypes.sizeof(ctypes.c_voidp) == 8 else SetWindowLongW
+SetWindowLong.restype = LONG_PTR
+SetWindowLong.argtypes = [HWND, INT, LONG_PTR]
 
 FindWindow = user32.FindWindowW
 FindWindow.restype = HWND
