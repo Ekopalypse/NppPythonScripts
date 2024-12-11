@@ -57,9 +57,10 @@ Classes that are missing and for which there are currently no plans to include a
 __all__ = ['Dialog',
            'Button', 'DefaultButton', 'CheckBoxButton', 'GroupBox', 'CommandButton', 'RadioButton', 'RadioPushButton', 'SplitButton',
            'Label', 'TruncatedLabel', 'BlackFramedLabel', 'CenteredLabel', 'RigthAlignedLabel',
-           'ComboBox', 'ComboBoxEx', 'ListBox', 'TextBox', 'ListView', 'ProgressBar', 'StatusBar', 'UpDown', 'TreeView'
+           'ComboBox', 'ComboBoxEx', 'ListBox', 'TextBox', 'ListView', 'ProgressBar', 'StatusBar', 'UpDown', 'TreeView',
+           'DirectoryPicker', 'FileOpenDialog'
            ]
-__version__ = '0.2'
+__version__ = '0.3'
 __author__ = 'ekopalypse'
 
 from .win_helper import (
@@ -100,6 +101,8 @@ from .controls.treeview import TreeView
 # from .controls.syspager import ...
 # from .controls.systabcontrol32 import ...
 # from .controls.toolbarwindow32 import ...
+
+from .com_dialogs import FileOpenDialog, DirectoryPicker
 
 from .resource_parser import parser
 

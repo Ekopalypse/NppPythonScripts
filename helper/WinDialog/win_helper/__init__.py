@@ -10,11 +10,11 @@ Note:
 """
 
 import ctypes
-from ctypes import POINTER, Structure
+from ctypes import POINTER, Structure, HRESULT, ARRAY, WINFUNCTYPE
 from ctypes.wintypes import (
 	HWND, UINT, WPARAM, LPARAM, INT, BOOL,
     MSG, HINSTANCE, RECT, HMODULE, LPCWSTR,
-    POINT, LONG
+    POINT, LONG, DWORD
 )
 from enum import IntEnum
 
@@ -29,9 +29,11 @@ user32 = ctypes.WinDLL('user32', use_last_error=True)
 gdi32 = ctypes.WinDLL('gdi32', use_last_error=True)
 kernel32 = ctypes.WinDLL('kernel32', use_last_error=True)
 comctl32 = ctypes.WinDLL('comctl32', use_last_error=True)
+ole32 = ctypes.OleDLL('ole32')
+shell32 = ctypes.WinDLL('shell32', use_last_error=True)
 
 LRESULT = ctypes.c_ssize_t
-DIALOGPROC = ctypes.WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM)
+DIALOGPROC = WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM)
 
 SendMessage = user32.SendMessageW
 SendMessage.restype = LRESULT
@@ -114,7 +116,7 @@ GetModuleHandle.restype  = HMODULE
 GetModuleHandle.argtypes = [LPCWSTR]
 
 # https://learn.microsoft.com/en-us/windows/win32/controls/subclassing-overview#subclassing-controls-using-comctl32dll-version-6
-SUBCLASSPROC = ctypes.WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR)
+SUBCLASSPROC = WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR)
 
 SetWindowSubclass = comctl32.SetWindowSubclass
 SetWindowSubclass.restype  = BOOL
@@ -144,11 +146,11 @@ GetWindowTextLength = user32.GetWindowTextLengthW
 GetWindowTextLength.restype = INT
 GetWindowTextLength.argtypes = [HWND]
 
-GetWindowLong = user32.GetWindowLongPtrW if ctypes.sizeof(ctypes.c_voidp) == 8 else GetWindowLongW
+GetWindowLong = user32.GetWindowLongPtrW if ctypes.sizeof(ctypes.c_voidp) == 8 else user32.GetWindowLongW
 GetWindowLong.restype = LONG_PTR
 GetWindowLong.argtypes = [HWND, INT]
 
-SetWindowLong = user32.SetWindowLongPtrW if ctypes.sizeof(ctypes.c_voidp) == 8 else SetWindowLongW
+SetWindowLong = user32.SetWindowLongPtrW if ctypes.sizeof(ctypes.c_voidp) == 8 else user32.SetWindowLongW
 SetWindowLong.restype = LONG_PTR
 SetWindowLong.argtypes = [HWND, INT, LONG_PTR]
 
@@ -596,3 +598,44 @@ class WINDOWPOS(Structure):
         ("flags", UINT),
     ]
 LPWINDOWPOS = POINTER(WINDOWPOS)
+
+class GUID(Structure):
+    # https://learn.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid
+    _fields_ = [
+        ("data1", ctypes.c_ulong),
+        ("data2", ctypes.c_ushort),
+        ("data3", ctypes.c_ushort),
+        ("data4", ARRAY(ctypes.c_byte, 8)),
+    ]
+
+    def __init__(self, guid_string):
+        parts = guid_string.split("-")
+
+        self.data1 = int(parts[0], 16)  # The first 8 hexadecimal digits of the GUID.
+        self.data2 = int(parts[1], 16)  # The first group of 4 hexadecimal digits.
+        self.data3 = int(parts[2], 16)  # The second group of 4 hexadecimal digits.
+
+        # Array of 8 bytes.
+        # The first 2 bytes contain the third group of 4 hexadecimal digits.
+        # The remaining 6 bytes contain the final 12 hexadecimal digits.
+        byte_1 = int(parts[3][:2], 16)
+        byte_2 = int(parts[3][2:4], 16)
+        byte_3_to_8 = [int(parts[4][i:i+2], 16) for i in range(0, len(parts[4]), 2)]
+        self.data4 = (ctypes.c_byte * 8)(byte_1, byte_2, *byte_3_to_8)
+
+
+CoCreateInstance = ole32.CoCreateInstance
+CoCreateInstance.argtypes = [POINTER(GUID), ctypes.c_void_p, DWORD, POINTER(GUID), POINTER(ctypes.c_void_p)]
+CoCreateInstance.restype = HRESULT
+
+CoInitialize = ole32.CoInitialize
+CoInitialize.argtypes = [ctypes.c_void_p]
+CoInitialize.restype = HRESULT
+
+CoUninitialize = ole32.CoUninitialize
+CoUninitialize.argtypes = []
+CoUninitialize.restype = HRESULT
+
+SHCreateItemFromParsingName = shell32.SHCreateItemFromParsingName
+SHCreateItemFromParsingName.argtypes = [LPCWSTR, ctypes.c_void_p, POINTER(GUID), POINTER(ctypes.c_void_p)]
+SHCreateItemFromParsingName.restype = HRESULT
