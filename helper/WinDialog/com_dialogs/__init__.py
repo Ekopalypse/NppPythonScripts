@@ -243,6 +243,7 @@ class FileDialog:
         """
         options = DWORD()
         self._get_options(self.this, byref(options))
+        return options.value
 
     # def getResult(self):
         # ishell_object = c_void_p()
