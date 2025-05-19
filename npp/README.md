@@ -2,6 +2,8 @@
 
 These are scripts that extend the functionality of Npp/Scintilla.
 
+Note: With Npp 8.8.1 the errorlist python scripts are obsolete, as an internal errorlist lexer has been implemented.
+
 Error list lexer turns that
 
 ![image](https://user-images.githubusercontent.com/47723516/175293943-31018059-c708-46a0-9a98-3367221f75bf.png)
