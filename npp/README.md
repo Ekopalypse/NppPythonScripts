@@ -1,8 +1,9 @@
+***Note: With Npp 8.8.1 the errorlist python scripts are obsolete, as an internal errorlist lexer has been implemented.***
+
 ***Note, a dedicated plugin to enhance any lexer can be found [here](https://github.com/Ekopalypse/EnhanceAnyLexer/releases).***
 
 These are scripts that extend the functionality of Npp/Scintilla.
 
-Note: With Npp 8.8.1 the errorlist python scripts are obsolete, as an internal errorlist lexer has been implemented.
 
 Error list lexer turns that
 
