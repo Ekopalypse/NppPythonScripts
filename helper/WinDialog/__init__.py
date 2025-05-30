@@ -58,7 +58,7 @@ __all__ = ['Dialog',
            'Button', 'DefaultButton', 'CheckBoxButton', 'GroupBox', 'CommandButton', 'RadioButton', 'RadioPushButton', 'SplitButton',
            'Label', 'TruncatedLabel', 'BlackFramedLabel', 'CenteredLabel', 'RigthAlignedLabel',
            'ComboBox', 'ComboBoxEx', 'ListBox', 'TextBox', 'ListView', 'ProgressBar', 'StatusBar', 'UpDown', 'TreeView',
-           'DirectoryPicker', 'FileOpenDialog'
+           'DirectoryPicker', 'FileOpenDialog', 'FileSaveDialog'
            ]
 __version__ = '0.3'
 __author__ = 'ekopalypse'
@@ -102,7 +102,7 @@ from .controls.treeview import TreeView
 # from .controls.systabcontrol32 import ...
 # from .controls.toolbarwindow32 import ...
 
-from .com_dialogs import FileOpenDialog, DirectoryPicker
+from .com_dialogs import FileOpenDialog, DirectoryPicker, FileSaveDialog
 
 from .resource_parser import parser
 
