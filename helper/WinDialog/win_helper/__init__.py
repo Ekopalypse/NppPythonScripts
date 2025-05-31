@@ -34,6 +34,7 @@ shell32 = ctypes.WinDLL('shell32', use_last_error=True)
 
 LRESULT = ctypes.c_ssize_t
 DIALOGPROC = WINFUNCTYPE(LRESULT, HWND, UINT, WPARAM, LPARAM)
+ENUMWINDOWSPROC = WINFUNCTYPE(BOOL, HWND, LPARAM)
 
 SendMessage = user32.SendMessageW
 SendMessage.restype = LRESULT
@@ -639,3 +640,15 @@ CoUninitialize.restype = HRESULT
 SHCreateItemFromParsingName = shell32.SHCreateItemFromParsingName
 SHCreateItemFromParsingName.argtypes = [LPCWSTR, ctypes.c_void_p, POINTER(GUID), POINTER(ctypes.c_void_p)]
 SHCreateItemFromParsingName.restype = HRESULT
+
+EnumChildWindows = user32.EnumChildWindows
+EnumChildWindows.restype = BOOL
+EnumChildWindows.argtypes = [HWND, ENUMWINDOWSPROC, LPARAM]
+
+GetClassName = user32.GetClassNameW
+GetClassName.restype = INT
+GetClassName.argtypes = [HWND, LPCWSTR, INT]
+
+GetParent = user32.GetParent
+GetParent.restype = HWND
+GetParent.argtypes = [HWND]
