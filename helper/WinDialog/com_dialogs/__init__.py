@@ -192,7 +192,7 @@ class FileDialog:
         self._set_title = WINFUNCTYPE(HRESULT, c_void_p, LPCWSTR)(self._vtable[17])
         self._set_ok_button_label = WINFUNCTYPE(HRESULT, c_void_p, LPCWSTR)(self._vtable[18])
         self._set_file_name_label = WINFUNCTYPE(HRESULT, c_void_p, LPCWSTR)(self._vtable[19])
-        # self._get_result = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[20])
+        self._get_result = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[20])
         self._add_place = WINFUNCTYPE(HRESULT, c_void_p, c_void_p, UINT)(self._vtable[21])
         self._set_default_extension = WINFUNCTYPE(HRESULT, c_void_p, LPCWSTR)(self._vtable[22])
         # self._close = WINFUNCTYPE(HRESULT, c_void_p, HRESULT)(self._vtable[23])
@@ -492,43 +492,68 @@ class DirectoryPicker(FileOpenDialog):
             self._set_options(self.this, default_options.value | options)
 
 
-# @dataclass
-# class FileSaveDialog(FileDialog):
-    # # https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifilesavedialog
-    # '''
-    # FileSaveDialog Class
+@dataclass
+class FileSaveDialog(FileDialog):
+    # https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ifilesavedialog
+    '''
+    FileSaveDialog Class
 
-    # Represents the standard COM-based file open dialog window.
+    Represents the standard COM-based file save dialog window.
 
-    # The FileSaveDialog class provides a template for creating and managing dialog windows.
-    # It encapsulates properties and behaviors common to dialog windows, such as
-    # title, size, position, styles, and controls.
+    The FileSaveDialog class provides a template for creating and managing dialog windows.
+    It encapsulates properties and behaviors common to dialog windows, such as
+    title, size, position, styles, and controls.
 
-    # Attributes:
-        # title (str): The title of the dialog window.
-        # parent (int): The handle of the parent window for the dialog.
-    # '''
+    Attributes:
+        title (str): The title of the dialog window.
+        parent (int): The handle of the parent window for the dialog.
+    '''
 
-    # def __post_init__(self):
-        # """
-        # Perform post-initialization tasks for the FileSaveDialog object.
+    selectedItem: List = field(default_factory=list)
+    parent: int = notepad.hwnd
 
-        # This method is automatically called after the initialization of the FileSaveDialog object.
-        # It creates the com object and its vtable (object methods).
+    def __post_init__(self):
+        """
+        Perform post-initialization tasks for the FileSaveDialog object.
 
-        # Args:
-            # None.
+        This method is automatically called after the initialization of the FileSaveDialog object.
+        It creates the com object and its vtable (object methods).
 
-        # Returns:
-            # None.
-        # """
-        # super().__post_init__(GUID('C0B4E2F3-BA21-4773-8DBA-335EC946EB8B'), GUID('84BCCD23-5FDE-4CDB-AEA4-AF64B83D78AB'), 5)
+        Args:
+            None.
 
-    # def show(self, hwnd=None):
-        # try:
-            # self._show(self.this, hwnd)
-        # except OSError as e:
-            # if len(e.args) > 3 and e.args[3] == -2147023673:
-                # pass  # User cancelled dialog
-            # else:
-                # raise
+        Returns:
+            None.
+        """
+        super().__post_init__(GUID('C0B4E2F3-BA21-4773-8DBA-335EC946EB8B'), GUID('84BCCD23-5FDE-4CDB-AEA4-AF64B83D78AB'), 5)
+        # self._set_saveas_item = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[27])
+        # self._set_properties = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[28])
+        # self._set_collected_properties = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[29])
+        # self._get_properties = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[30])
+        # self._apply_properties = WINFUNCTYPE(HRESULT, c_void_p, POINTER(c_void_p))(self._vtable[30])
+
+    def show(self, hwnd=None):
+        '''
+        This method displays the dialog on the screen.
+        The method blocks until the dialog is closed.
+
+        Args:
+            None
+
+        Returns:
+            list: A single-element list containing the selected item (or empty list if cancelled or some error)
+        '''
+        try:
+            self.selectedItem.clear()
+            self._show(self.this, self.parent)
+            ishell_object = c_void_p()
+            if self._get_result(self.this, byref(ishell_object)) == 0:
+                ishell_item = IShellItem(ishell_object)
+                self.selectedItem.append(ishell_item.get_display_name())
+                ishell_item.release()
+        except OSError as e:
+            if len(e.args) > 3 and e.args[3] == -2147023673:  # see, e.g., https://knowledge.broadcom.com/external/article/152212/error-codes-list-for-microsoft-technolog.html
+                pass  # User cancelled dialog
+            else:
+                raise
+        return self.selectedItem
